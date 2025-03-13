@@ -5,7 +5,13 @@ namespace honchoagency\craftcriticalcssgenerator;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
+use honchoagency\craftcriticalcssgenerator\services\CSS;
+use honchoagency\craftcriticalcssgenerator\services\Generator;
+use honchoagency\craftcriticalcssgenerator\services\Storage;
+use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
+use yii\base\Event;
 
 /**
  * Critical CSS Generator plugin
@@ -15,6 +21,9 @@ use honchoagency\craftcriticalcssgenerator\models\Settings;
  * @author honchoagency <dev@honcho.agency>
  * @copyright honchoagency
  * @license https://craftcms.github.io/license/ Craft License
+ * @property-read Storage $storage
+ * @property-read Generator $generator
+ * @property-read CSS $css
  */
 class Critical extends Plugin
 {
@@ -24,9 +33,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => [
-                // Define component configs here...
-            ],
+            'components' => ['storage' => Storage::class, 'generator' => Generator::class, 'css' => CSS::class],
         ];
     }
 
@@ -34,11 +41,12 @@ class Critical extends Plugin
     {
         parent::init();
 
+        $this->registerVariables();
         $this->attachEventHandlers();
 
         // Any code that creates an element query or loads Twig should be deferred until
         // after Craft is fully initialized, to avoid conflicts with other plugins/modules
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             // ...
         });
     }
@@ -60,5 +68,21 @@ class Critical extends Plugin
     {
         // Register event handlers here ...
         // (see https://craftcms.com/docs/5.x/extend/events.html to get started)
+    }
+
+    /**
+     * Registers variables
+     */
+    private function registerVariables(): void
+    {
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('critical', CriticalVariable::class);
+            }
+        );
     }
 }
