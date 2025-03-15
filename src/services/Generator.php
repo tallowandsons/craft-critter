@@ -25,7 +25,7 @@ class Generator extends Component
     public function generate(string $url, bool $useQueue = true, bool $storeResult = true): void
     {
         if ($useQueue) {
-            Craft::$app->queue->push(new GenerateCriticalCssJob([
+            Critical::getInstance()->queueService->pushIfNew(new GenerateCriticalCssJob([
                 'url' => $url,
                 'storeResult' => $storeResult,
             ]));

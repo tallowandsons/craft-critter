@@ -14,7 +14,7 @@ class TestController extends Controller
 {
     public $defaultAction = 'index';
 
-    public string $testUrl = "https://0336-86-9-86-160.ngrok-free.app/page-three";
+    public string $testUrl = "https://criticalcssplugin.ddev.site/page-three";
 
     public function options($actionID): array
     {
@@ -44,6 +44,6 @@ class TestController extends Controller
     public function actionGet()
     {
         $css = Critical::getInstance()->css->getCssForUrl($this->testUrl);
-        echo $css;
+        echo $css . PHP_EOL;
     }
 }
