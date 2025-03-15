@@ -8,7 +8,7 @@ use craft\base\Plugin;
 use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
 use honchoagency\craftcriticalcssgenerator\services\Css;
-use honchoagency\craftcriticalcssgenerator\services\Generator;
+use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
 use honchoagency\craftcriticalcssgenerator\services\QueueService;
 use honchoagency\craftcriticalcssgenerator\services\StorageService;
 use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
@@ -35,7 +35,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => Generator::class, 'css' => Css::class, 'queueService' => QueueService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => Css::class, 'queueService' => QueueService::class],
         ];
     }
 

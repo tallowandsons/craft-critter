@@ -12,7 +12,7 @@ use yii\base\Component;
 /**
  * Generator service
  */
-class Generator extends Component
+class GeneratorService extends Component
 {
 
     public GeneratorInterface $generator;
