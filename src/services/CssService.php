@@ -11,7 +11,7 @@ use yii\base\Component;
 /**
  * Css service
  */
-class Css extends Component
+class CssService extends Component
 {
     public $useQueue = true;
     public $fallbackCss = "/* fallback */ body { background-color: red; }";
