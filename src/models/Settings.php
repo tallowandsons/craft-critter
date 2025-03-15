@@ -13,4 +13,5 @@ class Settings extends Model
 {
     public string $generatorType = DummyGenerator::class;
     public string $storageType = CraftCacheStorage::class;
+    public array $styleTagOptions = [];
 }

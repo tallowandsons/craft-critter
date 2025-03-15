@@ -14,8 +14,6 @@ class CriticalVariable
         $cssStr = Critical::getInstance()->css->getCssForRequest();
 
         // register inline css
-        Craft::$app->getView()->registerCss($cssStr, [
-            'id' => 'js_critical-css',
-        ]);
+        Craft::$app->getView()->registerCss($cssStr, Critical::getInstance()->settings->styleTagOptions);
     }
 }
