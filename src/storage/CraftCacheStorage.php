@@ -3,16 +3,25 @@
 namespace honchoagency\craftcriticalcssgenerator\storage;
 
 use Craft;
+use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
 
 class CraftCacheStorage extends BaseStorage
 {
-    public function get(string $key): ?string
+    public function get(string $key): StorageResponse
     {
-        return Craft::$app->getCache()->get($key);
+        /* @var CssModel $css */
+        $css = Craft::$app->getCache()->get($key);
+
+        $response = new StorageResponse();
+        $response->setSuccess($css !== false);
+        $response->setData($css);
+
+        return $response;
     }
 
-    public function save(string $key, string $css): bool
+    public function save(string $key, CssModel $cssModel): bool
     {
-        return Craft::$app->getCache()->set($key, $css);
+        return Craft::$app->getCache()->set($key, $cssModel);
     }
 }

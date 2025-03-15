@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 class DummyGenerator extends BaseGenerator
@@ -12,7 +13,7 @@ class DummyGenerator extends BaseGenerator
     public function generate(UrlModel $url, bool $storeResult = true): void
     {
         if ($storeResult) {
-            Critical::getInstance()->storage->save($url, $this->css);
+            Critical::getInstance()->storage->save($url, new CssModel($this->css));
         }
     }
 }

@@ -5,6 +5,7 @@ namespace honchoagency\craftcriticalcssgenerator\services;
 use Craft;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
+use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use yii\base\Component;
 
 /**
@@ -29,8 +30,10 @@ class Css extends Component
         $url = UrlFactory::create($url);
 
         // return css from storage if it exists
-        if ($css = Critical::getInstance()->storage->get($url)) {
-            return $css;
+        $cssModel = Critical::getInstance()->storage->get($url);
+
+        if (!$cssModel->isEmpty()) {
+            return $cssModel->getCss();
         }
 
         // generate new css
@@ -38,6 +41,6 @@ class Css extends Component
             Critical::getInstance()->generator->generate($url, $this->useQueue);
         }
 
-        return $this->fallbackCss;
+        return (new CssModel($this->fallbackCss))->getCss();
     }
 }

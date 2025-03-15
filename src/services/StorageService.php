@@ -4,6 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use honchoagency\craftcriticalcssgenerator\storage\StorageInterface;
 use yii\base\Component;
@@ -22,19 +23,28 @@ class StorageService extends Component
         $this->storage = new $storageClass();
     }
 
-    public function get(UrlModel $url): ?string
+    public function get(UrlModel $url): CssModel
     {
         $key = $this->getCacheKey($url);
-        return $this->storage->get($key);
+
+        /* @var StorageResponse $response */
+        $response = $this->storage->get($key);
+
+        if (!$response->isSuccess()) {
+            return new CssModel();
+        }
+
+        return $response->getData();
     }
 
-    public function save(UrlModel $url, string $css): bool
+    public function save(UrlModel $url, CssModel $css): bool
     {
         $key = $this->getCacheKey($url);
 
-        $formattedCss = $this->formatCss($key, $css);
+        // Stamp the CSS with the current datetime and key
+        $css->stamp($key);
 
-        return $this->storage->save($key, $formattedCss);
+        return $this->storage->save($key, $css);
     }
 
     public function getCacheKey(UrlModel $url): string
@@ -45,15 +55,5 @@ class StorageService extends Component
     public function normaliseUriPath(UrlModel $url)
     {
         return $url->getSafeUrl();
-    }
-
-    public function formatCss(string $key, string $css): string
-    {
-        $datetime = new \DateTime();
-
-        $header = "/* Critical CSS - $key */";
-        $footer = "/* generated at " . $datetime->format('Y-m-d H:i:s') . " */";
-
-        return $header . PHP_EOL . $css . PHP_EOL . $footer;
     }
 }
