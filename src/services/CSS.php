@@ -3,9 +3,8 @@
 namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
-use craft\helpers\UrlHelper;
-use craft\web\Request;
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
 use yii\base\Component;
 
 /**
@@ -27,7 +26,7 @@ class Css extends Component
     public function getCssForUrl(string $url, bool $generate = true)
     {
         // format url
-        $url = $this->formatUrl($url);
+        $url = UrlFactory::create($url);
 
         // return css from storage if it exists
         if ($css = Critical::getInstance()->storage->get($url)) {
@@ -40,15 +39,5 @@ class Css extends Component
         }
 
         return $this->fallbackCss;
-    }
-
-    private function formatUrl(string $url): string
-    {
-        $urlHelper = new UrlHelper();
-
-        // strip query parameters
-        $url = $urlHelper->stripQueryString($url);
-
-        return $url;
     }
 }

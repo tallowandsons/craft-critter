@@ -6,6 +6,7 @@ use Craft;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
 use honchoagency\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
+use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use yii\base\Component;
 
 /**
@@ -22,7 +23,7 @@ class Generator extends Component
         $this->generator = new $generatorClass();
     }
 
-    public function generate(string $url, bool $useQueue = true, bool $storeResult = true): void
+    public function generate(UrlModel $url, bool $useQueue = true, bool $storeResult = true): void
     {
         if ($useQueue) {
             Critical::getInstance()->queueService->pushIfNew(new GenerateCriticalCssJob([

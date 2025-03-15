@@ -2,7 +2,9 @@
 
 namespace honchoagency\craftcriticalcssgenerator\storage;
 
-class BaseStorage implements StorageInterface
+use craft\base\Model;
+
+class BaseStorage extends Model implements StorageInterface
 {
     public function get(string $key): ?string
     {

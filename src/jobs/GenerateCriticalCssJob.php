@@ -4,6 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\jobs;
 
 use craft\queue\BaseJob;
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 /**
  * Generate Critical Css Job queue job
@@ -11,7 +12,7 @@ use honchoagency\craftcriticalcssgenerator\Critical;
 class GenerateCriticalCssJob extends BaseJob
 {
 
-    public string $url;
+    public UrlModel $url;
     public bool $storeResult = true;
 
     function execute($queue): void
@@ -23,6 +24,6 @@ class GenerateCriticalCssJob extends BaseJob
 
     protected function defaultDescription(): ?string
     {
-        return 'Generating critical css for ' . $this->url;
+        return 'Generating critical css for ' . $this->url->getUrl();
     }
 }

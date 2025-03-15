@@ -3,8 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
 use Craft;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use Symfony\Component\Process\Process;
 
 class CLIGenerator extends BaseGenerator
@@ -12,9 +11,10 @@ class CLIGenerator extends BaseGenerator
 
     public int $timeout = 60;
 
-    public function generate(string $url, bool $storeResult = true): void
+    public function generate(UrlModel $urlModel, bool $storeResult = true): void
     {
-        $key = Critical::getInstance()->storage->normaliseUriPath($url);
+        $url = $urlModel->getUrl();
+        $key = $urlModel->getSafeUrl();
 
         $outputPath = Craft::getAlias('@storage/runtime/temp/critical');
         $outputName = "$key.css";
@@ -41,7 +41,7 @@ class CLIGenerator extends BaseGenerator
             if ($process->isSuccessful()) {
                 if ($storeResult) {
                     $css = file_get_contents($output);
-                    $this->store($url, $css);
+                    $this->store($urlModel, $css);
                 }
             }
         } catch (\Exception $e) {

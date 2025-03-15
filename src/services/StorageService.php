@@ -4,6 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use honchoagency\craftcriticalcssgenerator\storage\StorageInterface;
 use yii\base\Component;
 
@@ -21,30 +22,29 @@ class StorageService extends Component
         $this->storage = new $storageClass();
     }
 
-    public function get(string $path): ?string
+    public function get(UrlModel $url): ?string
     {
-        $key = $this->getCacheKey($path);
+        $key = $this->getCacheKey($url);
         return $this->storage->get($key);
     }
 
-    public function save(string $path, string $css): bool
+    public function save(UrlModel $url, string $css): bool
     {
-        $key = $this->getCacheKey($path);
+        $key = $this->getCacheKey($url);
 
         $formattedCss = $this->formatCss($key, $css);
 
         return $this->storage->save($key, $formattedCss);
     }
 
-    public function getCacheKey(string $uriPath)
+    public function getCacheKey(UrlModel $url): string
     {
-        return 'critical-css-' . $this->normaliseUriPath($uriPath);
+        return 'critical-css-' . $this->normaliseUriPath($url);
     }
 
-    public function normaliseUriPath(string $uriPath)
+    public function normaliseUriPath(UrlModel $url)
     {
-        $path = str_replace('/', '-', $uriPath);
-        return $path;
+        return $url->getSafeUrl();
     }
 
     public function formatCss(string $key, string $css): string
