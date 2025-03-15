@@ -7,7 +7,7 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
-use honchoagency\craftcriticalcssgenerator\services\CSS;
+use honchoagency\craftcriticalcssgenerator\services\Css;
 use honchoagency\craftcriticalcssgenerator\services\Generator;
 use honchoagency\craftcriticalcssgenerator\services\Storage;
 use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
@@ -23,7 +23,7 @@ use yii\base\Event;
  * @license https://craftcms.github.io/license/ Craft License
  * @property-read Storage $storage
  * @property-read Generator $generator
- * @property-read CSS $css
+ * @property-read Css $css
  */
 class Critical extends Plugin
 {
@@ -33,7 +33,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => Storage::class, 'generator' => Generator::class, 'css' => CSS::class],
+            'components' => ['storage' => Storage::class, 'generator' => Generator::class, 'css' => Css::class],
         ];
     }
 

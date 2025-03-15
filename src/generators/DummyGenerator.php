@@ -11,7 +11,7 @@ class DummyGenerator extends BaseGenerator
     public function generate(string $url, bool $storeResult = true): void
     {
         if ($storeResult) {
-            Critical::getInstance()->storage->set($url, $this->css);
+            Critical::getInstance()->storage->save($url, $this->css);
         }
     }
 }

@@ -37,13 +37,15 @@ class CLIGenerator extends BaseGenerator
             }
         }
 
-        if ($process->isSuccessful()) {
-            if ($storeResult) {
-                $css = file_get_contents($output);
-                $this->store($url, $css);
+        try {
+            if ($process->isSuccessful()) {
+                if ($storeResult) {
+                    $css = file_get_contents($output);
+                    $this->store($url, $css);
+                }
             }
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        throw new ProcessFailedException($process);
     }
 }

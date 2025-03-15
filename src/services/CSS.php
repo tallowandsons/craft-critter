@@ -9,41 +9,35 @@ use yii\base\Component;
 /**
  * Css service
  */
-class CSS extends Component
+class Css extends Component
 {
-
+    public $useQueue = true;
     public $fallbackCss = "/* fallback */ body { background-color: red; }";
 
-    public function getCssForRequest()
+    public function getCssForRequest(bool $generate = true)
     {
         $request = Craft::$app->getRequest();
-        $path = $request->getPathInfo();
+        $absoluteUrl = $request->getAbsoluteUrl();
 
-        if ($css = $this->getCssForPath($path)) {
+        if ($css = $this->getCssForUrl($absoluteUrl, $generate)) {
             return $css;
         }
-
-
-        // otherwise, generate new css and save to storage
-        Critical::getInstance()->generator->generate($request, false);
-
-        // get Entry
-        // if ($entry = Craft::$app->getUrlManager()->getMatchedElement()) {
-        //     $entryType = $entry->getType()->handle;
-        //     $entryId = $entry->id;
-        // }
 
         return $this->fallbackCss;
     }
 
-    public function getCssForPath($path)
+    public function getCssForUrl(string $url, bool $generate = true)
     {
-
         // return css from storage if it exists
-        if ($css = Critical::getInstance()->storage->get($path)) {
+        if ($css = Critical::getInstance()->storage->get($url)) {
             return $css;
         }
 
-        return false;
+        // generate new css
+        if ($generate) {
+            Critical::getInstance()->generator->generate($url, $this->useQueue);
+        }
+
+        return $this->fallbackCss;
     }
 }

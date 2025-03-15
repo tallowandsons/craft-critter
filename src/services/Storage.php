@@ -3,6 +3,8 @@
 namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
+use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\storage\StorageInterface;
 use yii\base\Component;
 
 /**
@@ -10,16 +12,28 @@ use yii\base\Component;
  */
 class Storage extends Component
 {
-    public function get(string $path)
+
+    public StorageInterface $storage;
+
+    public function __construct()
     {
-        $key = $this->getCacheKey($path);
-        return Craft::$app->getCache()->get($key);
+        $storageClass = Critical::getInstance()->settings->storageType;
+        $this->storage = new $storageClass();
     }
 
-    public function set(string $path, string $css): bool
+    public function get(string $path): ?string
     {
         $key = $this->getCacheKey($path);
-        return Craft::$app->getCache()->set($key, $css);
+        return $this->storage->get($key);
+    }
+
+    public function save(string $path, string $css): bool
+    {
+        $key = $this->getCacheKey($path);
+
+        $formattedCss = $this->formatCss($key, $css);
+
+        return $this->storage->save($key, $formattedCss);
     }
 
     public function getCacheKey(string $uriPath)
@@ -31,5 +45,15 @@ class Storage extends Component
     {
         $path = str_replace('/', '-', $uriPath);
         return $path;
+    }
+
+    public function formatCss(string $key, string $css): string
+    {
+        $datetime = new \DateTime();
+
+        $header = "/* Critical CSS - $key */";
+        $footer = "/* generated at " . $datetime->format('Y-m-d H:i:s') . " */";
+
+        return $header . PHP_EOL . $css . PHP_EOL . $footer;
     }
 }

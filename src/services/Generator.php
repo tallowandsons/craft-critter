@@ -18,7 +18,7 @@ class Generator extends Component
 
     public function __construct()
     {
-        $generatorClass = Critical::getInstance()->settings->generator;
+        $generatorClass = Critical::getInstance()->settings->generatorType;
         $this->generator = new $generatorClass();
     }
 

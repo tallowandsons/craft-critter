@@ -16,7 +16,7 @@ class GenerateCriticalCssJob extends BaseJob
 
     function execute($queue): void
     {
-        $generatorClass = Critical::getInstance()->settings->generator;
+        $generatorClass = Critical::getInstance()->settings->generatorType;
         $generator = new $generatorClass();
         $generator->generate($this->url, $this->storeResult);
     }

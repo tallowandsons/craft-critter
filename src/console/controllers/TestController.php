@@ -4,7 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\console\controllers;
 
 use Craft;
 use craft\console\Controller;
-use honchoagency\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
+use honchoagency\craftcriticalcssgenerator\Critical;
 use yii\console\ExitCode;
 
 /**
@@ -13,6 +13,8 @@ use yii\console\ExitCode;
 class TestController extends Controller
 {
     public $defaultAction = 'index';
+
+    public string $testUrl = "https://0336-86-9-86-160.ngrok-free.app/page-three";
 
     public function options($actionID): array
     {
@@ -36,10 +38,12 @@ class TestController extends Controller
 
     public function actionGenerate()
     {
-        $url = 'https://0336-86-9-86-160.ngrok-free.app/page-three';
+        Critical::getInstance()->generator->generate($this->testUrl, false, true);
+    }
 
-        Craft::$app->queue->push(new GenerateCriticalCssJob([
-            'url' => $url
-        ]));
+    public function actionGet()
+    {
+        $css = Critical::getInstance()->css->getCssForUrl($this->testUrl);
+        echo $css;
     }
 }
