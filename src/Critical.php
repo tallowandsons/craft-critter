@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\web\twig\variables\CraftVariable;
+use craft\web\View;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
 use honchoagency\craftcriticalcssgenerator\services\CssService;
 use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
@@ -13,6 +14,7 @@ use honchoagency\craftcriticalcssgenerator\services\QueueService;
 use honchoagency\craftcriticalcssgenerator\services\StorageService;
 use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
 use yii\base\Event;
+use yii\base\View as BaseView;
 
 /**
  * Critical CSS Generator plugin
@@ -70,6 +72,17 @@ class Critical extends Plugin
     {
         // Register event handlers here ...
         // (see https://craftcms.com/docs/5.x/extend/events.html to get started)
+
+        Event::on(
+            View::class,
+            BaseView::EVENT_END_PAGE,
+            static function () {
+                $autoRenderEnabled = Critical::getInstance()->getSettings()->autoRenderEnabled;
+                if ($autoRenderEnabled) {
+                    Critical::getInstance()->css->renderCss();
+                }
+            }
+        );
     }
 
     /**

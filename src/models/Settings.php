@@ -11,7 +11,16 @@ use honchoagency\craftcriticalcssgenerator\storage\CraftCacheStorage;
  */
 class Settings extends Model
 {
-    public string $generatorType = DummyGenerator::class;
-    public string $storageType = CraftCacheStorage::class;
+
+    // whether or not to automatically render the critical css
+    public bool $autoRenderEnabled = true;
+
+    // what options to pass to the style tag where the critical css is inserted
     public array $styleTagOptions = [];
+
+    // which generator type to use
+    public string $generatorType = DummyGenerator::class;
+
+    // which storage type to use
+    public string $storageType = CraftCacheStorage::class;
 }

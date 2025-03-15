@@ -16,6 +16,13 @@ class CssService extends Component
     public $useQueue = true;
     public $fallbackCss = "/* fallback */ body { background-color: red; }";
 
+    public function renderCss()
+    {
+        $css = $this->getCssForRequest();
+
+        Craft::$app->getView()->registerCss($css, Critical::getInstance()->settings->styleTagOptions);
+    }
+
     public function getCssForRequest(bool $generate = true)
     {
         $request = Craft::$app->getRequest();
