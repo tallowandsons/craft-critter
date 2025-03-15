@@ -23,7 +23,10 @@ class GeneratorService extends Component
         $this->generator = new $generatorClass();
     }
 
-    public function generate(UrlModel $url, bool $useQueue = true, bool $storeResult = true): void
+    /**
+     * Start generating critical css for a url, optionally using the queue
+     */
+    public function startGenerate(UrlModel $url, bool $useQueue = true, bool $storeResult = true): void
     {
         if ($useQueue) {
             Critical::getInstance()->queueService->pushIfNew(new GenerateCriticalCssJob([
@@ -31,7 +34,16 @@ class GeneratorService extends Component
                 'storeResult' => $storeResult,
             ]));
         } else {
-            $this->generator->generate($url, $storeResult);
+            $this->generate($url, $storeResult);
         }
+    }
+
+    /**
+     * Generate critical css for a url.
+     * This is different from startGenerate as it will always generate the css immediately, not using the queue.
+     */
+    public function generate(UrlModel $url, bool $storeResult): void
+    {
+        $this->generator->generate($url, $storeResult);
     }
 }

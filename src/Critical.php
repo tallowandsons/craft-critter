@@ -77,9 +77,11 @@ class Critical extends Plugin
             View::class,
             BaseView::EVENT_END_PAGE,
             static function () {
-                $autoRenderEnabled = Critical::getInstance()->getSettings()->autoRenderEnabled;
-                if ($autoRenderEnabled) {
-                    Critical::getInstance()->css->renderCss();
+                if (Craft::$app->getRequest()->getIsSiteRequest()) {
+                    $autoRenderEnabled = Critical::getInstance()->getSettings()->autoRenderEnabled;
+                    if ($autoRenderEnabled) {
+                        Critical::getInstance()->css->renderCss();
+                    }
                 }
             }
         );

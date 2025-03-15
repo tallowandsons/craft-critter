@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
 use Craft;
+use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use Symfony\Component\Process\Process;
 
@@ -41,7 +42,7 @@ class CLIGenerator extends BaseGenerator
             if ($process->isSuccessful()) {
                 if ($storeResult) {
                     $css = file_get_contents($output);
-                    $this->store($urlModel, $css);
+                    $this->store($urlModel, new CssModel($css));
                 }
             }
         } catch (\Exception $e) {

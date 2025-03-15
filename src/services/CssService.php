@@ -45,7 +45,7 @@ class CssService extends Component
 
         // generate new css
         if ($generate) {
-            Critical::getInstance()->generator->generate($url, $this->useQueue);
+            Critical::getInstance()->generator->startGenerate($url, $this->useQueue);
         }
 
         return (new CssModel($this->fallbackCss))->getCss();

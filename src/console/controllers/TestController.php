@@ -40,7 +40,7 @@ class TestController extends Controller
     public function actionGenerate()
     {
         $urlModel = new UrlModel($this->testUrl);
-        Critical::getInstance()->generator->generate($urlModel, false, true);
+        Critical::getInstance()->generator->startGenerate($urlModel, false, true);
     }
 
     public function actionGet()
