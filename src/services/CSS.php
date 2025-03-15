@@ -19,11 +19,7 @@ class Css extends Component
         $request = Craft::$app->getRequest();
         $absoluteUrl = $request->getAbsoluteUrl();
 
-        if ($css = $this->getCssForUrl($absoluteUrl, $generate)) {
-            return $css;
-        }
-
-        return $this->fallbackCss;
+        return $this->getCssForUrl($absoluteUrl, $generate);
     }
 
     public function getCssForUrl(string $url, bool $generate = true)

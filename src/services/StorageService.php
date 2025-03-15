@@ -10,7 +10,7 @@ use yii\base\Component;
 /**
  * Storage service
  */
-class Storage extends Component
+class StorageService extends Component
 {
 
     public StorageInterface $storage;
