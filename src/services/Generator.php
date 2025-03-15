@@ -3,8 +3,9 @@
 namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
-use craft\web\Request;
 use honchoagency\craftcriticalcssgenerator\Critical;
+use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
+use honchoagency\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
 use yii\base\Component;
 
 /**
@@ -12,33 +13,24 @@ use yii\base\Component;
  */
 class Generator extends Component
 {
-    public function generate(Request $request, bool $useQueue = true)
+
+    public GeneratorInterface $generator;
+
+    public function __construct()
     {
-
-        $path = $request->getPathInfo();
-
-        if ($useQueue) {
-            // queue job
-            // Craft::$app->queue->push(new GenerateCriticalCssJob([
-            //     'request' => $request,
-            // ]));
-        } else {
-            // generate css
-            $css = $this->generateCss($request);
-
-            // save to storage
-            Critical::getInstance()->storage->set($path, $css);
-        }
+        $generatorClass = Critical::getInstance()->settings->generator;
+        $this->generator = new $generatorClass();
     }
 
-    public function generateCss(Request $request)
+    public function generate(string $url, bool $useQueue = true, bool $storeResult = true): void
     {
-        $path = $request->getPathInfo();
-
-        $key = Critical::getInstance()->storage->getCacheKey($path);
-
-        $css = "/* key: {$key} */ body { background-color: lime; }";
-
-        return $css;
+        if ($useQueue) {
+            Craft::$app->queue->push(new GenerateCriticalCssJob([
+                'url' => $url,
+                'storeResult' => $storeResult,
+            ]));
+        } else {
+            $this->generator->generate($url, $storeResult);
+        }
     }
 }
