@@ -23,4 +23,7 @@ class Settings extends Model
 
     // which storage type to use
     public string $storageType = CraftCacheStorage::class;
+
+    // which cache type to use
+    public ?string $cacheType = null;
 }

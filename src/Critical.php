@@ -5,9 +5,10 @@ namespace honchoagency\craftcriticalcssgenerator;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
-use craft\web\twig\variables\CraftVariable;
 use craft\web\View;
+use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
+use honchoagency\craftcriticalcssgenerator\services\CacheService;
 use honchoagency\craftcriticalcssgenerator\services\CssService;
 use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
 use honchoagency\craftcriticalcssgenerator\services\QueueService;
@@ -28,6 +29,7 @@ use yii\base\View as BaseView;
  * @property-read GeneratorService $generator
  * @property-read CssService $css
  * @property-read QueueService $queueService
+ * @property-read CacheService $cacheService
  */
 class Critical extends Plugin
 {
@@ -37,7 +39,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'queueService' => QueueService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'queueService' => QueueService::class, 'cache' => CacheService::class],
         ];
     }
 

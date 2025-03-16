@@ -44,6 +44,11 @@ class CLIGenerator extends BaseGenerator
                     $css = file_get_contents($output);
                     $this->store($urlModel, new CssModel($css));
                 }
+
+                $expireCache = true;
+                if ($expireCache) {
+                    $this->expireCache($urlModel);
+                }
             }
         } catch (\Exception $e) {
             throw $e;

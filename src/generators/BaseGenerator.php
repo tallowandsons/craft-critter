@@ -15,4 +15,9 @@ class BaseGenerator implements GeneratorInterface
     {
         Critical::getInstance()->storage->save($url, $css);
     }
+
+    public function expireCache(UrlModel $url): void
+    {
+        Critical::getInstance()->cache->expireUrl($url);
+    }
 }

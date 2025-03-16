@@ -5,7 +5,7 @@ namespace honchoagency\craftcriticalcssgenerator\console\controllers;
 use Craft;
 use craft\console\Controller;
 use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
 use yii\console\ExitCode;
 
 /**
@@ -39,13 +39,14 @@ class TestController extends Controller
 
     public function actionGenerate()
     {
-        $urlModel = new UrlModel($this->testUrl);
+        $urlModel = UrlFactory::createFromUrl($this->testUrl);
         Critical::getInstance()->generator->startGenerate($urlModel, false, true);
     }
 
     public function actionGet()
     {
-        $css = Critical::getInstance()->css->getCssForUrl($this->testUrl);
+        $urlModel = UrlFactory::createFromUrl($this->testUrl);
+        $css = Critical::getInstance()->css->getCssForUrl($urlModel);
         echo $css . PHP_EOL;
     }
 }

@@ -49,7 +49,14 @@ class StorageService extends Component
 
     public function getCacheKey(UrlModel $url): string
     {
-        return 'critical-css-' . $this->normaliseUriPath($url);
+        $path = $this->normaliseUriPath($url);
+        $key = null;
+
+        if ($path == "") {
+            $key = "index";
+        }
+
+        return 'critical-css-' . $key;
     }
 
     public function normaliseUriPath(UrlModel $url)
