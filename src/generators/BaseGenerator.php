@@ -9,15 +9,24 @@ use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 class BaseGenerator implements GeneratorInterface
 {
-    public function generate(UrlModel $url, bool $storeResult = true): void {}
+    /**
+     * @inheritdoc
+     */
+    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void {}
 
+    /**
+     * @inheritdoc
+     */
     public function store(UrlModel $url, CssModel $css): void
     {
         Critical::getInstance()->storage->save($url, $css);
     }
 
-    public function expireCache(UrlModel $url): void
+    /**
+     * @inheritdoc
+     */
+    public function resolveCache(UrlModel $url): void
     {
-        Critical::getInstance()->cache->expireUrl($url);
+        Critical::getInstance()->cache->resolveCache($url);
     }
 }

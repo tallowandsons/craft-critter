@@ -10,10 +10,17 @@ class DummyGenerator extends BaseGenerator
 {
     private string $css = "body { background-color: pink; }";
 
-    public function generate(UrlModel $url, bool $storeResult = true): void
+    /**
+     * @inheritdoc
+     */
+    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
     {
         if ($storeResult) {
             Critical::getInstance()->storage->save($url, new CssModel($this->css));
+        }
+
+        if ($resolveCache) {
+            $this->resolveCache($url);
         }
     }
 }

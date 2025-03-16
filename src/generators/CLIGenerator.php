@@ -12,7 +12,10 @@ class CLIGenerator extends BaseGenerator
 
     public int $timeout = 60;
 
-    public function generate(UrlModel $urlModel, bool $storeResult = true): void
+    /**
+     * @inheritdoc
+     */
+    public function generate(UrlModel $urlModel, bool $storeResult = true, bool $resolveCache = true): void
     {
         $url = $urlModel->getUrl();
         $key = $urlModel->getSafeUrl();
@@ -45,9 +48,8 @@ class CLIGenerator extends BaseGenerator
                     $this->store($urlModel, new CssModel($css));
                 }
 
-                $expireCache = true;
-                if ($expireCache) {
-                    $this->expireCache($urlModel);
+                if ($resolveCache) {
+                    $this->resolveCache($urlModel);
                 }
             }
         } catch (\Exception $e) {

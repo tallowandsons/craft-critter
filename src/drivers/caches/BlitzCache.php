@@ -2,8 +2,7 @@
 
 namespace honchoagency\craftcriticalcssgenerator\drivers\caches;
 
-use Craft;
-use craft\base\Model;
+use honchoagency\craftcriticalcssgenerator\models\Settings;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use putyourlightson\blitz\Blitz;
 use putyourlightson\blitz\models\SiteUriModel;
@@ -13,10 +12,43 @@ use putyourlightson\blitz\models\SiteUriModel;
  */
 class BlitzCache extends BaseCache implements CacheInterface
 {
+
+    /**
+     * @inheritdoc
+     */
+    public function resolveCache(UrlModel $urlModel): void
+    {
+        $cacheBehaviour = $this->getCacheBehaviour();
+
+        switch ($cacheBehaviour) {
+            case Settings::EXPIRE_URL:
+                $this->expireUrl($urlModel);
+                break;
+            case Settings::CLEAR_URL:
+                $this->clearUrl($urlModel);
+                break;
+            case Settings::REFRESH_URL:
+                $this->refreshUrl($urlModel);
+                break;
+        }
+    }
+
     public function expireUrl(UrlModel $urlModel): void
     {
         $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
         Blitz::getInstance()->expireCache->expireUris([$blitzSiteUriModel]);
+    }
+
+    public function clearUrl(UrlModel $urlModel): void
+    {
+        $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
+        Blitz::getInstance()->clearCache->clearUris([$blitzSiteUriModel]);
+    }
+
+    public function refreshUrl(UrlModel $urlModel): void
+    {
+        $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
+        Blitz::getInstance()->refreshCache->refreshSiteUris([$blitzSiteUriModel]);
     }
 
     private function convertUrlToBlitzSiteUriModel(UrlModel $urlModel)

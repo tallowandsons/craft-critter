@@ -21,8 +21,11 @@ class CacheService extends Component
         $this->cache = new $cacheClass();
     }
 
-    public function expireUrl(UrlModel $url): void
+    /**
+     * Clear, expire, or refresh the cached page according to the cache driver and settings
+     */
+    public function resolveCache(UrlModel $url): void
     {
-        $this->cache->expireUrl($url);
+        $this->cache->resolveCache($url);
     }
 }

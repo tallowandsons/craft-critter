@@ -6,5 +6,8 @@ use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 interface CacheInterface
 {
-    public function expireUrl(UrlModel $url): void;
+    /**
+     * Clear, expire, or refresh the cached page according to the cache driver and settings
+     */
+    public function resolveCache(UrlModel $url): void;
 }

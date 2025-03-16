@@ -12,6 +12,10 @@ use honchoagency\craftcriticalcssgenerator\storage\CraftCacheStorage;
 class Settings extends Model
 {
 
+    const CACHE_BEHAVIOUR_EXPIRE_URL = 'expireUrl';
+    const CACHE_BEHAVIOUR_CLEAR_URL = 'clearUrl';
+    const CACHE_BEHAVIOUR_REFRESH_URL = 'refreshUrl';
+
     // whether or not to automatically render the critical css
     public bool $autoRenderEnabled = true;
 
@@ -26,4 +30,7 @@ class Settings extends Model
 
     // which cache type to use
     public ?string $cacheType = null;
+
+    // what the cache behaviour should be
+    public ?string $cacheBehaviour = null;
 }
