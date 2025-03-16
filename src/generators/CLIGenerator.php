@@ -15,7 +15,7 @@ class CLIGenerator extends BaseGenerator
     /**
      * @inheritdoc
      */
-    public function generate(UrlModel $urlModel, bool $storeResult = true, bool $resolveCache = true): void
+    protected function getCriticalCss(UrlModel $urlModel): CssModel
     {
         $url = $urlModel->getUrl();
         $key = $urlModel->getSafeUrl();
@@ -43,14 +43,10 @@ class CLIGenerator extends BaseGenerator
 
         try {
             if ($process->isSuccessful()) {
-                if ($storeResult) {
-                    $css = file_get_contents($output);
-                    $this->store($urlModel, new CssModel($css));
-                }
-
-                if ($resolveCache) {
-                    $this->resolveCache($urlModel);
-                }
+                $cssStr = file_get_contents($output);
+                return new CssModel($cssStr);
+            } else {
+                return new CssModel();
             }
         } catch (\Exception $e) {
             throw $e;

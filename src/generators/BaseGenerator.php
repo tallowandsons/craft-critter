@@ -12,7 +12,27 @@ class BaseGenerator implements GeneratorInterface
     /**
      * @inheritdoc
      */
-    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void {}
+    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
+    {
+
+        $css = $this->getCriticalCss($url);
+
+        if ($storeResult) {
+            $this->store($url, $css);
+        }
+
+        if ($resolveCache) {
+            $this->resolveCache($url);
+        }
+    }
+
+    /**
+     * Get the critical CSS for the given URL.
+     */
+    protected function getCriticalCss(UrlModel $url): CssModel
+    {
+        return new CssModel();
+    }
 
     /**
      * @inheritdoc

@@ -15,7 +15,7 @@ class TestController extends Controller
 {
     public $defaultAction = 'index';
 
-    public string $testUrl = "https://criticalcssplugin.ddev.site/page-three";
+    public string $testUrl = "https://criticalcssplugin.ddev.site/page-three?abc=123";
 
     public function options($actionID): array
     {

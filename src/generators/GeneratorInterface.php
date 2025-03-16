@@ -8,7 +8,7 @@ use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 interface GeneratorInterface
 {
     /**
-     * Generate the critical CSS for the given URL. Optionally store the result and/or resolve the cache.
+     * Generate the critical CSS for the given URL, then optionally store the result and/or resolve the cache.
      */
     public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void;
 

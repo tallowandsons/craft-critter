@@ -31,7 +31,6 @@ class CssService extends Component
 
     public function getCssForUrl(UrlModel $url, bool $generate = true)
     {
-
         // return css from storage if it exists
         $cssModel = Critical::getInstance()->storage->get($url);
         if (!$cssModel->isEmpty()) {
