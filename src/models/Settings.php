@@ -33,4 +33,7 @@ class Settings extends Model
 
     // what the cache behaviour should be
     public ?string $cacheBehaviour = null;
+
+    // which query string parameters are to be treated as unique urls
+    public array $allowedQueryStringParams = [];
 }

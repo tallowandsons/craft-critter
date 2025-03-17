@@ -8,7 +8,7 @@ use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
 
 class CraftCacheStorage extends BaseStorage
 {
-    public function get(string $key): StorageResponse
+    public function get(mixed $key): StorageResponse
     {
         /* @var CssModel $css */
         $css = Craft::$app->getCache()->get($key);
@@ -20,7 +20,7 @@ class CraftCacheStorage extends BaseStorage
         return $response;
     }
 
-    public function save(string $key, CssModel $cssModel): bool
+    public function save(mixed $key, CssModel $cssModel): bool
     {
         return Craft::$app->getCache()->set($key, $cssModel);
     }

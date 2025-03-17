@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\services;
 
 use Craft;
+use craft\helpers\ArrayHelper;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
@@ -42,25 +43,18 @@ class StorageService extends Component
         $key = $this->getCacheKey($url);
 
         // Stamp the CSS with the current datetime and key
-        $css->stamp($key);
+        $css->stamp($url->getAbsoluteUrl());
 
         return $this->storage->save($key, $css);
     }
 
-    public function getCacheKey(UrlModel $url): string
+    public function getCacheKey(UrlModel $url): mixed
     {
-        $path = $this->normaliseUriPath($url);
-        $key = null;
-
-        if ($path == "") {
-            $key = "index";
-        }
-
-        return 'critical-css-' . $key;
+        return ArrayHelper::merge(['critical-css'], $url->toArray());
     }
 
     public function normaliseUriPath(UrlModel $url)
     {
-        return $url->getSafeUrl();
+        return $url->getRelativeUrl();
     }
 }

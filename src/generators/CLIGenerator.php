@@ -17,8 +17,8 @@ class CLIGenerator extends BaseGenerator
      */
     protected function getCriticalCss(UrlModel $urlModel): CssModel
     {
-        $url = $urlModel->getUrl();
-        $key = $urlModel->getSafeUrl();
+        $url = $urlModel->getAbsoluteUrl();
+        $key = $this->getFilenameFromUrl($url);
 
         $outputPath = Craft::getAlias('@storage/runtime/temp/critical');
         $outputName = "$key.css";
@@ -51,5 +51,10 @@ class CLIGenerator extends BaseGenerator
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    private function getFilenameFromUrl(string $url): string
+    {
+        return md5($url);
     }
 }

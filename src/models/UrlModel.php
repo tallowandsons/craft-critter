@@ -14,25 +14,37 @@ class UrlModel extends Model
 {
     public ?string $url = '';
     public ?int $siteId = null;
+    public array $queryParams = [];
 
-    public function __construct(?string $url, ?int $siteId = null)
+    public function __construct(?string $url = null, ?int $siteId = null)
     {
         $this->siteId = $siteId ?? Craft::$app->getSites()->getCurrentSite()->id;
         $this->url = $url;
     }
 
-    public function getUrl(array $params = []): string
+    public function getUrl(): string
     {
         if ($this->url === Element::HOMEPAGE_URI) {
-            return UrlHelper::siteUrl('', $params, null, $this->siteId);
+            return UrlHelper::siteUrl('', $this->queryParams, null, $this->siteId);
         }
 
-        return UrlHelper::siteUrl($this->url, $params, null, $this->siteId);
+        return UrlHelper::siteUrl($this->url, $this->queryParams, null, $this->siteId);
+    }
+
+    public function getRelativeUrl(): string
+    {
+        $url = $this->getUrl();
+        $url = UrlHelper::rootRelativeUrl($url);
+        return $url;
+    }
+
+    public function getAbsoluteUrl(): string
+    {
+        return $this->getUrl();
     }
 
     public function getSafeUrl()
     {
-        $url = $this->url;
-        return $url;
+        return $this->getUrl();
     }
 }

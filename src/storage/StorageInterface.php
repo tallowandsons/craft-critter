@@ -7,7 +7,7 @@ use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
 
 interface StorageInterface
 {
-    public function get(string $key): StorageResponse;
+    public function get(mixed $key): StorageResponse;
 
-    public function save(string $key, CssModel $css): bool;
+    public function save(mixed $key, CssModel $css): bool;
 }

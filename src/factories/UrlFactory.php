@@ -5,10 +5,33 @@ namespace honchoagency\craftcriticalcssgenerator\factories;
 use Craft;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
+use honchoagency\craftcriticalcssgenerator\helpers\UrlHelper as CriticalUrlHelper;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 class UrlFactory
 {
+
+    static function createFromRequest(?Request $request = null): UrlModel
+    {
+        if ($request === null) {
+            $request = Craft::$app->getRequest();
+        }
+
+        $site = Craft::$app->getSites()->getCurrentSite();
+
+        // $uri is the url without the base url or query string
+        $uri = $request->getFullUri();
+
+        // get query string
+        $queryParams = CriticalUrlHelper::getAllowedQueryParamsFromRequest($request);
+
+        $urlModel = new UrlModel();
+        $urlModel->siteId = $site->id;
+        $urlModel->url = $uri;
+        $urlModel->queryParams = $queryParams;
+
+        return $urlModel;
+    }
 
     static function createFromUrl(string $url): UrlModel
     {
@@ -22,19 +45,5 @@ class UrlFactory
         $url = trim($url, '/');
 
         return new UrlModel($url);
-    }
-
-    static function createFromRequest(?Request $request = null): UrlModel
-    {
-        if ($request === null) {
-            $request = Craft::$app->getRequest();
-        }
-
-        $site = Craft::$app->getSites()->getCurrentSite();
-
-        // $uri is the url without the base url or query string
-        $uri = $request->getFullUri();
-
-        return new UrlModel($uri, $site->id);
     }
 }

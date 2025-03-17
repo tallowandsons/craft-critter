@@ -8,12 +8,12 @@ use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
 
 class BaseStorage extends Model implements StorageInterface
 {
-    public function get(string $key): StorageResponse
+    public function get(mixed $key): StorageResponse
     {
         return new StorageResponse();
     }
 
-    public function save(string $key, CssModel $css): bool
+    public function save(mixed $key, CssModel $css): bool
     {
         return false;
     }
