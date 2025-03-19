@@ -17,12 +17,14 @@ class BaseGenerator implements GeneratorInterface
 
         $css = $this->getCriticalCss($url);
 
-        if ($storeResult) {
-            $this->store($url, $css);
-        }
+        if (!$css->isEmpty()) {
+            if ($storeResult) {
+                $this->store($url, $css);
+            }
 
-        if ($resolveCache) {
-            $this->resolveCache($url);
+            if ($resolveCache) {
+                $this->resolveCache($url);
+            }
         }
     }
 

@@ -8,11 +8,13 @@ use craft\base\Plugin;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
+use honchoagency\craftcriticalcssgenerator\services\ApiService;
 use honchoagency\craftcriticalcssgenerator\services\CacheService;
 use honchoagency\craftcriticalcssgenerator\services\CssService;
 use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
 use honchoagency\craftcriticalcssgenerator\services\QueueService;
 use honchoagency\craftcriticalcssgenerator\services\StorageService;
+use honchoagency\craftcriticalcssgenerator\services\UriRecordService;
 use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
 use yii\base\Event;
 use yii\base\View as BaseView;
@@ -30,6 +32,7 @@ use yii\base\View as BaseView;
  * @property-read CssService $css
  * @property-read QueueService $queueService
  * @property-read CacheService $cacheService
+ * @property-read UriRecordService $uriRecords
  */
 class Critical extends Plugin
 {
@@ -39,7 +42,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'queueService' => QueueService::class, 'cache' => CacheService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'queueService' => QueueService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class],
         ];
     }
 

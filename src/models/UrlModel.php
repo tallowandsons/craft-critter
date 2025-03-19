@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Element;
 use craft\base\Model;
 use craft\helpers\UrlHelper;
+use honchoagency\craftcriticalcssgenerator\Critical;
 
 /**
  * Url Model model
@@ -24,11 +25,24 @@ class UrlModel extends Model
 
     public function getUrl(): string
     {
-        if ($this->url === Element::HOMEPAGE_URI) {
-            return UrlHelper::siteUrl('', $this->queryParams, null, $this->siteId);
+
+        $baseUrlOverride = Critical::getInstance()->settings->baseUrlOverride ?? null;
+        if ($baseUrlOverride) {
+            $baseUrlOverride = rtrim($baseUrlOverride, '/');
         }
 
-        return UrlHelper::siteUrl($this->url, $this->queryParams, null, $this->siteId);
+        if ($this->url === Element::HOMEPAGE_URI) {
+            $url = UrlHelper::siteUrl('', $this->queryParams, null, $this->siteId);
+        }
+
+        $url = UrlHelper::siteUrl($this->url, $this->queryParams, null, $this->siteId);
+
+        if ($baseUrlOverride) {
+            $siteBaseUrl = rtrim(Craft::$app->sites->getSiteById($this->siteId)->baseUrl, '/');
+            $url = str_replace($siteBaseUrl, $baseUrlOverride, $url);
+        }
+
+        return $url;
     }
 
     public function getRelativeUrl(): string

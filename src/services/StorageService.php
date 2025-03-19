@@ -2,11 +2,11 @@
 
 namespace honchoagency\craftcriticalcssgenerator\services;
 
-use Craft;
 use craft\helpers\ArrayHelper;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 use honchoagency\craftcriticalcssgenerator\storage\StorageInterface;
 use yii\base\Component;
 
@@ -45,7 +45,12 @@ class StorageService extends Component
         // Stamp the CSS with the current datetime and key
         $css->stamp($url->getAbsoluteUrl());
 
-        return $this->storage->save($key, $css);
+        // save the CSS to the storage and update the uri record
+        if ($this->storage->save($key, $css)) {
+            return Critical::getInstance()->uriRecords->saveOrUpdateUrl($url, UriRecord::STATUS_COMPLETE, null, null, null);
+        }
+
+        return false;
     }
 
     public function getCacheKey(UrlModel $url): mixed

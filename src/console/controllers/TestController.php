@@ -6,6 +6,7 @@ use Craft;
 use craft\console\Controller;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
+use honchoagency\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
 use yii\console\ExitCode;
 
 /**
@@ -15,7 +16,7 @@ class TestController extends Controller
 {
     public $defaultAction = 'index';
 
-    public string $testUrl = "https://criticalcssplugin.ddev.site/page-three?abc=123";
+    public string $testUrl = "https://honcho.agency/about";
 
     public function options($actionID): array
     {
@@ -48,5 +49,19 @@ class TestController extends Controller
         $urlModel = UrlFactory::createFromUrl($this->testUrl);
         $css = Critical::getInstance()->css->getCssForUrl($urlModel);
         echo $css . PHP_EOL;
+    }
+
+    public function actionApiGenerate()
+    {
+        $urlModel = UrlFactory::createFromUrl($this->testUrl);
+        $generator = new CriticalCssDotComGenerator();
+        $generator->generate($urlModel);
+    }
+
+    public function actionApiResults()
+    {
+        $id = "163673788XuXlhTN6B2";
+        $generator = new CriticalCssDotComGenerator();
+        $generator->getResults($id);
     }
 }

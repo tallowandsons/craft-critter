@@ -8,7 +8,7 @@ use honchoagency\craftcriticalcssgenerator\Critical;
 class CriticalVariable
 {
 
-    public function insert()
+    public function render()
     {
 
         $cssStr = Critical::getInstance()->css->getCssForRequest();
