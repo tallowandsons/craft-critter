@@ -10,7 +10,7 @@ class CraftCacheStorage extends BaseStorage
 {
     public function get(mixed $key): StorageResponse
     {
-        /* @var CssModel $css */
+        /** @var CssModel $css */
         $css = Craft::$app->getCache()->get($key);
 
         $response = new StorageResponse();
