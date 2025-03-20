@@ -42,8 +42,17 @@ class GeneratorService extends Component
      */
     public function generate(UrlModel $url, bool $storeResult): void
     {
+        // set the uri record status to 'generating'
         Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_GENERATING);
-        $this->generator->generate($url, $storeResult);
+
+        // generate the critical css
+        $response = $this->generator->generate($url, $storeResult);
+
+        if ($response->isSuccess()) {
+            Critical::getInstance()->uriRecords->createOrUpdateRecord($url, UriRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
+        } else {
+            Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_ERROR);
+        }
     }
 
     private function queueIfNewJob(UrlModel $url, bool $storeResult): void

@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 interface GeneratorInterface
@@ -10,7 +11,7 @@ interface GeneratorInterface
     /**
      * Generate the critical CSS for the given URL, then optionally store the result and/or resolve the cache.
      */
-    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void;
+    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): GeneratorResponse;
 
     /**
      * Store the critical CSS for the given URL accorging to the storage driver and settings.

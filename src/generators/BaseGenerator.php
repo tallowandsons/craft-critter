@@ -5,35 +5,37 @@ namespace honchoagency\craftcriticalcssgenerator\generators;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
-use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 
 class BaseGenerator implements GeneratorInterface
 {
     /**
      * @inheritdoc
      */
-    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
+    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): GeneratorResponse
     {
-        $css = $this->getCriticalCss($url);
+        $response = $this->getCriticalCss($url);
 
-        if (!$css->isEmpty()) {
+        if ($response->isSuccess()) {
             if ($storeResult) {
-                $this->store($url, $css);
+                $this->store($url, $response->getCss());
             }
 
             if ($resolveCache) {
                 $this->resolveCache($url);
             }
         }
+
+        return $response;
     }
 
     /**
      * Get the critical CSS for the given URL.
      */
-    protected function getCriticalCss(UrlModel $url): CssModel
+    protected function getCriticalCss(UrlModel $url): GeneratorResponse
     {
-        return new CssModel();
+        return new GeneratorResponse();
     }
 
     /**

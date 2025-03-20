@@ -6,6 +6,7 @@ use craft\helpers\Json;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 class CriticalCssDotComGenerator extends BaseGenerator
@@ -28,7 +29,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
     /**
      * @inheritdoc
      */
-    protected function getCriticalCss(UrlModel $urlModel): CssModel
+    protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
 
         // the criticalcss.com API works like this:
@@ -62,12 +63,16 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
         while ($attemptCount < $this->maxAttempts) {
 
-            $response = $this->getResultsById($resultId);
+            $apiResponse = $this->getResultsById($resultId);
 
-            if ($response->isDone()) {
-                if ($response->hasCss()) {
-                    $cssStr = $response->getCss();
-                    return new CssModel($cssStr);
+            if ($apiResponse->isDone()) {
+                if ($apiResponse->hasCss()) {
+                    $cssStr = $apiResponse->getCss();
+
+                    $generatorResponse = new GeneratorResponse();
+                    $generatorResponse->setSuccess(true);
+                    $generatorResponse->setCss(new CssModel($cssStr));
+                    return $generatorResponse;
                 }
             }
 

@@ -9,8 +9,8 @@ use craft\base\Model;
  */
 class BaseResponse extends Model
 {
-    public bool $success = false;
-    public mixed $data;
+    private bool $success = false;
+    private mixed $data;
 
     public function setSuccess(bool $success): BaseResponse
     {

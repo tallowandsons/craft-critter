@@ -45,12 +45,8 @@ class StorageService extends Component
         // Stamp the CSS with the current datetime and key
         $css->stamp($url->getAbsoluteUrl());
 
-        // save the CSS to the storage and update the uri record
-        if ($this->storage->save($key, $css)) {
-            return Critical::getInstance()->uriRecords->createOrUpdateRecord($url, UriRecord::STATUS_COMPLETE, null, null, null);
-        }
-
-        return false;
+        // save the CSS to the storage
+        return $this->storage->save($key, $css);
     }
 
     public function getCacheKey(UrlModel $url): mixed
