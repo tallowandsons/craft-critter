@@ -2,13 +2,11 @@
 
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
-use Craft;
 use craft\helpers\Json;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
-use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {
@@ -57,7 +55,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 throw new \Exception('Failed to generate critical css from criticalcss.com API');
             }
 
-            $this->updateUriRecord($urlModel, null, ['resultId' => $resultId]);
+            Critical::getInstance()->uriRecords->setData($urlModel, ['resultId' => $resultId]);
         }
 
         $attemptCount = 0;

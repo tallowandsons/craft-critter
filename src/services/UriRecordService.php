@@ -32,6 +32,7 @@ class UriRecordService extends Component
             $record = new UriRecord();
             $record->uri = $url->getRelativeUrl();
             $record->siteId = $url->siteId;
+            $record->status = UriRecord::STATUS_TODO;
         }
 
         return $record;
@@ -39,7 +40,7 @@ class UriRecordService extends Component
 
     public function createRecordIfNotExists(UrlModel $url): UriRecord
     {
-        return $this->setStatus($url, UriRecord::STATUS_TODO);
+        return $this->getOrCreateRecord($url);
     }
 
     public function setStatus(UrlModel $url, string $status): UriRecord
