@@ -13,7 +13,13 @@ use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 class CriticalCssDotComGenerator extends BaseGenerator
 {
 
-    public int $timeout = 60;
+    // the maximum number of times to poll the API for the results
+    // of a generate job before giving up.
+    public int $maxAttempts = 10;
+
+    // the number of seconds to wait between each poll attempt
+    public int $attemptDelay = 2;
+
     public CriticalCssDotComApi $api;
 
     public function __construct()
@@ -27,48 +33,66 @@ class CriticalCssDotComGenerator extends BaseGenerator
     protected function getCriticalCss(UrlModel $urlModel): CssModel
     {
 
-        $resultId = null;
+        // the criticalcss.com API works like this:
+        // 1.   trigger a generate job by POSTing to the API.
+        //      This will return a job number, while the CSS is being
+        //      generated on the criticalcss.com servers.
+        // 2.   poll the API with the job number to check the status of the job.
+        //      this will return the CSS when the job is complete.
+        // 3.   if the job is not complete, wait a few seconds and try again.
 
-        // get a resultId from the DB based on the url
-        $record = Critical::getInstance()->uriRecords->getRecordByUrl($urlModel);
-        if ($record) {
-            $data = Json::decode($record->data);
-            $resultId = $data['resultId'] ?? null;
-        }
+        // if a generate job has been previously triggered, the API
+        // will have returned a resultId which is stored in the DB.
+        // this resultId can be used to check the status of the job
+        // from the API and get the css when the job is complete.
+        $resultId = $this->getResultId($urlModel);
 
-        // if there is no resultId, then no job has been triggered, so
-        // trigger a new job via the API and return an empty string
+        // if there is no resultId then no generate job has been triggered,
+        // so trigger a new job via the API.
         if (!$resultId) {
             $response = $this->api->generate($urlModel);
+            $resultId = $response->getJobId();
 
-            $jobId = $response->getJobId();
-
-            Critical::getInstance()->uriRecords->saveOrUpdateUrl($urlModel, UriRecord::STATUS_PENDING, ['resultId' => $jobId]);
-
-            return new CssModel();
-        }
-
-        // if there is a resultId, then we can check the status of the job via the API
-        // if the job is complete, we can get the css from the API
-        // if the job is not complete, we can return an empty string
-
-        $response = $this->getResults($resultId);
-
-        if ($response->isDone()) {
-            if ($response->hasCss()) {
-                $cssStr = $response->getCss();
-                return new CssModel($cssStr);
+            if (!$resultId) {
+                $this->addOrUpdateUriRecord($urlModel, UriRecord::STATUS_ERROR);
+                throw new \Exception('Failed to generate critical css from criticalcss.com API');
             }
+
+            $this->addOrUpdateUriRecord($urlModel, UriRecord::STATUS_PENDING, ['resultId' => $resultId]);
         }
 
-        // if there is no resultId, we can trigger a new job via the API
-        // then save the resultId to the DB, and return an empty string
+        $attemptCount = 0;
 
-        return new CssModel();
+        while ($attemptCount < $this->maxAttempts) {
+
+            $response = $this->getResultsById($resultId);
+
+            if ($response->isDone()) {
+                if ($response->hasCss()) {
+                    $cssStr = $response->getCss();
+                    return new CssModel($cssStr);
+                }
+            }
+
+            $attemptCount++;
+            sleep($this->attemptDelay);
+        }
+
+        throw new \Exception('Failed to get critical css from criticalcss.com API');
     }
 
-    public function getResults(string $id)
+    private function getResultsById(string $id)
     {
         return $this->api->getResults($id);
+    }
+
+    private function getResultId(UrlModel $url)
+    {
+        $record = Critical::getInstance()->uriRecords->getRecordByUrl($url);
+        if ($record) {
+            $data = Json::decode($record->data);
+            return $data['resultId'] ?? null;
+        }
+        return null;
     }
 }

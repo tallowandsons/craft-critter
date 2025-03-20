@@ -15,23 +15,23 @@ class CriticalCssDotComGenerateResponse extends Model
 
     public function getJobId()
     {
-        return $this->job['id'];
+        return $this->job['id'] ?? null;
     }
 
     public function getJobStatus()
     {
-        return $this->job['status'];
+        return $this->job['status'] ?? null;
     }
 
     public function getJobError()
     {
-        return $this->job['error'];
+        return $this->job['error'] ?? null;
     }
 
     static function createFromResponse(array $response)
     {
         $model = new self();
-        $model->job = $response['job'];
+        $model->job = $response['job'] ?? null;
         return $model;
     }
 }

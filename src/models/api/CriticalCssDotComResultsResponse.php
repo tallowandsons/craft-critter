@@ -44,20 +44,20 @@ class CriticalCssDotComResultsResponse extends Model
     static function createFromResponse(array $response)
     {
         $model = new self();
-        $model->insertId = $response['insertId'];
-        $model->url = $response['url'];
-        $model->width = $response['width'];
-        $model->height = $response['height'];
-        $model->css = $response['css'];
-        $model->size = $response['size'];
-        $model->originalSize = $response['originalSize'];
-        $model->resultStatus = $response['resultStatus'];
-        $model->createdAt = $response['createdAt'];
-        $model->validationStatus = $response['validationStatus'];
-        $model->imageId = $response['imageId'];
-        $model->forceInclude = $response['forceInclude'];
-        $model->status = $response['status'];
-        $model->id = $response['id'];
+        $model->insertId = $response['insertId'] ?? null;
+        $model->url = $response['url'] ?? null;
+        $model->width = $response['width'] ?? null;
+        $model->height = $response['height'] ?? null;
+        $model->css = $response['css'] ?? null;
+        $model->size = $response['size'] ?? null;
+        $model->originalSize = $response['originalSize'] ?? null;
+        $model->resultStatus = $response['resultStatus'] ?? null;
+        $model->createdAt = $response['createdAt'] ?? null;
+        $model->validationStatus = $response['validationStatus'] ?? null;
+        $model->imageId = $response['imageId'] ?? null;
+        $model->forceInclude = $response['forceInclude'] ?? null;
+        $model->status = $response['status'] ?? null;
+        $model->id = $response['id'] ?? null;
         return $model;
     }
 }

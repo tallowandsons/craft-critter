@@ -6,6 +6,7 @@ use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 
 class BaseGenerator implements GeneratorInterface
 {
@@ -14,6 +15,7 @@ class BaseGenerator implements GeneratorInterface
      */
     public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
     {
+        $this->addOrUpdateUriRecord($url, UriRecord::STATUS_PENDING);
 
         $css = $this->getCriticalCss($url);
 
@@ -50,5 +52,10 @@ class BaseGenerator implements GeneratorInterface
     public function resolveCache(UrlModel $url): void
     {
         Critical::getInstance()->cache->resolveCache($url);
+    }
+
+    public function addOrUpdateUriRecord(UrlModel $url, ?string $status, ?array $data = null): bool
+    {
+        return Critical::getInstance()->uriRecords->saveOrUpdateUrl($url);
     }
 }
