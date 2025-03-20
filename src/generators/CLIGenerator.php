@@ -4,6 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\generators;
 
 use Craft;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use Symfony\Component\Process\Process;
 
@@ -15,7 +16,7 @@ class CLIGenerator extends BaseGenerator
     /**
      * @inheritdoc
      */
-    protected function getCriticalCss(UrlModel $urlModel): CssModel
+    protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
         $url = $urlModel->getAbsoluteUrl();
         $key = $this->getFilenameFromUrl($url);
@@ -44,9 +45,13 @@ class CLIGenerator extends BaseGenerator
         try {
             if ($process->isSuccessful()) {
                 $cssStr = file_get_contents($output);
-                return new CssModel($cssStr);
+
+                $generatorResponse = new GeneratorResponse();
+                $generatorResponse->setSuccess(true);
+                $generatorResponse->setCss(new CssModel($cssStr));
+                return $generatorResponse;
             } else {
-                return new CssModel();
+                return new GeneratorResponse();
             }
         } catch (\Exception $e) {
             throw $e;

@@ -25,6 +25,6 @@ class UriRecord extends ActiveRecord
 
     public function isInQueue()
     {
-        return $this->status === self::STATUS_QUEUED;
+        return $this->status === self::STATUS_QUEUED || $this->status === self::STATUS_GENERATING;
     }
 }

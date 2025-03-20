@@ -2,25 +2,19 @@
 
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
-use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
 class DummyGenerator extends BaseGenerator
 {
     private string $css = "body { background-color: pink; }";
 
-    /**
-     * @inheritdoc
-     */
-    public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
+    protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
-        if ($storeResult) {
-            Critical::getInstance()->storage->save($url, new CssModel($this->css));
-        }
-
-        if ($resolveCache) {
-            $this->resolveCache($url);
-        }
+        $generatorResponse = new GeneratorResponse();
+        $generatorResponse->setSuccess(true);
+        $generatorResponse->setCss(new CssModel($this->css));
+        return $generatorResponse;
     }
 }
