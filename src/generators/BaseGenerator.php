@@ -15,8 +15,6 @@ class BaseGenerator implements GeneratorInterface
      */
     public function generate(UrlModel $url, bool $storeResult = true, bool $resolveCache = true): void
     {
-        $this->addOrUpdateUriRecord($url, UriRecord::STATUS_PENDING);
-
         $css = $this->getCriticalCss($url);
 
         if (!$css->isEmpty()) {
@@ -52,10 +50,5 @@ class BaseGenerator implements GeneratorInterface
     public function resolveCache(UrlModel $url): void
     {
         Critical::getInstance()->cache->resolveCache($url);
-    }
-
-    public function addOrUpdateUriRecord(UrlModel $url, ?string $status, ?array $data = null): bool
-    {
-        return Critical::getInstance()->uriRecords->saveOrUpdateUrl($url);
     }
 }

@@ -4,7 +4,8 @@ namespace honchoagency\craftcriticalcssgenerator\jobs;
 
 use craft\queue\BaseJob;
 use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use honchoagency\craftcriticalcssgenerator\models\UrlModel
+use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 
 /**
  * Generate Critical Css Job queue job

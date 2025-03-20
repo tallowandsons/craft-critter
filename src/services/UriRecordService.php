@@ -24,27 +24,63 @@ class UriRecordService extends Component
             ->one();
     }
 
-    public function saveOrUpdateUrl(UrlModel $url, ?string $status = null, ?array $data = [], ?DateTime $dateQueued = null, ?DateTime $dateGenerated = null, ?DateTime $expiryDate = null): bool
+    public function getOrCreateRecord(UrlModel $url): UriRecord
     {
-
-        $uri = $url->getRelativeUrl();
-        $siteId = $url->siteId;
-
-        $record = UriRecord::find()
-            ->where(['uri' => $uri, 'siteId' => $siteId])
-            ->one();
+        $record = $this->getRecordByUrl($url);
 
         if (!$record) {
             $record = new UriRecord();
-            $record->uri = $uri;
-            $record->siteId = $siteId;
+            $record->uri = $url->getRelativeUrl();
+            $record->siteId = $url->siteId;
         }
 
+        return $record;
+    }
+
+    public function createRecordIfNotExists(UrlModel $url): UriRecord
+    {
+        return $this->setStatus($url, UriRecord::STATUS_TODO);
+    }
+
+    public function setStatus(UrlModel $url, string $status): UriRecord
+    {
+        $record = $this->getOrCreateRecord($url);
         $record->status = $status;
-        $record->data = Json::encode($data ?? []);
-        $record->dateQueued = $dateQueued;
-        $record->dateGenerated = $dateGenerated;
-        $record->expiryDate = $expiryDate;
+        $record->save();
+        return $record;
+    }
+
+    public function setData(UrlModel $url, array $data): UriRecord
+    {
+        $record = $this->getOrCreateRecord($url);
+        $record->data = Json::encode($data);
+        $record->save();
+        return $record;
+    }
+
+    public function createOrUpdateRecord(UrlModel $url, ?string $status = null, ?array $data = [], ?DateTime $dateQueued = null, ?DateTime $dateGenerated = null, ?DateTime $expiryDate = null): bool
+    {
+        $record = $this->getOrCreateRecord($url);
+
+        if ($status) {
+            $record->status = $status;
+        }
+
+        if ($data) {
+            $record->data = Json::encode($data);
+        }
+
+        if ($dateQueued) {
+            $record->dateQueued = $dateQueued;
+        }
+
+        if ($dateGenerated) {
+            $record->dateGenerated = $dateGenerated;
+        }
+
+        if ($expiryDate) {
+            $record->expiryDate = $expiryDate;
+        }
 
         return $record->save();
     }

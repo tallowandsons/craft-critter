@@ -54,11 +54,10 @@ class CriticalCssDotComGenerator extends BaseGenerator
             $resultId = $response->getJobId();
 
             if (!$resultId) {
-                $this->addOrUpdateUriRecord($urlModel, UriRecord::STATUS_ERROR);
                 throw new \Exception('Failed to generate critical css from criticalcss.com API');
             }
 
-            $this->addOrUpdateUriRecord($urlModel, UriRecord::STATUS_PENDING, ['resultId' => $resultId]);
+            $this->updateUriRecord($urlModel, null, ['resultId' => $resultId]);
         }
 
         $attemptCount = 0;

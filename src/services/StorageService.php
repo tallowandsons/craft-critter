@@ -47,7 +47,7 @@ class StorageService extends Component
 
         // save the CSS to the storage and update the uri record
         if ($this->storage->save($key, $css)) {
-            return Critical::getInstance()->uriRecords->saveOrUpdateUrl($url, UriRecord::STATUS_COMPLETE, null, null, null);
+            return Critical::getInstance()->uriRecords->createOrUpdateRecord($url, UriRecord::STATUS_COMPLETE, null, null, null);
         }
 
         return false;
