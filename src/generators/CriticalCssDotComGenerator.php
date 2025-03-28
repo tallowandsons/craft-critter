@@ -2,6 +2,7 @@
 
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
+use Craft;
 use craft\helpers\Json;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
@@ -24,6 +25,14 @@ class CriticalCssDotComGenerator extends BaseGenerator
     public function __construct()
     {
         $this->api = new CriticalCssDotComApi();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function displayName(): string
+    {
+        return Craft::t('critical-css-generator', 'criticalcss.com Generator');
     }
 
     /**

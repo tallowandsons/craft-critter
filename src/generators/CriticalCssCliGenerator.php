@@ -8,10 +8,18 @@ use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use Symfony\Component\Process\Process;
 
-class CLIGenerator extends BaseGenerator
+class CriticalCssCliGenerator extends BaseGenerator
 {
 
     public int $timeout = 60;
+
+    /**
+     * @inheritdoc
+     */
+    public static function displayName(): string
+    {
+        return Craft::t('critical-css-generator', '@plone/critical-css-cli Generator');
+    }
 
     /**
      * @inheritdoc

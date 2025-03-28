@@ -2,13 +2,14 @@
 
 namespace honchoagency\craftcriticalcssgenerator\generators;
 
+use craft\base\Component;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
 use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 
-class BaseGenerator implements GeneratorInterface
+class BaseGenerator extends Component implements GeneratorInterface
 {
     /**
      * @inheritdoc

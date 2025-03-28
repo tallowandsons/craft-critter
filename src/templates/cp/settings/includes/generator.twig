@@ -1,0 +1,12 @@
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning %}
+
+{{ forms.selectField({
+    label: "Generator"|t(pluginHandle),
+    instructions: "Select the generator to use for critical CSS generation"|t(pluginHandle),
+    warning: (config.generatorType is defined ? configWarning('generatorType')),
+    name: 'settings[generatorType]',
+    options: generatorTypeOptions,
+    value: settings.generatorType,
+    toggle: true,
+}) }}
