@@ -12,7 +12,7 @@ class BaseCache extends Model implements CacheInterface
     /**
      * @inheritdoc
      */
-    public function resolveCache(UrlModel $url): void {}
+    public function resolveCache(UrlModel|array $urlModels): void {}
 
     protected function getCacheBehaviour()
     {

@@ -15,43 +15,59 @@ class BlitzCache extends BaseCache implements CacheInterface
 
     /**
      * @inheritdoc
+     *
+     * @param UrlModel|UrlModel[] $urlModels
      */
-    public function resolveCache(UrlModel $urlModel): void
+    public function resolveCache(UrlModel|array $urlModels): void
     {
         $cacheBehaviour = $this->getCacheBehaviour();
 
+        // if $urlModels is a single UrlModel, convert it to an array
+        if (!is_array($urlModels)) {
+            $urlModels = [$urlModels];
+        }
+
         switch ($cacheBehaviour) {
             case Settings::CACHE_BEHAVIOUR_EXPIRE_URL:
-                $this->expireUrl($urlModel);
+                $this->expireUrls($urlModels);
                 break;
             case Settings::CACHE_BEHAVIOUR_CLEAR_URL:
-                $this->clearUrl($urlModel);
+                $this->clearUrls($urlModels);
                 break;
             case Settings::CACHE_BEHAVIOUR_REFRESH_URL:
-                $this->refreshUrl($urlModel);
+                $this->refreshUrls($urlModels);
                 break;
         }
     }
 
-    public function expireUrl(UrlModel $urlModel): void
+    private function expireUrls(array $urlModels): void
     {
-        $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
-        Blitz::getInstance()->expireCache->expireUris([$blitzSiteUriModel]);
+        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
+        Blitz::getInstance()->expireCache->expireUris($blitzSiteUriModels);
     }
 
-    public function clearUrl(UrlModel $urlModel): void
+    private function clearUrls(array $urlModels): void
     {
-        $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
-        Blitz::getInstance()->clearCache->clearUris([$blitzSiteUriModel]);
+        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
+        Blitz::getInstance()->clearCache->clearUris($blitzSiteUriModels);
     }
 
-    public function refreshUrl(UrlModel $urlModel): void
+    private function refreshUrls(array $urlModels): void
     {
-        $blitzSiteUriModel = $this->convertUrlToBlitzSiteUriModel($urlModel);
-        Blitz::getInstance()->refreshCache->refreshSiteUris([$blitzSiteUriModel]);
+        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
+        Blitz::getInstance()->refreshCache->refreshSiteUris($blitzSiteUriModels);
     }
 
-    private function convertUrlToBlitzSiteUriModel(UrlModel $urlModel)
+    private function convertUrlToBlitzSiteUriModels(UrlModel|array $urlModels): array
+    {
+        if (is_array($urlModels)) {
+            return array_map([$this, 'convertUrlToBlitzSiteUriModel'], $urlModels);
+        }
+
+        return [$this->convertUrlToBlitzSiteUriModel($urlModels)];
+    }
+
+    private function convertUrlToBlitzSiteUriModel(UrlModel $urlModel): SiteUriModel
     {
         return new SiteUriModel([
             'siteId' => $urlModel->siteId,

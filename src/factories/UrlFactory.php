@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\factories;
 
 use Craft;
+use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
 use honchoagency\craftcriticalcssgenerator\helpers\UrlHelper as CriticalUrlHelper;
@@ -45,5 +46,11 @@ class UrlFactory
         $url = trim($url, '/');
 
         return new UrlModel($url);
+    }
+
+    static function createFromEntry(Entry $entry): UrlModel
+    {
+        $url = UrlHelper::siteUrl($entry->getUrl(), null, null, $entry->siteId);
+        return self::createFromUrl($url);
     }
 }

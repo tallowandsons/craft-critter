@@ -5,8 +5,8 @@ namespace honchoagency\craftcriticalcssgenerator\services;
 use craft\helpers\ArrayHelper;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\CssRequest;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
-use honchoagency\craftcriticalcssgenerator\records\UriRecord;
 use honchoagency\craftcriticalcssgenerator\storage\StorageInterface;
 use yii\base\Component;
 
@@ -24,13 +24,15 @@ class StorageService extends Component
         $this->storage = new $storageClass();
     }
 
-    public function get(UrlModel $url): CssModel
+    public function get(CssRequest $cssRequest): CssModel
     {
-        $key = $this->getCacheKey($url);
+        $key = $this->getCacheKey($cssRequest->getKey());
 
         /* @var StorageResponse $response */
         $response = $this->storage->get($key);
 
+        // if the response is not successful,
+        // return an empty CssModel
         if (!$response->isSuccess()) {
             return new CssModel();
         }
@@ -38,20 +40,22 @@ class StorageService extends Component
         return $response->getData();
     }
 
-    public function save(UrlModel $url, CssModel $css): bool
+    public function save(CssRequest $cssRequest, CssModel $css): bool
     {
-        $key = $this->getCacheKey($url);
+        $key = $this->getCacheKey($cssRequest->getKey());
+        $url = $cssRequest->getUrl();
 
-        // Stamp the CSS with the current datetime and key
+        // stamp the CSS with the current datetime and key
         $css->stamp($url->getAbsoluteUrl());
 
         // save the CSS to the storage
         return $this->storage->save($key, $css);
     }
 
-    public function getCacheKey(UrlModel $url): mixed
+    public function getCacheKey(mixed $key): mixed
     {
-        return ArrayHelper::merge(['critical-css'], $url->toArray());
+        // return ArrayHelper::merge(['critical-css'], $url->toArray());
+        return $key;
     }
 
     public function normaliseUriPath(UrlModel $url)

@@ -5,6 +5,7 @@ namespace honchoagency\craftcriticalcssgenerator\models;
 use Craft;
 use craft\base\Element;
 use craft\base\Model;
+use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use honchoagency\craftcriticalcssgenerator\Critical;
 
@@ -60,5 +61,31 @@ class UrlModel extends Model
     public function getSafeUrl()
     {
         return $this->getUrl();
+    }
+
+    public function getPath()
+    {
+        $url = $this->getRelativeUrl();
+        $url = UrlHelper::stripQueryString($url);
+        $url = trim($url, '/');
+        return $url;
+    }
+
+    public function getMatchedElement()
+    {
+        $url = $this->getPath();
+        $siteId = $this->siteId;
+
+        return Craft::$app->getElements()->getElementByUri($url, null, $siteId);
+    }
+
+    public function getEntryType()
+    {
+        $element = $this->getMatchedElement();
+        if ($element instanceof Entry) {
+            return $element->getType()->handle;
+        }
+
+        return null;
     }
 }

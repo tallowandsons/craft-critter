@@ -6,6 +6,7 @@ use Craft;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
 use honchoagency\craftcriticalcssgenerator\models\CssModel;
+use honchoagency\craftcriticalcssgenerator\models\CssRequest;
 use honchoagency\craftcriticalcssgenerator\models\UrlModel;
 use yii\base\Component;
 
@@ -34,17 +35,26 @@ class CssService extends Component
         // create a record for the URL if it doesn't exist
         Critical::getInstance()->uriRecords->createRecordIfNotExists($url);
 
+        $mode = $this->getMode();
+
+        $cssRequest = (new CssRequest())->setUrl($url)->setMode($mode);
+
         // return css from storage if it exists
-        $cssModel = Critical::getInstance()->storage->get($url);
+        $cssModel = Critical::getInstance()->storage->get($cssRequest);
         if (!$cssModel->isEmpty()) {
             return $cssModel->getCss();
         }
 
         // if there is no css in storage, start generating new css and return fallback css
         if ($generate) {
-            Critical::getInstance()->generator->startGenerate($url, $this->useQueue);
+            Critical::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
         }
 
         return (new CssModel($this->fallbackCss))->getCss();
+    }
+
+    private function getMode()
+    {
+        return Critical::getInstance()->settings->defaultMode;
     }
 }

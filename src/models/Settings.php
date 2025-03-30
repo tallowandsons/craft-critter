@@ -12,6 +12,9 @@ use honchoagency\craftcriticalcssgenerator\storage\CraftCacheStorage;
 class Settings extends Model
 {
 
+    const MODE_URL = 'url';
+    const MODE_ENTRY_TYPE = 'entryType';
+
     const CACHE_BEHAVIOUR_EXPIRE_URL = 'expireUrl';
     const CACHE_BEHAVIOUR_CLEAR_URL = 'clearUrl';
     const CACHE_BEHAVIOUR_REFRESH_URL = 'refreshUrl';
@@ -40,4 +43,9 @@ class Settings extends Model
     public ?string $generatorApiKey = null;
 
     public ?string $baseUrlOverride = null;
+
+    // what the default mode should be.
+    // this will detemine whether critical css
+    // is generated for each url or each entry type
+    public string $defaultMode = self::MODE_URL;
 }
