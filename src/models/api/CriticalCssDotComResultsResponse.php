@@ -36,7 +36,7 @@ class CriticalCssDotComResultsResponse extends Model
         return !empty($this->getCss());
     }
 
-    public function getCss(): string
+    public function getCss(): ?string
     {
         return $this->css;
     }

@@ -89,15 +89,34 @@ class UrlModel extends Model
     }
 
     /**
-     * returns the entry type handle for the url (if it exists)
+     * return the handle of the url's section (if it exists)
      */
-    public function getEntryType(): ?string
+    public function getSectionHandle(): ?string
+    {
+        $element = $this->getMatchedElement();
+        if ($element instanceof Entry) {
+            return $element->section->handle;
+        }
+        return null;
+    }
+
+    /**
+     * returns whether the url has a section
+     */
+    public function hasSection(): bool
+    {
+        return $this->getSectionHandle() !== null;
+    }
+
+    /**
+     * returns the handle of the url's entry type (if it exists)
+     */
+    public function getEntryTypeHandle(): ?string
     {
         $element = $this->getMatchedElement();
         if ($element instanceof Entry) {
             return $element->getType()->handle;
         }
-
         return null;
     }
 
@@ -106,6 +125,6 @@ class UrlModel extends Model
      */
     public function hasEntryType(): bool
     {
-        return $this->getEntryType() !== null;
+        return $this->getEntryTypeHandle() !== null;
     }
 }

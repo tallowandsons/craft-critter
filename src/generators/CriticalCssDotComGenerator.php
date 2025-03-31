@@ -82,6 +82,15 @@ class CriticalCssDotComGenerator extends BaseGenerator
                     $generatorResponse->setSuccess(true);
                     $generatorResponse->setCss(new CssModel($cssStr));
                     return $generatorResponse;
+                } else {
+
+                    // if the job is done but no css was returned,
+                    // this is an error.
+
+                    $generatorResponse = new GeneratorResponse();
+                    $generatorResponse->setSuccess(false);
+                    // $generatorResponse->setError('No CSS returned from criticalcss.com API');
+                    return $generatorResponse;
                 }
             }
 

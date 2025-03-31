@@ -29,12 +29,34 @@ class CssRequest extends Model
     {
         $defaultMode = Critical::getInstance()->settings->defaultMode;
 
-        if ($defaultMode == Settings::MODE_ENTRY_TYPE) {
-            if ($this->url->hasEntryType()) {
-                return Settings::MODE_ENTRY_TYPE;
-            } else {
-                return Settings::MODE_URL;
-            }
+        switch ($defaultMode) {
+
+            // section mode is only possible if the url
+            // has a matched section. Otherwise,
+            // fallback to url mode.
+            case Settings::MODE_SECTION:
+                if ($this->url->hasSection()) {
+                    return Settings::MODE_SECTION;
+                } else {
+                    return Settings::MODE_URL;
+                }
+                break;
+
+            // entry type mode is only possible if the url
+            // has a matched entry type. Otherwise,
+            // fallback to url mode.
+            case Settings::MODE_ENTRY_TYPE:
+                if ($this->url->hasEntryType()) {
+                    return Settings::MODE_ENTRY_TYPE;
+                } else {
+                    return Settings::MODE_URL;
+                }
+                break;
+
+            // url mode is always possible
+            case Settings::MODE_URL:
+            default:
+                return $defaultMode;
         }
 
         return $defaultMode;
@@ -43,15 +65,13 @@ class CssRequest extends Model
     public function getKey(): string
     {
         switch ($this->getMode()) {
-            case Settings::MODE_URL:
-                return $this->url->getAbsoluteUrl();
+            case Settings::MODE_SECTION:
+                return $this->url->getSectionHandle();
+                break;
             case Settings::MODE_ENTRY_TYPE:
-                $entryType = $this->url->getEntryType();
-                if ($entryType) {
-                    return $entryType;
-                }
-
-                return $this->url->getAbsoluteUrl();
+                return $this->url->getEntryTypeHandle();
+                break;
+            case Settings::MODE_URL:
             default:
                 return $this->url->getAbsoluteUrl();
         }

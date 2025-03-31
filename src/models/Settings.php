@@ -13,6 +13,7 @@ class Settings extends Model
 {
 
     const MODE_URL = 'url';
+    const MODE_SECTION = 'section';
     const MODE_ENTRY_TYPE = 'entryType';
 
     const CACHE_BEHAVIOUR_EXPIRE_URL = 'expireUrl';
