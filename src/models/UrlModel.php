@@ -4,6 +4,7 @@ namespace honchoagency\craftcriticalcssgenerator\models;
 
 use Craft;
 use craft\base\Element;
+use craft\base\ElementInterface;
 use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
@@ -63,7 +64,11 @@ class UrlModel extends Model
         return $this->getUrl();
     }
 
-    public function getPath()
+    /**
+     * returns the path for the url without the query string
+     * eg the path for https://website.com/about/team?foo=bar is "about/team"
+     */
+    public function getPath(): string
     {
         $url = $this->getRelativeUrl();
         $url = UrlHelper::stripQueryString($url);
@@ -71,7 +76,11 @@ class UrlModel extends Model
         return $url;
     }
 
-    public function getMatchedElement()
+    /**
+     * returns the 'matched element' for the url (if it exists)
+     * ie the Entry associated with the url
+     */
+    public function getMatchedElement(): ?ElementInterface
     {
         $url = $this->getPath();
         $siteId = $this->siteId;
@@ -79,7 +88,10 @@ class UrlModel extends Model
         return Craft::$app->getElements()->getElementByUri($url, null, $siteId);
     }
 
-    public function getEntryType()
+    /**
+     * returns the entry type handle for the url (if it exists)
+     */
+    public function getEntryType(): ?string
     {
         $element = $this->getMatchedElement();
         if ($element instanceof Entry) {
@@ -87,5 +99,13 @@ class UrlModel extends Model
         }
 
         return null;
+    }
+
+    /**
+     * returns whether the url has an entry type
+     */
+    public function hasEntryType(): bool
+    {
+        return $this->getEntryType() !== null;
     }
 }

@@ -35,9 +35,7 @@ class CssService extends Component
         // create a record for the URL if it doesn't exist
         Critical::getInstance()->uriRecords->createRecordIfNotExists($url);
 
-        $mode = $this->getMode();
-
-        $cssRequest = (new CssRequest())->setUrl($url)->setMode($mode);
+        $cssRequest = (new CssRequest())->setUrl($url);
 
         // return css from storage if it exists
         $cssModel = Critical::getInstance()->storage->get($cssRequest);
@@ -51,10 +49,5 @@ class CssService extends Component
         }
 
         return (new CssModel($this->fallbackCss))->getCss();
-    }
-
-    private function getMode()
-    {
-        return Critical::getInstance()->settings->defaultMode;
     }
 }
