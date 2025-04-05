@@ -27,9 +27,15 @@ class CssRequest extends Model
 
     public function getMode(): string
     {
-        $defaultMode = Critical::getInstance()->settings->defaultMode;
+        $preferredMode = null;
 
-        switch ($defaultMode) {
+        if ($this->url->hasSection()) {
+            $preferredMode = Critical::getInstance()->settings->getSectionMode($this->url->getSectionHandle());
+        } else {
+            return Settings::MODE_URL;
+        }
+
+        switch ($preferredMode) {
 
             // section mode is only possible if the url
             // has a matched section. Otherwise,
@@ -55,11 +61,12 @@ class CssRequest extends Model
 
             // url mode is always possible
             case Settings::MODE_URL:
-            default:
-                return $defaultMode;
-        }
+                return Settings::MODE_URL;
+                break;
 
-        return $defaultMode;
+            default:
+                return Critical::getInstance()->settings->defaultMode;
+        }
     }
 
     public function getKey(): string

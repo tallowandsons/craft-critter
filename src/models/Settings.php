@@ -49,4 +49,26 @@ class Settings extends Model
     // this will detemine whether critical css
     // is generated for each url or each entry type
     public string $defaultMode = self::MODE_URL;
+
+    // the settings for each section
+    public array $sectionSettings = [];
+
+    /**
+     * Get the mode for a section
+     * (whether to generate critical css for each url, section, or each entry type)
+     */
+    public function getSectionMode(string $handle): ?string
+    {
+        $settings = $this->sectionSettings[$handle] ?? null;
+
+        if (!$settings) {
+            return null;
+        }
+
+        if (!isset($settings['mode'])) {
+            return null;
+        }
+
+        return $settings['mode'];
+    }
 }

@@ -28,7 +28,6 @@ class StorageService extends Component
     {
         $key = $this->getCacheKey($cssRequest->getKey());
 
-        /* @var StorageResponse $response */
         $response = $this->storage->get($key);
 
         // if the response is not successful,
