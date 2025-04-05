@@ -127,4 +127,31 @@ class UrlModel extends Model
     {
         return $this->getEntryTypeHandle() !== null;
     }
+
+    /**
+     * returns the type of the url's section (if it exists)
+     * ie 'single', 'channel', or 'structure' (or null)
+     */
+    public function getSectionType(): ?string
+    {
+        $sectionHandle = $this->getSectionHandle();
+        if (!$sectionHandle) {
+            return null;
+        }
+
+        $section = Craft::$app->entries->getSectionByHandle($sectionHandle);
+        if (!$section) {
+            return null;
+        }
+
+        return $section->type;
+    }
+
+    /**
+     * returns whether the url is a single entry
+     */
+    public function isSingle(): bool
+    {
+        return $this->getSectionType() === 'single';
+    }
 }

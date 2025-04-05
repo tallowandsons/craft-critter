@@ -1,0 +1,36 @@
+{% extends '_layouts/cp' %}
+
+{% import '_includes/forms' as forms %}
+
+{% set title = 'Critical CSS Generator' %}
+{% set pluginHandle = 'critical-css-generator' %}
+
+{% set selectedTab = selectedTab ?? 'general' %}
+
+{% block sidebar %}
+
+    {% set navItems = [
+        {
+            label: 'General',
+            handle: 'general',
+            url: url("#{pluginHandle}/settings/general"),
+        },
+        {
+            label: 'Sections',
+            handle: 'sections',
+            url: url("#{pluginHandle}/settings/sections"),
+        }
+    ] %}
+
+    <nav>
+        <ul>
+            {% for navItem in navItems %}
+                <li>
+                    <a href="{{ navItem.url }}" {% if selectedTab == navItem.handle %}class="sel"{% endif %}>
+                        {{ navItem.label|t(pluginHandle) }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}

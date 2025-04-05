@@ -6,6 +6,7 @@ use Craft;
 use craft\web\Controller;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\helpers\GeneratorHelper;
+use honchoagency\craftcriticalcssgenerator\helpers\SettingsHelper;
 use yii\web\Response;
 
 /**
@@ -31,19 +32,9 @@ class SettingsController extends Controller
      */
     public function actionEdit(): Response
     {
-        // $settings is the current plugin settings from the Settings model,
-        // which are a combination of the project config settings and the config file settings.
-        $settings = Critical::getInstance()->getSettings();
-
-        // $config is the plugin settings from the config file.
-        // this is used to determine whether the config file settings
-        // are overriding the project config settings.
-        $config = Craft::$app->getConfig()->getConfigFromFile('critical-css-generator');
-
-        return $this->renderTemplate('critical-css-generator/cp/settings', [
-            'settings' => $settings,
-            'config' => $config,
-
+        return $this->renderTemplate('critical-css-generator/cp/settings/general', [
+            'settings' => $this->getSettings(),
+            'config' => $this->getConfig(),
             'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions()
         ]);
     }
@@ -55,19 +46,55 @@ class SettingsController extends Controller
     {
         $this->requirePostRequest();
 
-        $request = Craft::$app->getRequest();
+        // get the settings from the POST
+        $postedSettings = Craft::$app->getRequest()->getBodyParam('settings', []);
 
-        $postedSettings = $request->getBodyParam('settings', []);
-
-        $settings = Critical::getInstance()->settings;
+        // apply them to the settings model
+        $settings = $this->getSettings();
         $settings->setAttributes($postedSettings, false);
 
+        // save the settings into the project config
         Craft::$app->getPlugins()->savePluginSettings(Critical::getInstance(), $settings->getAttributes());
 
+        // let the user know the settings were saved
         $notice = Craft::t('critical-css-generator', 'Settings saved.');
-
         Craft::$app->getSession()->setSuccess($notice);
 
+        // redirect to the settings page
         return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * critical-css-generator/settings/sections/edit action
+     */
+    public function actionSectionsEdit()
+    {
+        return $this->renderTemplate('critical-css-generator/cp/settings/sections', [
+            'settings' => $this->getSettings(),
+            'config' => $this->getConfig(),
+            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
+            'modeOptions' => SettingsHelper::getModesAsSelectOptions(),
+        ]);
+    }
+
+    /**
+     * The 'settings' are the current plugin settings from the Settings model,
+     * which are a combination of the project config settings and the config file settings.
+     * This functions returns the settings.
+     */
+    private function getSettings()
+    {
+        return Critical::getInstance()->getSettings();
+    }
+
+    /**
+     * The 'config' is the plugin settings from the config file.
+     * This is used to determine whether the config file settings
+     * are overriding the project config settings.
+     * This function returns the config.
+     */
+    private function getConfig()
+    {
+        return Craft::$app->getConfig()->getConfigFromFile('critical-css-generator');
     }
 }

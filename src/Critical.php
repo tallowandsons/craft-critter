@@ -7,13 +7,14 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
+use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
-use craft\web\UrlManager;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
 use honchoagency\craftcriticalcssgenerator\services\CacheService;
 use honchoagency\craftcriticalcssgenerator\services\CssService;
 use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
+use honchoagency\craftcriticalcssgenerator\services\SettingsService;
 use honchoagency\craftcriticalcssgenerator\services\StorageService;
 use honchoagency\craftcriticalcssgenerator\services\UriRecordService;
 use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
@@ -33,6 +34,7 @@ use yii\base\View as BaseView;
  * @property-read CssService $css
  * @property-read CacheService $cacheService
  * @property-read UriRecordService $uriRecords
+ * @property-read SettingsService $settingsService
  */
 class Critical extends Plugin
 {
@@ -43,7 +45,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class, 'settingsService' => SettingsService::class],
         ];
     }
 
@@ -77,6 +79,15 @@ class Critical extends Plugin
             'plugin' => $this,
             'settings' => $this->getSettings(),
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSettingsResponse(): mixed
+    {
+        // Redirect to the custom settings page
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('critical-css-generator/settings/general'));
     }
 
     private function attachEventHandlers(): void
@@ -125,7 +136,8 @@ class Critical extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules = array_merge(
                     [
-                        'settings/plugins/critical-css-generator' => 'critical-css-generator/settings/edit'
+                        'critical-css-generator/settings/general' => 'critical-css-generator/settings/edit',
+                        'critical-css-generator/settings/sections' => 'critical-css-generator/settings/sections-edit',
                     ],
                     $event->rules
                 );

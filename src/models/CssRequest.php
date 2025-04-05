@@ -25,14 +25,25 @@ class CssRequest extends Model
         return $this->url;
     }
 
+    /**
+     * Each section has a 'mode', which determines whether to
+     * generate unique critical css for each url, or once
+     * for the entire section.
+     * This function returns the mode for the URL.
+     */
     public function getMode(): string
     {
         $preferredMode = null;
 
         if ($this->url->hasSection()) {
-            $preferredMode = Critical::getInstance()->settings->getSectionMode($this->url->getSectionHandle());
+            $preferredMode = Critical::getInstance()->settingsService->getSectionMode($this->url->getSectionHandle());
         } else {
             return Settings::MODE_URL;
+        }
+
+        // if the section is a single, switch preferred mode to url
+        if ($this->url->isSingle()) {
+            $preferredMode = Settings::MODE_URL;
         }
 
         switch ($preferredMode) {
