@@ -1,0 +1,69 @@
+{% extends 'critical-css-generator/_layouts/cp' %}
+
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning %}
+
+{% set fullPageForm = true %}
+{% set selectedTab = 'sections' %}
+
+{% block sidebar %}{% endblock %}
+
+{% block actionButton %}
+    <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+{% endblock %}
+
+{% block content %}
+
+    <input type="hidden" name="action" value="{{ pluginHandle }}/config/save">
+    <input type="hidden" name="pluginHandle" value="{{ pluginHandle }}">
+
+    <div class="field">
+        <div class="heading">
+            <h1>Sections</h1>
+        </div>
+
+        {# <div class="instructions">
+            <p>...</p>
+        </div> #}
+
+        {% if config.sectionSettings is defined %}
+            <p class="warning has-icon">
+                <span class="icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
+            </p>
+        {% endif %}
+
+        <hr>
+    </div>
+
+    {% for section in sections %}
+
+        {% set sectionConfig = sectionsConfig[section.id][currentSite.id] ?? null %}
+
+        {% set isSingle = section.type == 'single' %}
+        {% if not isSingle %}
+            <div class="field">
+                <div class="heading">
+                    <h2>{{ section.name }}</h2>
+                </div>
+
+                {% set elements = sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
+
+                {{ forms.elementSelect({
+                    id: 'section-entry-' ~ section.handle,
+                    name: 'config[sections][' ~ section.id ~ '][' ~ currentSite.id ~ '][entryId]',
+                    elementType: 'craft\\elements\\Entry',
+                    limit: 1,
+                    showSiteMenu: false,
+                    elements: elements,
+                }) }}
+
+                {% if not loop.last %}
+                    <hr>
+                {% endif %}
+
+            </div>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

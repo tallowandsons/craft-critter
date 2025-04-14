@@ -12,6 +12,7 @@ use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
 use honchoagency\craftcriticalcssgenerator\models\Settings;
 use honchoagency\craftcriticalcssgenerator\services\CacheService;
+use honchoagency\craftcriticalcssgenerator\services\ConfigService;
 use honchoagency\craftcriticalcssgenerator\services\CssService;
 use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
 use honchoagency\craftcriticalcssgenerator\services\SettingsService;
@@ -35,6 +36,7 @@ use yii\base\View as BaseView;
  * @property-read CacheService $cacheService
  * @property-read UriRecordService $uriRecords
  * @property-read SettingsService $settingsService
+ * @property-read ConfigService $configService
  */
 class Critical extends Plugin
 {
@@ -45,7 +47,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class, 'settingsService' => SettingsService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class, 'settingsService' => SettingsService::class, 'configService' => ConfigService::class],
         ];
     }
 
@@ -138,6 +140,7 @@ class Critical extends Plugin
                     [
                         'critical-css-generator/settings/general' => 'critical-css-generator/settings/edit',
                         'critical-css-generator/settings/sections' => 'critical-css-generator/settings/sections-edit',
+                        'critical-css-generator/config/sections' => 'critical-css-generator/config/sections-edit',
                     ],
                     $event->rules
                 );
