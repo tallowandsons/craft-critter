@@ -35,7 +35,7 @@ class ConfigController extends Controller
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
-            'sectionsConfig' => Critical::getInstance()->configService->getSectionsConfig()
+            'sectionsConfig' => Critical::getInstance()->configService->getSectionConfigs()
         ]);
     }
 

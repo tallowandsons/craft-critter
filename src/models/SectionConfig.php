@@ -17,10 +17,14 @@ class SectionConfig extends Model
     public ?int $entryId;
 
     /**
-     * returns the entry for this section config
+     * returns the entry for this section config (if it exists)
      */
     public function getEntry(): ?Entry
     {
+        if (!$this->entryId) {
+            return null;
+        }
+
         return Craft::$app->getEntries()->getEntryById($this->entryId);
     }
 

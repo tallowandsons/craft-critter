@@ -8,6 +8,7 @@ use craft\base\ElementInterface;
 use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
+use craft\models\Section;
 use honchoagency\craftcriticalcssgenerator\Critical;
 
 /**
@@ -64,6 +65,11 @@ class UrlModel extends Model
         return $this->getUrl();
     }
 
+    public function getSiteId()
+    {
+        return $this->siteId;
+    }
+
     /**
      * returns the path for the url without the query string
      * eg the path for https://website.com/about/team?foo=bar is "about/team"
@@ -89,13 +95,25 @@ class UrlModel extends Model
     }
 
     /**
+     * return a url's section (if it exists)
+     */
+    public function getSection(): ?Section
+    {
+        $element = $this->getMatchedElement();
+        if ($element instanceof Entry) {
+            return $element->section;
+        }
+        return null;
+    }
+
+    /**
      * return the handle of the url's section (if it exists)
      */
     public function getSectionHandle(): ?string
     {
-        $element = $this->getMatchedElement();
-        if ($element instanceof Entry) {
-            return $element->section->handle;
+        $section = $this->getSection();
+        if ($section) {
+            return $section->handle;
         }
         return null;
     }

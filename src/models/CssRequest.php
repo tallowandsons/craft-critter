@@ -12,17 +12,35 @@ use honchoagency\craftcriticalcssgenerator\Critical;
 class CssRequest extends Model
 {
 
-    private UrlModel $url;
+    // the url that was originally requested
+    private UrlModel $requestUrl;
 
-    public function setUrl(UrlModel $url): CssRequest
+    public function setRequestUrl(UrlModel $url): CssRequest
     {
-        $this->url = $url;
+        $this->requestUrl = $url;
         return $this;
     }
 
+    /**
+     * get the URL that will be used to generate the critical css
+     */
     public function getUrl(): UrlModel
     {
-        return $this->url;
+        if ($this->getMode() == Settings::MODE_SECTION) {
+            $section = $this->requestUrl->getSection();
+            $sectionConfig = Critical::getInstance()->configService->getSectionConfig($section->id, $this->requestUrl->getSiteId());
+            $generateEntry = $sectionConfig->getEntry();
+
+            // if there is no specific entry for the section,
+            // use the url as the generate url
+            if ($generateEntry === null) {
+                return $this->requestUrl;
+            }
+
+            return new UrlModel($generateEntry->getUrl(), $this->requestUrl->getSiteId());
+        }
+
+        return $this->requestUrl;
     }
 
     /**
@@ -35,14 +53,14 @@ class CssRequest extends Model
     {
         $preferredMode = null;
 
-        if ($this->url->hasSection()) {
-            $preferredMode = Critical::getInstance()->settingsService->getSectionMode($this->url->getSectionHandle());
+        if ($this->requestUrl->hasSection()) {
+            $preferredMode = Critical::getInstance()->settingsService->getSectionMode($this->requestUrl->getSectionHandle());
         } else {
             return Settings::MODE_URL;
         }
 
         // if the section is a single, switch preferred mode to url
-        if ($this->url->isSingle()) {
+        if ($this->requestUrl->isSingle()) {
             $preferredMode = Settings::MODE_URL;
         }
 
@@ -52,7 +70,7 @@ class CssRequest extends Model
             // has a matched section. Otherwise,
             // fallback to url mode.
             case Settings::MODE_SECTION:
-                if ($this->url->hasSection()) {
+                if ($this->requestUrl->hasSection()) {
                     return Settings::MODE_SECTION;
                 } else {
                     return Settings::MODE_URL;
@@ -63,7 +81,7 @@ class CssRequest extends Model
             // has a matched entry type. Otherwise,
             // fallback to url mode.
             case Settings::MODE_ENTRY_TYPE:
-                if ($this->url->hasEntryType()) {
+                if ($this->requestUrl->hasEntryType()) {
                     return Settings::MODE_ENTRY_TYPE;
                 } else {
                     return Settings::MODE_URL;
@@ -84,14 +102,14 @@ class CssRequest extends Model
     {
         switch ($this->getMode()) {
             case Settings::MODE_SECTION:
-                return $this->url->getSectionHandle();
+                return $this->requestUrl->getSectionHandle();
                 break;
             case Settings::MODE_ENTRY_TYPE:
-                return $this->url->getEntryTypeHandle();
+                return $this->requestUrl->getEntryTypeHandle();
                 break;
             case Settings::MODE_URL:
             default:
-                return $this->url->getAbsoluteUrl();
+                return $this->requestUrl->getAbsoluteUrl();
         }
     }
 }

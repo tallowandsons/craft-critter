@@ -32,10 +32,10 @@ class CssService extends Component
 
     public function getCssForUrl(UrlModel $url, bool $generate = true)
     {
-        // create a record for the URL if it doesn't exist
-        Critical::getInstance()->uriRecords->createRecordIfNotExists($url);
+        $cssRequest = (new CssRequest())->setRequestUrl($url);
 
-        $cssRequest = (new CssRequest())->setUrl($url);
+        // create a record for the URL if it doesn't exist
+        Critical::getInstance()->uriRecords->createRecordIfNotExists($cssRequest->getUrl());
 
         // return css from storage if it exists
         $cssModel = Critical::getInstance()->storage->get($cssRequest);

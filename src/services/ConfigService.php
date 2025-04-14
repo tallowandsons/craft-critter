@@ -74,7 +74,7 @@ class ConfigService extends Component
      * returns all the section configs from the database
      * returns an array of SectionConfig models
      */
-    public function getSectionsConfig(): array
+    public function getSectionConfigs(): array
     {
         $sections = [];
 
@@ -84,12 +84,26 @@ class ConfigService extends Component
         foreach ($sectionConfigs as $sectionConfig) {
             $sectionId = $sectionConfig->sectionId;
             $siteId = $sectionConfig->siteId;
-
-            $model = SectionConfig::createFromRecord($sectionConfig);
-
-            $sections[$sectionId][$siteId] = $model;
+            $sections[$sectionId][$siteId] = $this->getSectionConfig($sectionId, $siteId);
         }
 
         return $sections;
+    }
+
+    /**
+     * returns a section config for a given section and site
+     */
+    public function getSectionConfig(int $sectionId, int $siteId): ?SectionConfig
+    {
+        $record = SectionConfigRecord::findOne([
+            'sectionId' => $sectionId,
+            'siteId' => $siteId,
+        ]);
+
+        if (!$record) {
+            return null;
+        }
+
+        return SectionConfig::createFromRecord($record);
     }
 }
