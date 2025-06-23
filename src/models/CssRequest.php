@@ -37,7 +37,8 @@ class CssRequest extends Model
                 return $this->requestUrl;
             }
 
-            return new UrlModel($generateEntry->getUrl(), $this->requestUrl->getSiteId());
+            return (new UrlModel($generateEntry->getUrl(), $this->requestUrl->getSiteId()))
+                ->setQueryParams($this->requestUrl->queryParams);
         }
 
         return $this->requestUrl;
@@ -102,7 +103,7 @@ class CssRequest extends Model
     {
         switch ($this->getMode()) {
             case Settings::MODE_SECTION:
-                return $this->requestUrl->getSectionHandle();
+                return $this->requestUrl->getSectionHandle() . $this->requestUrl->getQueryString();
                 break;
             case Settings::MODE_ENTRY_TYPE:
                 return $this->requestUrl->getEntryTypeHandle();

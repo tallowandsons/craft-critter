@@ -172,4 +172,30 @@ class UrlModel extends Model
     {
         return $this->getSectionType() === 'single';
     }
+
+    /**
+     * Returns the query parameters for the URL.
+     */
+    public function getQueryParams()
+    {
+        return $this->queryParams;
+    }
+
+    /**
+     * Sets the query parameters for the URL.
+     */
+    public function setQueryParams(array $queryParams): self
+    {
+        $this->queryParams = $queryParams;
+        return $this;
+    }
+
+    /**
+     * Returns the query parameters as a query string.
+     */
+    public function getQueryString()
+    {
+        $params = http_build_query($this->queryParams);
+        return $params ? '?' . $params : '';
+    }
 }
