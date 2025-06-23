@@ -14,7 +14,16 @@ class BaseGenerator extends Component implements GeneratorInterface
      */
     public function generate(UrlModel $url): GeneratorResponse
     {
-        return $this->getCriticalCss($url);
+        try {
+            return $this->getCriticalCss($url);
+        } catch (\Exception $e) {
+
+            $response = new GeneratorResponse();
+            $response->setSuccess(false);
+            $response->setException($e);
+
+            return $response;
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ class GeneratorResponse extends BaseResponse
 {
     private CssModel $css;
     private \DateTime $timestamp;
+    private ?\Exception $exception;
 
     public function __construct()
     {
@@ -33,5 +34,20 @@ class GeneratorResponse extends BaseResponse
     public function getTimestamp(): \DateTime
     {
         return $this->timestamp;
+    }
+
+    public function setException(\Exception $exception): void
+    {
+        $this->exception = $exception;
+    }
+
+    public function getException(): ?\Exception
+    {
+        return $this->exception;
+    }
+
+    public function hasException(): bool
+    {
+        return $this->getException() !== null;
     }
 }

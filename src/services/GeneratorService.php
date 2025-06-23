@@ -50,7 +50,7 @@ class GeneratorService extends Component
         Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_GENERATING);
 
         // generate the critical css
-        $response = $this->generator->generate($url, false);
+        $response = $this->generator->generate($url);
 
         if ($response->isSuccess()) {
 
@@ -68,6 +68,12 @@ class GeneratorService extends Component
             }
         } else {
             Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_ERROR);
+
+            // throw an exception if the response has one.
+            // this will fail the queue job and report the error.
+            if ($response->hasException()) {
+                throw $response->getException();
+            }
         }
     }
 
