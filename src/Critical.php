@@ -40,6 +40,11 @@ use yii\base\View as BaseView;
  */
 class Critical extends Plugin
 {
+
+    //  plugin information
+    public const PLUGIN_NAME = 'Critical CSS Generator';
+    public const PLUGIN_HANDLE = 'critical-css-generator';
+
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
@@ -68,6 +73,30 @@ class Critical extends Plugin
         Craft::$app->onInit(function () {
             // ...
         });
+    }
+
+    /**
+     * Returns the plugin name.
+     */
+    public function getPluginName(): string
+    {
+        return self::PLUGIN_NAME;
+    }
+
+    /**
+     * Returns the plugin handle.
+     */
+    public function getPluginHandle(): string
+    {
+        return self::PLUGIN_HANDLE;
+    }
+
+    /**
+     * Returns the plugin URL segment.
+     */
+    public function getPluginUrlSegment(): string
+    {
+        return self::PLUGIN_HANDLE;
     }
 
     protected function createSettingsModel(): ?Model
@@ -146,5 +175,46 @@ class Critical extends Plugin
                 );
             }
         );
+    }
+
+    /**
+     * build the control panel navigation for the plugin
+     */
+    public function getCpNavItem(): ?array
+    {
+        $nav = parent::getCpNavItem();
+
+        $nav['label'] = $this->getPluginName();
+        $nav['url'] = $this->cpUrl('config/sections');
+
+        $nav['subnav']['sections'] = [
+            'label' => $this->translate('Sections'),
+            'url' => $this->cpUrl('config/sections'),
+        ];
+
+        if (Craft::$app->getUser()->getIsAdmin()) {
+            $nav['subnav']['settings'] = [
+                'label' => $this->translate('Settings'),
+                'url' => $this->cpUrl('settings/general'),
+            ];
+        }
+
+        return $nav;
+    }
+
+    /**
+     *  Generates a control panel URL for the plugin.
+     */
+    private function cpUrl(string $path): string
+    {
+        return UrlHelper::cpUrl($this->getPluginUrlSegment() . '/' . $path);
+    }
+
+    /**
+     * Translates a string using the plugin's translation context.
+     */
+    private function translate(string $str): string
+    {
+        return Craft::t($this->getPluginHandle(), $str);
     }
 }
