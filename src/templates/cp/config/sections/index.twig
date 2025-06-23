@@ -42,6 +42,9 @@
 
         {% set isSingle = section.type == 'single' %}
         {% if not isSingle %}
+
+            {% set mode = settings.sectionSettings[section.handle].mode ?? null %}
+
             <div class="field">
                 <div class="heading">
                     <h2>{{ section.name }}</h2>
@@ -55,8 +58,16 @@
                     elementType: 'craft\\elements\\Entry',
                     limit: 1,
                     showSiteMenu: false,
-                    elements: elements,
+                    elements: elements
                 }) }}
+
+                {% if mode != 'section' %}
+                    <p class="warning has-icon">
+                        <span class="icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Tip: </span>
+                        <span>This won't have an effect because the <em>{{ section.name }}</em> section is in <em>{{ mode }}</em> mode.</span>
+                    </p>
+                {% endif %}
 
                 {% if not loop.last %}
                     <hr>
