@@ -103,7 +103,7 @@ class CssRequest extends Model
     {
         switch ($this->getMode()) {
             case Settings::MODE_SECTION:
-                return $this->requestUrl->getSectionHandle() . $this->requestUrl->getQueryString();
+                return 'mode:section|site:' . $this->requestUrl->getSiteId() . '|section:' . $this->requestUrl->getSectionHandle() . '|query:' . $this->requestUrl->getQueryString();
                 break;
             case Settings::MODE_ENTRY_TYPE:
                 return $this->requestUrl->getEntryTypeHandle();

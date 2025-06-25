@@ -10,7 +10,7 @@ use craft\base\Model;
 class BaseResponse extends Model
 {
     private bool $success = false;
-    private mixed $data;
+    private mixed $data = null;
 
     public function setSuccess(bool $success): BaseResponse
     {

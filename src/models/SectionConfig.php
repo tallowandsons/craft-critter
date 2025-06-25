@@ -34,8 +34,9 @@ class SectionConfig extends Model
     static function createFromRecord(SectionConfigRecord $record): SectionConfig
     {
         $record = $record->toArray();
-        $json = $record['data'] ?? [];
-        $data = Json::decode($json);
+        $json = $record['data'] ?? "[]";
+
+        $data = Json::decode($json) ?? [];
 
         $model = new SectionConfig();
         $model->entryId = $data['entryId'] ?? null;

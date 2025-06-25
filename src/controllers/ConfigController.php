@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\controllers;
 
 use Craft;
+use craft\helpers\Cp;
 use craft\web\Controller;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use yii\web\Response;
@@ -31,11 +32,26 @@ class ConfigController extends Controller
      */
     public function actionSectionsEdit(): Response
     {
+        $cpSite = Cp::requestedSite();
+
+        $crumbs = [
+            [
+                'label' => Critical::getPluginName(),
+                'url' => Critical::cpUrl('/')
+            ],
+            [
+                'label' => Critical::translate('Sections'),
+                'url' => Critical::cpUrl('/config/sections')
+            ]
+        ];
+
         return $this->renderTemplate('critical-css-generator/cp/config/sections', [
+            'cpSite' => $cpSite,
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
-            'sectionsConfig' => Critical::getInstance()->configService->getSectionConfigs()
+            'sections' => Critical::getInstance()->settingsService->getConfigurableSections($cpSite->id),
+            'sectionsConfig' => Critical::getInstance()->configService->getSectionConfigs(),
+            'crumbs' => $this->formatCrumbs($crumbs),
         ]);
     }
 
@@ -79,5 +95,24 @@ class ConfigController extends Controller
     private function getConfig()
     {
         return Craft::$app->getConfig()->getConfigFromFile('critical-css-generator');
+    }
+
+    /**
+     * Formats the breadcrumbs for the config pages.
+     * Adds a language switcher crumb at the beginning.
+     */
+    private function formatCrumbs(array $crumbs)
+    {
+        $langSwitcherCrumb = [
+            'id' => 'language-menu',
+            'icon' => 'world',
+            'label' => Craft::t('site', Cp::requestedSite()->name),
+            'menu' => [
+                'items' => Cp::siteMenuItems(),
+                'label' => Craft::t('site', 'Select site'),
+            ],
+        ];
+
+        return [$langSwitcherCrumb, ...$crumbs];
     }
 }

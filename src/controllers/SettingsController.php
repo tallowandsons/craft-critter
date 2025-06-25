@@ -3,6 +3,7 @@
 namespace honchoagency\craftcriticalcssgenerator\controllers;
 
 use Craft;
+use craft\helpers\Cp;
 use craft\web\Controller;
 use honchoagency\craftcriticalcssgenerator\Critical;
 use honchoagency\craftcriticalcssgenerator\helpers\GeneratorHelper;
@@ -72,7 +73,7 @@ class SettingsController extends Controller
         return $this->renderTemplate('critical-css-generator/cp/settings/sections', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
+            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(Cp::requestedSite()->id),
             'modeOptions' => SettingsHelper::getModesAsSelectOptions(),
         ]);
     }

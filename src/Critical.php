@@ -78,7 +78,7 @@ class Critical extends Plugin
     /**
      * Returns the plugin name.
      */
-    public function getPluginName(): string
+    static function getPluginName(): string
     {
         return self::PLUGIN_NAME;
     }
@@ -86,7 +86,7 @@ class Critical extends Plugin
     /**
      * Returns the plugin handle.
      */
-    public function getPluginHandle(): string
+    static function getPluginHandle(): string
     {
         return self::PLUGIN_HANDLE;
     }
@@ -94,7 +94,7 @@ class Critical extends Plugin
     /**
      * Returns the plugin URL segment.
      */
-    public function getPluginUrlSegment(): string
+    static function getPluginUrlSegment(): string
     {
         return self::PLUGIN_HANDLE;
     }
@@ -203,18 +203,21 @@ class Critical extends Plugin
     }
 
     /**
-     *  Generates a control panel URL for the plugin.
+     *  Generates a control panel URL for the plugin from a given path.
      */
-    private function cpUrl(string $path): string
+    static function cpUrl(string $path): string
     {
-        return UrlHelper::cpUrl($this->getPluginUrlSegment() . '/' . $path);
+        // strip trailing and leading slashes
+        $path = trim($path, '/');
+
+        return UrlHelper::cpUrl(Critical::getInstance()->getPluginUrlSegment() . '/' . $path);
     }
 
     /**
      * Translates a string using the plugin's translation context.
      */
-    private function translate(string $str): string
+    static function translate(string $str): string
     {
-        return Craft::t($this->getPluginHandle(), $str);
+        return Craft::t(Critical::getInstance()->getPluginHandle(), $str);
     }
 }

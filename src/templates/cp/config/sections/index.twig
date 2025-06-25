@@ -38,23 +38,23 @@
 
     {% for section in sections %}
 
-        {% set sectionConfig = sectionsConfig[section.id][currentSite.id] ?? null %}
+        {% set sectionConfig = sectionsConfig[section.id][cpSite.id] ?? null %}
 
         {% set isSingle = section.type == 'single' %}
         {% if not isSingle %}
 
-            {% set mode = settings.sectionSettings[section.handle].mode ?? null %}
+            {% set mode = settings.sectionSettings[section.handle].mode ?? settings.defaultMode %}
 
             <div class="field">
                 <div class="heading">
                     <h2>{{ section.name }}</h2>
                 </div>
 
-                {% set elements = sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
+                {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
 
                 {{ forms.elementSelect({
                     id: 'section-entry-' ~ section.handle,
-                    name: 'config[sections][' ~ section.id ~ '][' ~ currentSite.id ~ '][entryId]',
+                    name: 'config[sections][' ~ section.id ~ '][' ~ cpSite.id ~ '][entryId]',
                     elementType: 'craft\\elements\\Entry',
                     limit: 1,
                     showSiteMenu: false,

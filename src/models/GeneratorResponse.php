@@ -13,7 +13,9 @@ class GeneratorResponse extends BaseResponse
 
     public function __construct()
     {
+        $this->css = new CssModel();
         $this->timestamp = new \DateTime();
+        $this->exception = null;
     }
 
     public function setCss(CssModel $css): void
