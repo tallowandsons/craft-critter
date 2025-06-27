@@ -36,7 +36,8 @@ class SettingsController extends Controller
         return $this->renderTemplate('critical-css-generator/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions()
+            'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions(),
+            'readOnly' => !Craft::$app->getConfig()->getGeneral()->allowAdminChanges,
         ]);
     }
 

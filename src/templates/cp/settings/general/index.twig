@@ -7,6 +7,9 @@
 {% set title = 'Critical CSS Generator' %}
 {% set pluginHandle = 'critical-css-generator' %}
 
+{# whether or not allowAdminChanges is on #}
+{% set readOnly = readOnly ?? false %}
+
 {% set tabs = {
     general: { label: 'General'|t(pluginHandle), url: '#general' },
     storage: { label: 'Storage'|t(pluginHandle), url: '#storage' },

@@ -18,19 +18,21 @@ class CssService extends Component
     public $useQueue = true;
     public $fallbackCss = "/* fallback */ body { background-color: red; }";
 
-    public function renderCss()
+    public function renderCss(): void
     {
-        $css = $this->getCssForRequest();
-        Craft::$app->getView()->registerCss($css, Critical::getInstance()->settings->styleTagOptions);
+        if ($this->isCssableRequest()) {
+            $css = $this->getCssForRequest();
+            Craft::$app->getView()->registerCss($css, Critical::getInstance()->settings->styleTagOptions);
+        }
     }
 
-    public function getCssForRequest(bool $generate = true)
+    public function getCssForRequest(bool $generate = true): ?string
     {
         $url = UrlFactory::createFromRequest(Craft::$app->getRequest());
         return $this->getCssForUrl($url, $generate);
     }
 
-    public function getCssForUrl(UrlModel $url, bool $generate = true)
+    public function getCssForUrl(UrlModel $url, bool $generate = true): ?string
     {
         $cssRequest = (new CssRequest())->setRequestUrl($url);
 
@@ -49,5 +51,41 @@ class CssService extends Component
         }
 
         return (new CssModel($this->fallbackCss))->getCss();
+    }
+
+    /**
+     * Determine if the current request is eligible for CSS generation.
+     */
+    public function isCssableRequest(): bool
+    {
+        $request = Craft::$app->getRequest();
+
+        // only generate Critical CSS for site requests that are GET requests
+        // and not console requests, preview requests, action requests, or non-HTML requests
+        // This is to prevent generating CSS for admin requests, API requests, assets requests, etc.
+        if (
+            !$request->getIsSiteRequest() ||
+            !$request->getIsGet() ||
+            $request->getIsConsoleRequest() ||
+            $request->getIsPreview() ||
+            $request->getIsActionRequest() ||
+            !$request->accepts('text/html')
+        ) {
+            return false;
+        }
+
+        // only generate Critical CSS if the site is live
+        if (!Craft::$app->getIsLive()) {
+            return false;
+        }
+
+        // only generate Critical CSS if the response is OK
+        // This is to prevent generating CSS for 404 or other error pages
+        $response = Craft::$app->getResponse();
+        if (($response && !$response->getIsOk())) {
+            return false;
+        }
+
+        return true;
     }
 }

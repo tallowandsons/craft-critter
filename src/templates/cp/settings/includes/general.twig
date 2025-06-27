@@ -1,1 +1,11 @@
-<p>general settings...</p>
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning %}
+
+{{ forms.lightswitchField({
+    label: "Auto Render Enabled"|t(pluginHandle),
+    instructions: "Enable or disable automatic rendering of critical CSS on site requests"|t(pluginHandle),
+    warning: config.autoRenderEnabled is defined ? configWarning('autoRenderEnabled'),
+    name: 'settings[autoRenderEnabled]',
+    on: settings.autoRenderEnabled,
+    disabled: readOnly,
+}) }}
