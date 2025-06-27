@@ -22,7 +22,7 @@ class CssService extends Component
     {
         if ($this->isCssableRequest()) {
             $css = $this->getCssForRequest();
-            Craft::$app->getView()->registerCss($css, Critical::getInstance()->settings->styleTagOptions);
+            Craft::$app->getView()->registerCss($css, $this->formatTagAttributes(Critical::getInstance()->settings->styleTagAttributes));
         }
     }
 
@@ -87,5 +87,19 @@ class CssService extends Component
         }
 
         return true;
+    }
+
+    /**
+     * Format styleTagAttributes for the style tag.
+     */
+    private function formatTagAttributes(array $attributes): array
+    {
+        $result = [];
+        foreach ($attributes as $attr) {
+            if (isset($attr['enabled']) && $attr['enabled'] && isset($attr['key']) && isset($attr['value'])) {
+                $result[$attr['key']] = $attr['value'];
+            }
+        }
+        return $result;
     }
 }

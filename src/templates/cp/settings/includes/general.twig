@@ -9,3 +9,35 @@
     on: settings.autoRenderEnabled,
     disabled: readOnly,
 }) }}
+
+{{ forms.editableTableField({
+    label: "Style Tag Attributes"|t(pluginHandle),
+    instructions:  "Define attributes to be added to the critical css style tag rendered by the plugin"|t(pluginHandle),
+    warning: (config.styleTagAttributes is defined ? configWarning('styleTagAttributes')),
+    name: 'settings[styleTagAttributes]',
+    cols: {
+        enabled: {
+            type: 'lightswitch',
+            value: true,
+            thin: true,
+        },
+        key: {
+            type: 'singleline',
+            heading: 'Key'|t(pluginHandle),
+            placeholder: "Enter a key"|t(pluginHandle),
+            code: true,
+        },
+        value: {
+            type: 'singleline',
+            heading: 'Value'|t(pluginHandle),
+            placeholder: "Enter a value"|t(pluginHandle),
+            code: true,
+        },
+    },
+    rows: settings.styleTagAttributes,
+    addRowLabel: "Add attribute"|t(pluginHandle),
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    disabled: readOnly,
+}) }}
