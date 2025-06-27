@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\services;
+namespace mijewe\craftcriticalcssgenerator\services;
 
 use Craft;
 use craft\models\Section_SiteSettings;
-use honchoagency\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\Critical;
 use yii\base\Component;
 
 /**

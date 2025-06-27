@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\exceptions;
+namespace mijewe\craftcriticalcssgenerator\exceptions;
 
 use yii\base\Exception;
 

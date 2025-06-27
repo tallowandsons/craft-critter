@@ -1,12 +1,12 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\console\controllers;
+namespace mijewe\craftcriticalcssgenerator\console\controllers;
 
 use Craft;
 use craft\console\Controller;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
-use honchoagency\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\factories\UrlFactory;
+use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
 use yii\console\ExitCode;
 
 /**

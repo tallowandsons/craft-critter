@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models;
+namespace mijewe\craftcriticalcssgenerator\models;
 
 use craft\base\Model;
-use honchoagency\craftcriticalcssgenerator\generators\DummyGenerator;
-use honchoagency\craftcriticalcssgenerator\storage\CraftCacheStorage;
+use mijewe\craftcriticalcssgenerator\generators\DummyGenerator;
+use mijewe\craftcriticalcssgenerator\storage\CraftCacheStorage;
 
 /**
  * Critical CSS Generator settings

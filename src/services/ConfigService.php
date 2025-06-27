@@ -1,11 +1,11 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\services;
+namespace mijewe\craftcriticalcssgenerator\services;
 
 use Craft;
 use craft\helpers\Json;
-use honchoagency\craftcriticalcssgenerator\models\SectionConfig;
-use honchoagency\craftcriticalcssgenerator\records\SectionConfigRecord;
+use mijewe\craftcriticalcssgenerator\models\SectionConfig;
+use mijewe\craftcriticalcssgenerator\records\SectionConfigRecord;
 use yii\base\Component;
 
 /**

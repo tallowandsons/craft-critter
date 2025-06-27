@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\jobs;
+namespace mijewe\craftcriticalcssgenerator\jobs;
 
 use craft\queue\BaseJob;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\models\CssRequest;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\models\CssRequest;
 
 /**
  * Generate Critical Css Job queue job

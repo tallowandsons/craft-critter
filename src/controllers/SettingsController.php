@@ -1,13 +1,13 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\controllers;
+namespace mijewe\craftcriticalcssgenerator\controllers;
 
 use Craft;
 use craft\helpers\Cp;
 use craft\web\Controller;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\helpers\GeneratorHelper;
-use honchoagency\craftcriticalcssgenerator\helpers\SettingsHelper;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
+use mijewe\craftcriticalcssgenerator\helpers\SettingsHelper;
 use yii\web\Response;
 
 /**

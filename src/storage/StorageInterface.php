@@ -1,9 +1,9 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\storage;
+namespace mijewe\craftcriticalcssgenerator\storage;
 
-use honchoagency\craftcriticalcssgenerator\models\CssModel;
-use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
+use mijewe\craftcriticalcssgenerator\models\CssModel;
+use mijewe\craftcriticalcssgenerator\models\StorageResponse;
 
 interface StorageInterface
 {

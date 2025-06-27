@@ -1,15 +1,15 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\drivers\apis;
+namespace mijewe\craftcriticalcssgenerator\drivers\apis;
 
 use Craft;
 use craft\base\Component;
 use craft\helpers\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-use honchoagency\craftcriticalcssgenerator\exceptions\ApiException;
-use honchoagency\craftcriticalcssgenerator\models\ApiError;
-use honchoagency\craftcriticalcssgenerator\models\ApiResponse;
+use mijewe\craftcriticalcssgenerator\exceptions\ApiException;
+use mijewe\craftcriticalcssgenerator\models\ApiError;
+use mijewe\craftcriticalcssgenerator\models\ApiResponse;
 
 class BaseRestApi extends Component
 {

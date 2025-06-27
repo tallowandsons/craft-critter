@@ -1,14 +1,14 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\generators;
+namespace mijewe\craftcriticalcssgenerator\generators;
 
 use Craft;
 use craft\helpers\Json;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
-use honchoagency\craftcriticalcssgenerator\models\CssModel;
-use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
+use mijewe\craftcriticalcssgenerator\models\CssModel;
+use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {

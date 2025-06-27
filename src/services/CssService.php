@@ -1,13 +1,13 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\services;
+namespace mijewe\craftcriticalcssgenerator\services;
 
 use Craft;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\factories\UrlFactory;
-use honchoagency\craftcriticalcssgenerator\models\CssModel;
-use honchoagency\craftcriticalcssgenerator\models\CssRequest;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\factories\UrlFactory;
+use mijewe\craftcriticalcssgenerator\models\CssModel;
+use mijewe\craftcriticalcssgenerator\models\CssRequest;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 use yii\base\Component;
 
 /**

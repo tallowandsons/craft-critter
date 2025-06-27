@@ -23,7 +23,7 @@ Open your terminal and run the following commands:
 cd /path/to/my-project.test
 
 # tell Composer to load the plugin
-composer require honchoagency/craft-critical-css-generator
+composer require mijewe/craft-critical-css-generator
 
 # tell Craft to install the plugin
 ./craft plugin/install critical-css-generator

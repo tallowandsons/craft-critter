@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\storage;
+namespace mijewe\craftcriticalcssgenerator\storage;
 
 use craft\base\Model;
-use honchoagency\craftcriticalcssgenerator\models\CssModel;
-use honchoagency\craftcriticalcssgenerator\models\StorageResponse;
+use mijewe\craftcriticalcssgenerator\models\CssModel;
+use mijewe\craftcriticalcssgenerator\models\StorageResponse;
 
 class BaseStorage extends Model implements StorageInterface
 {

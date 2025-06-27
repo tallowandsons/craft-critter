@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models\api;
+namespace mijewe\craftcriticalcssgenerator\models\api;
 
 use Craft;
 use craft\base\Model;

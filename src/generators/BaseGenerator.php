@@ -1,11 +1,11 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\generators;
+namespace mijewe\craftcriticalcssgenerator\generators;
 
 use craft\base\Component;
-use honchoagency\craftcriticalcssgenerator\generators\GeneratorInterface;
-use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
+use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 
 class BaseGenerator extends Component implements GeneratorInterface
 {

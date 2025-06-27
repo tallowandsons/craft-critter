@@ -1,43 +1,43 @@
 {
-  "name": "honchoagency/craft-critical-css-generator",
-  "type": "craft-plugin",
-  "license": "proprietary",
-  "support": {
-    "email": "dev@honcho.agency"
-  },
-  "require": {
-    "php": ">=8.2",
-    "craftcms/cms": "^5.5.0"
-  },
-  "require-dev": {
-    "craftcms/ecs": "dev-main",
-    "craftcms/phpstan": "dev-main"
-  },
-  "autoload": {
-    "psr-4": {
-      "honchoagency\\craftcriticalcssgenerator\\": "src/"
-    }
-  },
-  "extra": {
-    "handle": "critical-css-generator",
-    "name": "Critical CSS Generator",
-    "developer": "honchoagency",
-    "documentationUrl": "",
-    "class": "honchoagency\\craftcriticalcssgenerator\\Critical"
-  },
-  "scripts": {
-    "check-cs": "ecs check --ansi",
-    "fix-cs": "ecs check --ansi --fix",
-    "phpstan": "phpstan --memory-limit=1G"
-  },
-  "config": {
-    "sort-packages": true,
-    "platform": {
-      "php": "8.2"
+    "name": "mijewe/craft-critical-css-generator",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "support": {
+        "email": "dev@honcho.agency"
     },
-    "allow-plugins": {
-      "yiisoft/yii2-composer": true,
-      "craftcms/plugin-installer": true
+    "require": {
+        "php": ">=8.2",
+        "craftcms/cms": "^5.5.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "mijewe\\craftcriticalcssgenerator\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "critical-css-generator",
+        "name": "Critical CSS Generator",
+        "developer": "mijewe",
+        "documentationUrl": "",
+        "class": "mijewe\\craftcriticalcssgenerator\\Critical"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
     }
-  }
 }

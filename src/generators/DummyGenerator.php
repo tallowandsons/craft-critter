@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\generators;
+namespace mijewe\craftcriticalcssgenerator\generators;
 
-use honchoagency\craftcriticalcssgenerator\models\CssModel;
-use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\models\CssModel;
+use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 
 class DummyGenerator extends BaseGenerator
 {

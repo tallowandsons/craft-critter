@@ -1,9 +1,9 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\variables;
+namespace mijewe\craftcriticalcssgenerator\variables;
 
 use Craft;
-use honchoagency\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\Critical;
 
 class CriticalVariable
 {

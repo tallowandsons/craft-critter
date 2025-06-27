@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models;
+namespace mijewe\craftcriticalcssgenerator\models;
 
 use Craft;
 use craft\base\Model;
-use honchoagency\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\Critical;
 
 /**
  * Storage Request model

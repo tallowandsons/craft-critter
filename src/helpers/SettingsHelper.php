@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\helpers;
+namespace mijewe\craftcriticalcssgenerator\helpers;
 
 use craft\helpers\StringHelper;
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\models\Settings;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\models\Settings;
 
 class SettingsHelper
 {

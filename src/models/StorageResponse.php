@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models;
+namespace mijewe\craftcriticalcssgenerator\models;
 
 /**
  * Storage Response model

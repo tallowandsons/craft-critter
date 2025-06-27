@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models;
+namespace mijewe\craftcriticalcssgenerator\models;
 
 use Craft;
 use craft\base\Element;
@@ -9,7 +9,7 @@ use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\models\Section;
-use honchoagency\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\Critical;
 
 /**
  * Url Model model

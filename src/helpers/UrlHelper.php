@@ -1,9 +1,9 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\helpers;
+namespace mijewe\craftcriticalcssgenerator\helpers;
 
 use craft\web\Request;
-use honchoagency\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\Critical;
 
 class UrlHelper
 {

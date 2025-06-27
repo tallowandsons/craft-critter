@@ -1,10 +1,10 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\helpers;
+namespace mijewe\craftcriticalcssgenerator\helpers;
 
-use honchoagency\craftcriticalcssgenerator\Critical;
-use honchoagency\craftcriticalcssgenerator\generators\CriticalCssCliGenerator;
-use honchoagency\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
+use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\craftcriticalcssgenerator\generators\CriticalCssCliGenerator;
+use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
 
 class GeneratorHelper
 {

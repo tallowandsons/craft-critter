@@ -1,12 +1,12 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\models;
+namespace mijewe\craftcriticalcssgenerator\models;
 
 use Craft;
 use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\Json;
-use honchoagency\craftcriticalcssgenerator\records\SectionConfigRecord;
+use mijewe\craftcriticalcssgenerator\records\SectionConfigRecord;
 
 /**
  * Section Config model

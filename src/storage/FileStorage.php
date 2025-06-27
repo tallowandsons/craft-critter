@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\storage;
+namespace mijewe\craftcriticalcssgenerator\storage;
 
 use Craft;
 use craft\helpers\App;

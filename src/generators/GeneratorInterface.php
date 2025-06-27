@@ -1,9 +1,9 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\generators;
+namespace mijewe\craftcriticalcssgenerator\generators;
 
-use honchoagency\craftcriticalcssgenerator\models\GeneratorResponse;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 
 interface GeneratorInterface
 {

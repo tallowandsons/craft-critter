@@ -1,13 +1,13 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\factories;
+namespace mijewe\craftcriticalcssgenerator\factories;
 
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
-use honchoagency\craftcriticalcssgenerator\helpers\UrlHelper as CriticalUrlHelper;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\helpers\UrlHelper as CriticalUrlHelper;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
 
 class UrlFactory
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator;
+namespace mijewe\craftcriticalcssgenerator;
 
 use Craft;
 use craft\base\Model;
@@ -10,15 +10,15 @@ use craft\helpers\UrlHelper;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
-use honchoagency\craftcriticalcssgenerator\models\Settings;
-use honchoagency\craftcriticalcssgenerator\services\CacheService;
-use honchoagency\craftcriticalcssgenerator\services\ConfigService;
-use honchoagency\craftcriticalcssgenerator\services\CssService;
-use honchoagency\craftcriticalcssgenerator\services\GeneratorService;
-use honchoagency\craftcriticalcssgenerator\services\SettingsService;
-use honchoagency\craftcriticalcssgenerator\services\StorageService;
-use honchoagency\craftcriticalcssgenerator\services\UriRecordService;
-use honchoagency\craftcriticalcssgenerator\variables\CriticalVariable;
+use mijewe\craftcriticalcssgenerator\models\Settings;
+use mijewe\craftcriticalcssgenerator\services\CacheService;
+use mijewe\craftcriticalcssgenerator\services\ConfigService;
+use mijewe\craftcriticalcssgenerator\services\CssService;
+use mijewe\craftcriticalcssgenerator\services\GeneratorService;
+use mijewe\craftcriticalcssgenerator\services\SettingsService;
+use mijewe\craftcriticalcssgenerator\services\StorageService;
+use mijewe\craftcriticalcssgenerator\services\UriRecordService;
+use mijewe\craftcriticalcssgenerator\variables\CriticalVariable;
 use yii\base\Event;
 use yii\base\View as BaseView;
 
@@ -27,8 +27,8 @@ use yii\base\View as BaseView;
  *
  * @method static Critical getInstance()
  * @method Settings getSettings()
- * @author honchoagency <dev@honcho.agency>
- * @copyright honchoagency
+ * @author mijewe <dev@honcho.agency>
+ * @copyright mijewe
  * @license https://craftcms.github.io/license/ Craft License
  * @property-read StorageService $storage
  * @property-read GeneratorService $generator

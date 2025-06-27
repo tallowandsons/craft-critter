@@ -1,11 +1,11 @@
 <?php
 
-namespace honchoagency\craftcriticalcssgenerator\services;
+namespace mijewe\craftcriticalcssgenerator\services;
 
 use craft\helpers\Json;
 use DateTime;
-use honchoagency\craftcriticalcssgenerator\models\UrlModel;
-use honchoagency\craftcriticalcssgenerator\records\UriRecord;
+use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\craftcriticalcssgenerator\records\UriRecord;
 use yii\base\Component;
 
 /**
