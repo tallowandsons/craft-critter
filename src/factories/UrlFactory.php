@@ -24,7 +24,7 @@ class UrlFactory
         $uri = $request->getFullUri();
 
         // get query string
-        $queryParams = CriticalUrlHelper::getAllowedQueryParamsFromRequest($request);
+        $queryParams = CriticalUrlHelper::getUniqueQueryParamsFromRequest($request);
 
         $urlModel = new UrlModel();
         $urlModel->siteId = $site->id;

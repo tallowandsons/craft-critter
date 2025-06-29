@@ -41,3 +41,29 @@
     allowReorder: true,
     disabled: readOnly,
 }) }}
+
+{{ forms.editableTableField({
+    label: "Unique Query Parameters"|t(pluginHandle),
+    instructions:  "Requests with these query parameters will be treated as unique pages, so will have separate critical CSS"|t(pluginHandle),
+    warning: (config.uniqueQueryParams is defined ? configWarning('uniqueQueryParams')),
+    name: 'settings[uniqueQueryParams]',
+    cols: {
+        enabled: {
+            type: 'lightswitch',
+            value: true,
+            thin: true,
+        },
+        param: {
+            type: 'singleline',
+            heading: 'Parameter'|t(pluginHandle),
+            placeholder: "Enter a parameter"|t(pluginHandle),
+            code: true,
+        },
+    },
+    rows: settings.uniqueQueryParams,
+    addRowLabel: "Add parameter"|t(pluginHandle),
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    disabled: readOnly,
+}) }}

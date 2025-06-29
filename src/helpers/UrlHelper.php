@@ -8,19 +8,22 @@ use mijewe\craftcriticalcssgenerator\Critical;
 class UrlHelper
 {
 
-    static function getAllowedQueryParamsFromRequest(Request $request): array
+    static function getUniqueQueryParamsFromRequest(Request $request): array
     {
-        $allowedQueryStringParams = Critical::getInstance()->settings->allowedQueryStringParams ?? [];
+        $uniqueQueryParamsSettings = Critical::getInstance()->settings->uniqueQueryParams ?? [];
 
-        $queryParams = $request->getQueryParams();
-
-        // remove any query string params that are not allowed
-        foreach ($queryParams as $key => $value) {
-            if (!in_array($key, $allowedQueryStringParams)) {
-                unset($queryParams[$key]);
+        // Extract enabled parameter names
+        $enabledParams = [];
+        foreach ($uniqueQueryParamsSettings as $setting) {
+            $isEnabled = !empty($setting['enabled']) && filter_var($setting['enabled'], FILTER_VALIDATE_BOOLEAN);
+            if ($isEnabled && !empty($setting['param'])) {
+                $enabledParams[] = $setting['param'];
             }
         }
 
-        return $queryParams;
+        $queryParams = $request->getQueryParams();
+
+        // Keep only allowed query string params
+        return array_intersect_key($queryParams, array_flip($enabledParams));
     }
 }

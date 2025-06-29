@@ -39,7 +39,7 @@ class Settings extends Model
     public ?string $cacheBehaviour = null;
 
     // which query string parameters are to be treated as unique urls
-    public array $allowedQueryStringParams = [];
+    public array $uniqueQueryParams = [];
 
     public ?string $generatorApiKey = null;
 
