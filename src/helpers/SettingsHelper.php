@@ -25,4 +25,25 @@ class SettingsHelper
             ]
         ];
     }
+
+    /**
+     * Returns an array of all available cache behaviours as <select> options.
+     */
+    static function getCacheBehavioursAsSelectOptions(): array
+    {
+        return [
+            [
+                'label' => Critical::translate('Clear URL'),
+                'value' => Settings::CACHE_BEHAVIOUR_CLEAR_URL,
+            ],
+            [
+                'label' => Critical::translate('Expire URL'),
+                'value' => Settings::CACHE_BEHAVIOUR_EXPIRE_URL,
+            ],
+            [
+                'label' => Critical::translate('Refresh URL'),
+                'value' => Settings::CACHE_BEHAVIOUR_REFRESH_URL,
+            ],
+        ];
+    }
 }

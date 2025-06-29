@@ -33,11 +33,38 @@ class SettingsController extends Controller
      */
     public function actionEdit(): Response
     {
+
+        $tabs = [
+            'general' => [
+                'label' => Critical::translate('General'),
+                'url' => '#general',
+            ],
+            'storage' => [
+                'label' => Critical::translate('Storage'),
+                'url' => '#storage',
+            ],
+            'generator' => [
+                'label' => Critical::translate('Generator'),
+                'url' => '#generator',
+            ],
+        ];
+
+        $blitzIsEnabled = Craft::$app->plugins->getPlugin('blitz') !== null;
+        if ($blitzIsEnabled) {
+            $tabs['cache'] = [
+                'label' => Critical::translate('Cache'),
+                'url' => '#cache',
+            ];
+        }
+
         return $this->renderTemplate('critical-css-generator/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions(),
             'readOnly' => !Craft::$app->getConfig()->getGeneral()->allowAdminChanges,
+            'tabs' => $tabs,
+            'blitzIsEnabled' => $blitzIsEnabled,
+            'cacheBehaviourOptions' => SettingsHelper::getCacheBehavioursAsSelectOptions(),
         ]);
     }
 

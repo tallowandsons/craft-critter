@@ -1,0 +1,6 @@
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning %}
+
+{% if blitzIsEnabled %}
+    {% include 'critical-css-generator/cp/settings/includes/cache/blitz.twig' ignore missing %}
+{% endif %}

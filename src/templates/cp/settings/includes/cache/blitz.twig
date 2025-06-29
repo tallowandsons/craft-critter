@@ -1,0 +1,15 @@
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning %}
+
+<h2>Blitz Cache</h2>
+
+{{ forms.selectField({
+    label: "Cache Behaviour"|t(pluginHandle),
+    instructions: "Since critical CSS is generated in a queue, Blitz may have cached pages with outdated or no critical CSS. Here you can configure how cached pages should be handled after critical CSS is generated."|t(pluginHandle),
+    warning: (config.cacheBehaviour is defined ? configWarning('cacheBehaviour')),
+    name: 'settings[cacheBehaviour]',
+    options: cacheBehaviourOptions,
+    value: settings.cacheBehaviour,
+    toggle: true,
+    tooltip: ""
+}) }}
