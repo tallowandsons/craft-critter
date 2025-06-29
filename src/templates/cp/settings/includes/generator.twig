@@ -1,5 +1,5 @@
 {% import '_includes/forms' as forms %}
-{% from 'critical-css-generator/macros' import configWarning %}
+{% from 'critical-css-generator/macros' import configWarning, configGroupWarning %}
 
 {{ forms.selectField({
     label: "Generator"|t(pluginHandle),
@@ -10,3 +10,14 @@
     value: settings.generatorType,
     toggle: true,
 }) }}
+
+{% for generator in generators %}
+    {% set generatorClassName = className(generator) %}
+    {% set isCurrent = (generatorClassName == settings.generatorType) %}
+
+    <div id="{{ generatorClassName|id }}" {{ not isCurrent ? 'class="hidden"' }}>
+        {% namespace 'generatorSettings[' ~ generatorClassName ~ ']' %}
+            {{ generator.getSettingsHtml()|raw }}
+        {% endnamespace %}
+    </div>
+{% endfor %}

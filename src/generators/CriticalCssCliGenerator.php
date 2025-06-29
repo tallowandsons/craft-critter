@@ -11,6 +11,8 @@ use Symfony\Component\Process\Process;
 class CriticalCssCliGenerator extends BaseGenerator
 {
 
+    public string $handle = 'critical-css-cli';
+
     public int $timeout = 60;
 
     /**

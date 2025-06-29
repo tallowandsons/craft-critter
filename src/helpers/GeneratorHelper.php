@@ -11,9 +11,29 @@ class GeneratorHelper
 {
 
     /**
+     * Returns an array of all available generators.
+     * This includes the default generators and any custom generators
+     * that are registered in the config file.
+     * Note: this returns an array of instances. If you want the class names,
+     * use `getGeneratorTypes()` instead.
+     */
+    static function getGeneratorInstances(): array
+    {
+        $generators = [];
+        foreach (self::getGeneratorTypes() as $generatorType) {
+            if (self::isValidGenerator($generatorType)) {
+                $generators[] = new $generatorType();
+            }
+        }
+        return $generators;
+    }
+
+    /**
      * Returns an array of all available generator types.
      * This includes the default generators and any custom generators
      * that are registered in the config file.
+     * Note: this returns an array of classes.
+     * If you want the instances, use `getGeneratorInstances()` instead.
      */
     static function getGeneratorTypes(): array
     {

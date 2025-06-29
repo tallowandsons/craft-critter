@@ -1,0 +1,19 @@
+{% import '_includes/forms' as forms %}
+{% from 'critical-css-generator/macros' import configWarning, configGroupWarning %}
+
+{# whether or not allowAdminChanges is on #}
+{% set readOnly = readOnly ?? false %}
+
+{{ forms.autosuggestField({
+    label: "API Key"|t(craft.critical.pluginHandle),
+    instructions: "The API key for your criticalcss.com account."|t(craft.critical.pluginHandle),
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'apiKey',
+    value: settings.generatorSettings.apiKey ?? null,
+    required: true,
+    disabled: readOnly,
+    code: true
+}) }}
+
+{{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}

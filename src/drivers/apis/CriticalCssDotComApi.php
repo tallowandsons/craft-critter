@@ -12,31 +12,29 @@ use mijewe\craftcriticalcssgenerator\models\UrlModel;
 class CriticalCssDotComApi extends BaseRestApi
 {
 
+    // the base URI for the criticalcss.com API
     const API_BASE_URI = 'https://criticalcss.com/api/premium/';
 
+    // the API key for the criticalcss.com account
     private string $apiKey;
 
     // constructor
-    public function __construct()
+    public function __construct(?string $apiKey = null)
     {
-
-        $this->setApiKeyFromConfig();
-
         $this->setBaseUri(self::API_BASE_URI);
 
-        $this->addHeader('Authorization', 'JWT ' . $this->apiKey);
+        if ($apiKey) {
+            $this->setApiKey($apiKey);
+        }
 
         parent::__construct();
     }
 
-    public function setApiKey(string $apiKey)
+    public function setApiKey(string $apiKey): self
     {
         $this->apiKey = $apiKey;
-    }
-
-    public function setApiKeyFromConfig()
-    {
-        $this->setApiKey(App::parseEnv(Critical::getInstance()->settings->generatorApiKey));
+        $this->addHeader('Authorization', 'JWT ' . $this->apiKey);
+        return $this;
     }
 
     public function generate(UrlModel $urlModel): ?CriticalCssDotComGenerateResponse

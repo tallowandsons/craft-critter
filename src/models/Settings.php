@@ -41,7 +41,8 @@ class Settings extends Model
     // which query string parameters are to be treated as unique urls
     public array $uniqueQueryParams = [];
 
-    public ?string $generatorApiKey = null;
+    // the settings for the generator
+    public array $generatorSettings = [];
 
     public ?string $baseUrlOverride = null;
 

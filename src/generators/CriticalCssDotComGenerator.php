@@ -3,6 +3,7 @@
 namespace mijewe\craftcriticalcssgenerator\generators;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\Json;
 use mijewe\craftcriticalcssgenerator\Critical;
 use mijewe\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
@@ -13,6 +14,8 @@ use mijewe\craftcriticalcssgenerator\models\UrlModel;
 class CriticalCssDotComGenerator extends BaseGenerator
 {
 
+    public string $handle = 'criticalcssdotcom';
+
     // the maximum number of times to poll the API for the results
     // of a generate job before giving up.
     public int $maxAttempts = 10;
@@ -20,11 +23,22 @@ class CriticalCssDotComGenerator extends BaseGenerator
     // the number of seconds to wait between each poll attempt
     public int $attemptDelay = 2;
 
+    // the API key for the criticalcss.com account
+    public ?string $apiKey;
+
     public CriticalCssDotComApi $api;
 
     public function __construct()
     {
-        $this->api = new CriticalCssDotComApi();
+        $generatorSettings = Critical::getInstance()->settings->generatorSettings ?? [];
+        $apiKey = $generatorSettings['apiKey'] ?? null;
+        $this->apiKey = $apiKey ? App::parseEnv($apiKey) : null;
+
+        if ($this->apiKey) {
+            $this->api = new CriticalCssDotComApi($this->apiKey);
+        }
+
+        parent::__construct();
     }
 
     /**
@@ -99,6 +113,20 @@ class CriticalCssDotComGenerator extends BaseGenerator
         }
 
         throw new \Exception('Failed to get critical css from criticalcss.com API');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSettings(): array
+    {
+        return [
+            'apiKey' => $this->apiKey,
+            'maxAttempts' => $this->maxAttempts,
+            'attemptDelay' => $this->attemptDelay,
+            'settings' => Critical::getInstance()->getSettings(),
+            'config' => Craft::$app->getConfig()->getConfigFromFile('critical-css-generator'),
+        ];
     }
 
     private function getResultsById(string $id)

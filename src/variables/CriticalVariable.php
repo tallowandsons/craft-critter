@@ -12,4 +12,12 @@ class CriticalVariable
     {
         Critical::getInstance()->css->renderCss();
     }
+
+    /**
+     * Get the plugin handle.
+     */
+    public function pluginHandle()
+    {
+        return Critical::getPluginHandle();
+    }
 }

@@ -60,6 +60,7 @@ class SettingsController extends Controller
         return $this->renderTemplate('critical-css-generator/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
+            'generators' => GeneratorHelper::getGeneratorInstances(),
             'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions(),
             'readOnly' => !Craft::$app->getConfig()->getGeneral()->allowAdminChanges,
             'tabs' => $tabs,
@@ -75,12 +76,16 @@ class SettingsController extends Controller
     {
         $this->requirePostRequest();
 
+        $request = Craft::$app->getRequest();
+
         // get the settings from the POST
-        $postedSettings = Craft::$app->getRequest()->getBodyParam('settings', []);
+        $postedSettings = $request->getBodyParam('settings', []);
+        $generatorSettings = $request->getBodyParam('generatorSettings', []);
 
         // apply them to the settings model
         $settings = $this->getSettings();
         $settings->setAttributes($postedSettings, false);
+        $settings->generatorSettings = $generatorSettings[$settings->generatorType] ?? [];
 
         // save the settings into the project config
         Craft::$app->getPlugins()->savePluginSettings(Critical::getInstance(), $settings->getAttributes());
