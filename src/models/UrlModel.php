@@ -7,6 +7,7 @@ use craft\base\Element;
 use craft\base\ElementInterface;
 use craft\base\Model;
 use craft\elements\Entry;
+use craft\helpers\App;
 use craft\helpers\UrlHelper;
 use craft\models\Section;
 use mijewe\craftcriticalcssgenerator\Critical;
@@ -29,7 +30,7 @@ class UrlModel extends Model
     public function getUrl(): string
     {
 
-        $baseUrlOverride = Critical::getInstance()->settings->baseUrlOverride ?? null;
+        $baseUrlOverride = App::parseEnv(Critical::getInstance()->settings->baseUrlOverride ?? null);
         if ($baseUrlOverride) {
             $baseUrlOverride = rtrim($baseUrlOverride, '/');
         }

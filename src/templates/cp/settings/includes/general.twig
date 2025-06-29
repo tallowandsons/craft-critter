@@ -67,3 +67,16 @@
     allowReorder: true,
     disabled: readOnly,
 }) }}
+
+{{ forms.autosuggestField({
+    label: "Base URL Override"|t(craft.critical.pluginHandle),
+    instructions: "An optional replacement base URL for generating critical CSS. This can be useful for testing or staging environments."|t(craft.critical.pluginHandle),
+    warning: config.baseUrlOverride is defined ? configWarning('baseUrlOverride') : null,
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'settings[baseUrlOverride]',
+    value: settings.baseUrlOverride ?? null,
+    required: false,
+    disabled: readOnly,
+    code: true
+}) }}
