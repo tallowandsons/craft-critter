@@ -2,7 +2,6 @@
 
 namespace mijewe\craftcriticalcssgenerator\helpers;
 
-use craft\helpers\StringHelper;
 use mijewe\craftcriticalcssgenerator\Critical;
 use mijewe\craftcriticalcssgenerator\models\Settings;
 

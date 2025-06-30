@@ -80,3 +80,13 @@
     disabled: readOnly,
     code: true
 }) }}
+
+{{ forms.selectField({
+    label: "Default Mode"|t(pluginHandle),
+    instructions: "The default mode to use when generating critical CSS."|t(pluginHandle),
+    warning: (config.defaultMode is defined ? configWarning('defaultMode')),
+    name: 'settings[defaultMode]',
+    options: defaultModeOptions,
+    value: settings.defaultMode,
+    disabled: readOnly,
+}) }}

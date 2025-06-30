@@ -62,6 +62,7 @@ class SettingsController extends Controller
             'tabs' => $tabs,
             'blitzIsEnabled' => $blitzIsEnabled,
             'cacheBehaviourOptions' => SettingsHelper::getCacheBehavioursAsSelectOptions(),
+            'defaultModeOptions' => SettingsHelper::getModesAsSelectOptions(),
         ]);
     }
 
