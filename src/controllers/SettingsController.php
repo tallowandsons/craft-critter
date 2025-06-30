@@ -39,10 +39,6 @@ class SettingsController extends Controller
                 'label' => Critical::translate('General'),
                 'url' => '#general',
             ],
-            'storage' => [
-                'label' => Critical::translate('Storage'),
-                'url' => '#storage',
-            ],
             'generator' => [
                 'label' => Critical::translate('Generator'),
                 'url' => '#generator',
