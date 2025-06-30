@@ -17,18 +17,24 @@ class SettingsService extends Component
      * Get all sections that can be configured by the plugin for a given site.
      * (i.e. sections that have urls)
      */
-    public function getConfigurableSections(int $siteId): array
+    public function getConfigurableSections(?int $siteId = null): array
     {
         $sections = Craft::$app->getEntries()->getAllSections() ?? [];
 
-        // filter out sections that do not have urls
         $sections = array_filter($sections, function ($section) use ($siteId) {
+            // If no siteId is provided, check if any siteSettings have URLs enabled
+            if ($siteId === null) {
+                foreach ($section->siteSettings as $settings) {
+                    if ($settings->hasUrls) {
+                        return true;
+                    }
+                }
+                return false;
+            }
 
             /** @var ?Section_SiteSettings */
             $siteSettings = $section->siteSettings[$siteId] ?? null;
-            if ($siteSettings && $siteSettings->hasUrls) {
-                return true;
-            }
+            return $siteSettings && $siteSettings->hasUrls;
         });
 
         return $sections;

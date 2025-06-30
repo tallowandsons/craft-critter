@@ -103,7 +103,7 @@ class SettingsController extends Controller
         return $this->renderTemplate('critical-css-generator/cp/settings/sections', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(Cp::requestedSite()->id),
+            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
             'modeOptions' => SettingsHelper::getModesAsSelectOptions(),
         ]);
     }
