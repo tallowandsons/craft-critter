@@ -5,6 +5,7 @@ namespace mijewe\craftcriticalcssgenerator\services;
 use Craft;
 use mijewe\craftcriticalcssgenerator\Critical;
 use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
+use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
 use mijewe\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
 use mijewe\craftcriticalcssgenerator\models\CssRequest;
 use mijewe\craftcriticalcssgenerator\models\UrlModel;
@@ -22,6 +23,12 @@ class GeneratorService extends Component
     public function __construct()
     {
         $generatorClass = Critical::getInstance()->settings->generatorType;
+
+        // Validate the generator class using the GeneratorHelper
+        if (!GeneratorHelper::isValidGenerator($generatorClass)) {
+            throw new \InvalidArgumentException("Invalid generator class: {$generatorClass}");
+        }
+
         $this->generator = new $generatorClass();
     }
 
