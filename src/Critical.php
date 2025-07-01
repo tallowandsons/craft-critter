@@ -19,6 +19,7 @@ use mijewe\craftcriticalcssgenerator\services\SettingsService;
 use mijewe\craftcriticalcssgenerator\services\StorageService;
 use mijewe\craftcriticalcssgenerator\services\RequestRecordService;
 use mijewe\craftcriticalcssgenerator\variables\CriticalVariable;
+use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
 use yii\base\Event;
 use yii\base\View as BaseView;
 
@@ -97,6 +98,14 @@ class Critical extends Plugin
     static function getPluginUrlSegment(): string
     {
         return self::PLUGIN_HANDLE;
+    }
+
+    /**
+     * Registers a custom generator class
+     */
+    public static function registerGenerator(string $generatorClass): void
+    {
+        GeneratorHelper::registerGenerator($generatorClass);
     }
 
     protected function createSettingsModel(): ?Model
