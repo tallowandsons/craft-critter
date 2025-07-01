@@ -187,7 +187,7 @@ class Critical extends Plugin
             'url' => $this->cpUrl('sections'),
         ];
 
-        if (Craft::$app->getUser()->getIsAdmin()) {
+        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
             $nav['subnav']['settings'] = [
                 'label' => $this->translate('Settings'),
                 'url' => $this->cpUrl('settings/general'),

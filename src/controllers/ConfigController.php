@@ -17,16 +17,6 @@ class ConfigController extends Controller
     protected array|int|bool $allowAnonymous = self::ALLOW_ANONYMOUS_NEVER;
 
     /**
-     * @inerhitdoc
-     */
-    public function beforeAction($action): bool
-    {
-        $this->requireAdmin();
-
-        return parent::beforeAction($action);
-    }
-
-    /**
      * critical-css-generator/settings/sections/edit action
      * loads the 'edit sections config' page.
      */
