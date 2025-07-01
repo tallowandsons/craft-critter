@@ -164,9 +164,10 @@ class Critical extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules = array_merge(
                     [
+                        'critical-css-generator' => 'critical-css-generator/config/sections-edit',
                         'critical-css-generator/settings/general' => 'critical-css-generator/settings/edit',
                         'critical-css-generator/settings/sections' => 'critical-css-generator/settings/sections-edit',
-                        'critical-css-generator/config/sections' => 'critical-css-generator/config/sections-edit',
+                        'critical-css-generator/sections' => 'critical-css-generator/config/sections-edit',
                     ],
                     $event->rules
                 );
@@ -181,12 +182,9 @@ class Critical extends Plugin
     {
         $nav = parent::getCpNavItem();
 
-        $nav['label'] = $this->getPluginName();
-        $nav['url'] = $this->cpUrl('config/sections');
-
         $nav['subnav']['sections'] = [
             'label' => $this->translate('Sections'),
-            'url' => $this->cpUrl('config/sections'),
+            'url' => $this->cpUrl('sections'),
         ];
 
         if (Craft::$app->getUser()->getIsAdmin()) {
