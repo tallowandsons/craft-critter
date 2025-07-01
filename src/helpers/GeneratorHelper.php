@@ -97,11 +97,19 @@ class GeneratorHelper
     private static function _registerGenerators(): void
     {
         // Register default generators
-        self::$_generators = [
+        $defaultGenerators = [
             CriticalCssDotComGenerator::class,
             CriticalCssCliGenerator::class,
         ];
 
+        // Merge default generators with existing ones
+        if (!isset(self::$_generators)) {
+            self::$_generators = [];
+        }
+
+        foreach ($defaultGenerators as $generator) {
+            self::registerGenerator($generator);
+        }
         // Add whatever generator is currently selected to the list of generator types,
         // as it may not be in the list above if the config file is
         // set up with a custom generator.
