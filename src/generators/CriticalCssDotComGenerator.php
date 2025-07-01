@@ -79,7 +79,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 throw new \Exception('Failed to generate critical css from criticalcss.com API');
             }
 
-            Critical::getInstance()->uriRecords->setData($urlModel, ['resultId' => $resultId]);
+            Critical::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
         }
 
         $attemptCount = 0;
@@ -136,7 +136,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
     private function getResultId(UrlModel $url)
     {
-        $record = Critical::getInstance()->uriRecords->getRecordByUrl($url);
+        $record = Critical::getInstance()->requestRecords->getRecordByUrl($url);
         if ($record) {
             $data = Json::decode($record->data);
             return $data['resultId'] ?? null;

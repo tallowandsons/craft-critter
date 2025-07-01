@@ -8,7 +8,7 @@ use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
 use mijewe\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
 use mijewe\craftcriticalcssgenerator\models\CssRequest;
 use mijewe\craftcriticalcssgenerator\models\UrlModel;
-use mijewe\craftcriticalcssgenerator\records\UriRecord;
+use mijewe\craftcriticalcssgenerator\records\RequestRecord;
 use yii\base\Component;
 
 /**
@@ -47,7 +47,7 @@ class GeneratorService extends Component
         $url = $cssRequest->getUrl();
 
         // set the uri record status to 'generating'
-        Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_GENERATING);
+        Critical::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_GENERATING);
 
         // generate the critical css
         $response = $this->generator->generate($url);
@@ -55,7 +55,7 @@ class GeneratorService extends Component
         if ($response->isSuccess()) {
 
             // update URI record
-            Critical::getInstance()->uriRecords->createOrUpdateRecord($url, UriRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
+            Critical::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
 
             // store the css
             if ($storeResult) {
@@ -67,7 +67,7 @@ class GeneratorService extends Component
                 Critical::getInstance()->cache->resolveCache($cssRequest);
             }
         } else {
-            Critical::getInstance()->uriRecords->setStatus($url, UriRecord::STATUS_ERROR);
+            Critical::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_ERROR);
 
             // throw an exception if the response has one.
             // this will fail the queue job and report the error.
@@ -94,13 +94,13 @@ class GeneratorService extends Component
         ]);
 
         if ($queueJobId = Craft::$app->queue->push($job)) {
-            Critical::getInstance()->uriRecords->createOrUpdateRecord($url, UriRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
+            Critical::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
         }
     }
 
     private function isInQueue(UrlModel $url): bool
     {
-        $uriRecord = Critical::getInstance()->uriRecords->getRecordByUrl($url);
+        $uriRecord = Critical::getInstance()->requestRecords->getRecordByUrl($url);
 
         if ($uriRecord === null) {
             return false;

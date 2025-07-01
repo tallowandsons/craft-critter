@@ -17,7 +17,7 @@ use mijewe\craftcriticalcssgenerator\services\CssService;
 use mijewe\craftcriticalcssgenerator\services\GeneratorService;
 use mijewe\craftcriticalcssgenerator\services\SettingsService;
 use mijewe\craftcriticalcssgenerator\services\StorageService;
-use mijewe\craftcriticalcssgenerator\services\UriRecordService;
+use mijewe\craftcriticalcssgenerator\services\RequestRecordService;
 use mijewe\craftcriticalcssgenerator\variables\CriticalVariable;
 use yii\base\Event;
 use yii\base\View as BaseView;
@@ -34,7 +34,7 @@ use yii\base\View as BaseView;
  * @property-read GeneratorService $generator
  * @property-read CssService $css
  * @property-read CacheService $cacheService
- * @property-read UriRecordService $uriRecords
+ * @property-read RequestRecordService $requestRecords
  * @property-read SettingsService $settingsService
  * @property-read ConfigService $configService
  */
@@ -52,7 +52,7 @@ class Critical extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'uriRecords' => UriRecordService::class, 'settingsService' => SettingsService::class, 'configService' => ConfigService::class],
+            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'requestRecords' => RequestRecordService::class, 'settingsService' => SettingsService::class, 'configService' => ConfigService::class],
         ];
     }
 
