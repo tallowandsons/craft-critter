@@ -103,7 +103,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
                     $generatorResponse = new GeneratorResponse();
                     $generatorResponse->setSuccess(false);
-                    // $generatorResponse->setError('No CSS returned from criticalcss.com API');
+                    $generatorResponse->setException(new \Exception('No CSS returned from criticalcss.com API'));
                     return $generatorResponse;
                 }
             }
