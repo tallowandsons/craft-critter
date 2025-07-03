@@ -16,4 +16,26 @@
     code: true
 }) }}
 
+{{ forms.textField({
+    label: "Max Attempts"|t(craft.critical.pluginHandle),
+    instructions: "The maximum number of times to poll the API for results before giving up."|t(craft.critical.pluginHandle),
+    name: 'maxAttempts',
+    value: settings.generatorSettings.maxAttempts ?? 10,
+    type: 'number',
+    min: 1,
+    max: 50,
+    disabled: readOnly,
+}) }}
+
+{{ forms.textField({
+    label: "Attempt Delay"|t(craft.critical.pluginHandle),
+    instructions: "The number of seconds to wait between each polling attempt."|t(craft.critical.pluginHandle),
+    name: 'attemptDelay',
+    value: settings.generatorSettings.attemptDelay ?? 2,
+    type: 'number',
+    min: 1,
+    max: 30,
+    disabled: readOnly,
+}) }}
+
 {{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}

@@ -34,6 +34,10 @@ class CriticalCssDotComGenerator extends BaseGenerator
         $apiKey = $generatorSettings['apiKey'] ?? null;
         $this->apiKey = $apiKey ? App::parseEnv($apiKey) : null;
 
+        // Load max attempts and attempt delay from settings, with fallback to defaults
+        $this->maxAttempts = (int)($generatorSettings['maxAttempts'] ?? $this->maxAttempts);
+        $this->attemptDelay = (int)($generatorSettings['attemptDelay'] ?? $this->attemptDelay);
+
         if ($this->apiKey) {
             $this->api = new CriticalCssDotComApi($this->apiKey);
         }
