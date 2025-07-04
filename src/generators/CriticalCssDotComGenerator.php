@@ -50,7 +50,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Craft::t('critical-css-generator', 'criticalcss.com Generator');
+        return Critical::translate('criticalcss.com Generator');
     }
 
     /**
@@ -129,7 +129,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'maxAttempts' => $this->maxAttempts,
             'attemptDelay' => $this->attemptDelay,
             'settings' => Critical::getInstance()->getSettings(),
-            'config' => Craft::$app->getConfig()->getConfigFromFile('critical-css-generator'),
+            'config' => Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle()),
         ];
     }
 

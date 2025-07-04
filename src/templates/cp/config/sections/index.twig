@@ -28,8 +28,8 @@
         {% if not currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
             <div class="readable">
                 <blockquote class="note">
-                    <p><strong>{{ 'Read-only mode'|t('critical-css-generator') }}</strong></p>
-                    <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t('critical-css-generator') }}</p>
+                    <p><strong>{{ 'Read-only mode'|t(pluginHandle) }}</strong></p>
+                    <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t(pluginHandle) }}</p>
                 </blockquote>
             </div>
         {% endif %}

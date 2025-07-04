@@ -3,6 +3,7 @@
 namespace mijewe\craftcriticalcssgenerator\generators;
 
 use Craft;
+use mijewe\craftcriticalcssgenerator\Critical;
 use mijewe\craftcriticalcssgenerator\models\CssModel;
 use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
 use mijewe\craftcriticalcssgenerator\models\UrlModel;
@@ -20,7 +21,7 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Craft::t('critical-css-generator', '@plone/critical-css-cli Generator');
+        return Critical::translate('@plone/critical-css-cli Generator');
     }
 
     /**

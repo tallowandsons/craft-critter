@@ -50,13 +50,14 @@ class ConfigController extends Controller
             ]
         ];
 
-        return $this->renderTemplate('critical-css-generator/cp/config/sections', [
+        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/config/sections', [
             'cpSite' => $cpSite,
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'sections' => Critical::getInstance()->settingsService->getConfigurableSections($cpSite->id),
             'sectionsConfig' => Critical::getInstance()->configService->getSectionConfigs(),
             'crumbs' => $this->formatCrumbs($crumbs),
+            'pluginHandle' => Critical::getPluginHandle(),
         ]);
     }
 
@@ -75,12 +76,12 @@ class ConfigController extends Controller
         $postedSettings = Craft::$app->getRequest()->getBodyParam('config', []);
 
         if (!Critical::getInstance()->configService->save($postedSettings)) {
-            Craft::$app->getSession()->setError(Craft::t('critical-css-generator', 'Unable to save settings.'));
+            Craft::$app->getSession()->setError(Critical::translate('Unable to save settings.'));
             return null;
         }
 
         // set a success message
-        Craft::$app->getSession()->setNotice(Craft::t('critical-css-generator', 'Settings saved.'));
+        Craft::$app->getSession()->setNotice(Critical::translate('Settings saved.'));
         return $this->redirectToPostedUrl();
     }
 
@@ -102,7 +103,7 @@ class ConfigController extends Controller
      */
     private function getConfig()
     {
-        return Craft::$app->getConfig()->getConfigFromFile('critical-css-generator');
+        return Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle());
     }
 
     /**

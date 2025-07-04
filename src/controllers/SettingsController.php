@@ -53,7 +53,7 @@ class SettingsController extends Controller
             ];
         }
 
-        return $this->renderTemplate('critical-css-generator/cp/settings/general', [
+        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'generators' => GeneratorHelper::getGeneratorInstances(),
@@ -88,7 +88,7 @@ class SettingsController extends Controller
         Craft::$app->getPlugins()->savePluginSettings(Critical::getInstance(), $settings->getAttributes());
 
         // let the user know the settings were saved
-        $notice = Craft::t('critical-css-generator', 'Settings saved.');
+        $notice = Critical::translate('Settings saved.');
         Craft::$app->getSession()->setSuccess($notice);
 
         // redirect to the settings page
@@ -100,7 +100,7 @@ class SettingsController extends Controller
      */
     public function actionSectionsEdit()
     {
-        return $this->renderTemplate('critical-css-generator/cp/settings/sections', [
+        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/settings/sections', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
@@ -126,6 +126,6 @@ class SettingsController extends Controller
      */
     private function getConfig()
     {
-        return Craft::$app->getConfig()->getConfigFromFile('critical-css-generator');
+        return Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle());
     }
 }

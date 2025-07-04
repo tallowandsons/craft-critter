@@ -123,7 +123,7 @@ class Critical extends Plugin
 
     protected function settingsHtml(): ?string
     {
-        return Craft::$app->view->renderTemplate('critical-css-generator/cp/settings', [
+        return Craft::$app->view->renderTemplate(self::getPluginHandle() . '/cp/settings', [
             'plugin' => $this,
             'settings' => $this->getSettings(),
         ]);
@@ -135,7 +135,7 @@ class Critical extends Plugin
     public function getSettingsResponse(): mixed
     {
         // Redirect to the custom settings page
-        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('critical-css-generator/settings/general'));
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl(self::getPluginHandle() . '/settings/general'));
     }
 
     private function attachEventHandlers(): void
@@ -207,10 +207,10 @@ class Critical extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules = array_merge(
                     [
-                        'critical-css-generator' => 'critical-css-generator/config/sections-edit',
-                        'critical-css-generator/settings/general' => 'critical-css-generator/settings/edit',
-                        'critical-css-generator/settings/sections' => 'critical-css-generator/settings/sections-edit',
-                        'critical-css-generator/sections' => 'critical-css-generator/config/sections-edit',
+                        self::getPluginHandle() => self::getPluginHandle() . '/config/sections-edit',
+                        self::getPluginHandle() . '/settings/general' => self::getPluginHandle() . '/settings/edit',
+                        self::getPluginHandle() . '/settings/sections' => self::getPluginHandle() . '/settings/sections-edit',
+                        self::getPluginHandle() . '/sections' => self::getPluginHandle() . '/config/sections-edit',
                     ],
                     $event->rules
                 );
