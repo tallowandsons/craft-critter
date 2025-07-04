@@ -6,7 +6,9 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\RegisterUserPermissionsEvent;
 use craft\helpers\UrlHelper;
+use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
@@ -46,6 +48,11 @@ class Critical extends Plugin
     public const PLUGIN_NAME = 'Critical CSS Generator';
     public const PLUGIN_HANDLE = 'critical-css-generator';
 
+    // user permissions
+    public const PERMISSION_MANAGE_SECTIONS = 'critical-css-generator:manageSections';
+    public const PERMISSION_MANAGE_SECTIONS_VIEW = 'critical-css-generator:manageSections:view';
+    public const PERMISSION_MANAGE_SECTIONS_EDIT = 'critical-css-generator:manageSections:edit';
+
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
@@ -63,6 +70,7 @@ class Critical extends Plugin
 
         $this->registerVariables();
         $this->attachEventHandlers();
+        $this->registerPermissions();
 
         // register control panel URL rules
         if (Craft::$app->getRequest()->getIsCpRequest()) {
@@ -147,6 +155,32 @@ class Critical extends Plugin
     }
 
     /**
+     * Register user permissions
+     */
+    private function registerPermissions(): void
+    {
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function (RegisterUserPermissionsEvent $event) {
+                $event->permissions[] = [
+                    'heading' => self::getPluginName(),
+                    'permissions' => [
+                        self::PERMISSION_MANAGE_SECTIONS_VIEW => [
+                            'label' => self::translate('View section configurations'),
+                            'nested' => [
+                                self::PERMISSION_MANAGE_SECTIONS_EDIT => [
+                                    'label' => self::translate('Edit section configurations'),
+                                ],
+                            ]
+                        ],
+                    ]
+                ];
+            }
+        );
+    }
+
+    /**
      * Registers variables
      */
     private function registerVariables(): void
@@ -189,20 +223,31 @@ class Critical extends Plugin
      */
     public function getCpNavItem(): ?array
     {
+        $user = Craft::$app->getUser();
         $nav = parent::getCpNavItem();
+        $subNavs = [];
 
-        $nav['subnav']['sections'] = [
-            'label' => $this->translate('Sections'),
-            'url' => $this->cpUrl('sections'),
-        ];
+        // Only show sections subnav if user has view permissions
+        if ($user->checkPermission(self::PERMISSION_MANAGE_SECTIONS_VIEW)) {
+            $subNavs['sections'] = [
+                'label' => $this->translate('Sections'),
+                'url' => $this->cpUrl('sections'),
+            ];
+        }
 
-        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
-            $nav['subnav']['settings'] = [
+        if ($user->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+            $subNavs['settings'] = [
                 'label' => $this->translate('Settings'),
                 'url' => $this->cpUrl('settings/general'),
             ];
         }
 
+        // If no subnavs are available, don't show the plugin at all
+        if (empty($subNavs)) {
+            return null;
+        }
+
+        $nav['subnav'] = $subNavs;
         return $nav;
     }
 

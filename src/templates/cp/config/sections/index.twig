@@ -10,7 +10,9 @@
 {% block sidebar %}{% endblock %}
 
 {% block actionButton %}
-    <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+    {% if currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -22,6 +24,15 @@
         <div class="heading">
             <h1>Sections</h1>
         </div>
+
+        {% if not currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+            <div class="readable">
+                <blockquote class="note">
+                    <p><strong>{{ 'Read-only mode'|t('critical-css-generator') }}</strong></p>
+                    <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t('critical-css-generator') }}</p>
+                </blockquote>
+            </div>
+        {% endif %}
 
         {# <div class="instructions">
             <p>...</p>
@@ -52,14 +63,16 @@
                 </div>
 
                 {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
+                {% set canEdit = currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
 
                 {{ forms.elementSelect({
                     id: 'section-entry-' ~ section.handle,
                     name: 'config[sections][' ~ section.id ~ '][' ~ cpSite.id ~ '][entryId]',
-                    elementType: 'craft\\elements\\Entry',
+                    elementType: 'craft\elements\Entry',
                     limit: 1,
                     showSiteMenu: false,
-                    elements: elements
+                    elements: elements,
+                    disabled: not canEdit
                 }) }}
 
                 {% if mode != 'section' %}

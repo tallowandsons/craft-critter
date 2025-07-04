@@ -17,12 +17,27 @@ class ConfigController extends Controller
     protected array|int|bool $allowAnonymous = self::ALLOW_ANONYMOUS_NEVER;
 
     /**
+     * @inheritdoc
+     */
+    public function beforeAction($action): bool
+    {
+        // Check for sections management permission
+        $this->requirePermission(Critical::PERMISSION_MANAGE_SECTIONS_VIEW);
+
+        return parent::beforeAction($action);
+    }
+
+    /**
      * critical-css-generator/settings/sections/edit action
      * loads the 'edit sections config' page.
      */
     public function actionSectionsEdit(): Response
     {
         $cpSite = Cp::requestedSite();
+
+        if (!$cpSite) {
+            throw new \yii\web\BadRequestHttpException('No site specified.');
+        }
 
         $crumbs = [
             [
@@ -52,6 +67,9 @@ class ConfigController extends Controller
     public function actionSave(): ?Response
     {
         $this->requirePostRequest();
+
+        // Check for edit permission
+        $this->requirePermission(Critical::PERMISSION_MANAGE_SECTIONS_EDIT);
 
         // get the settings from the POST
         $postedSettings = Craft::$app->getRequest()->getBodyParam('config', []);
