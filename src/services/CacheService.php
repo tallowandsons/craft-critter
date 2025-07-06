@@ -40,9 +40,6 @@ class CacheService extends Component
             case Settings::MODE_SECTION:
                 $this->resolveCacheForSection($url);
                 break;
-            case Settings::MODE_ENTRY_TYPE:
-                $this->resolveCacheForEntryType($url);
-                break;
             default:
                 throw new \Exception("Could not resolve cache; invalid mode: $mode");
         }
@@ -70,24 +67,6 @@ class CacheService extends Component
 
         // get all urls for the section
         $entries = Entry::find()->section($sectionHandle)->all();
-
-        $this->resolveCacheForEntries($entries);
-    }
-
-    /**
-     * resolve the cache for all urls with the entry type
-     * of the given url
-     */
-    private function resolveCacheForEntryType(UrlModel $url): void
-    {
-        $entryType = $url->getEntryTypeHandle();
-        if (!$entryType) {
-            Craft::warning("Could not resolve cache for entry type; url does not have an entry type", __METHOD__);
-            return;
-        }
-
-        // get all urls for the entry type
-        $entries = Entry::find()->type($entryType)->all();
 
         $this->resolveCacheForEntries($entries);
     }

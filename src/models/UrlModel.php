@@ -140,26 +140,6 @@ class UrlModel extends Model
     }
 
     /**
-     * returns the handle of the url's entry type (if it exists)
-     */
-    public function getEntryTypeHandle(): ?string
-    {
-        $element = $this->getMatchedElement();
-        if ($element instanceof Entry) {
-            return $element->getType()->handle;
-        }
-        return null;
-    }
-
-    /**
-     * returns whether the url has an entry type
-     */
-    public function hasEntryType(): bool
-    {
-        return $this->getEntryTypeHandle() !== null;
-    }
-
-    /**
      * returns the type of the url's section (if it exists)
      * ie 'single', 'channel', or 'structure' (or null)
      */

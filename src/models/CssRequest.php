@@ -78,17 +78,6 @@ class CssRequest extends Model
                 }
                 break;
 
-            // entry type mode is only possible if the url
-            // has a matched entry type. Otherwise,
-            // fallback to url mode.
-            case Settings::MODE_ENTRY_TYPE:
-                if ($this->requestUrl->hasEntryType()) {
-                    return Settings::MODE_ENTRY_TYPE;
-                } else {
-                    return Settings::MODE_URL;
-                }
-                break;
-
             // url mode is always possible
             case Settings::MODE_URL:
                 return Settings::MODE_URL;
@@ -104,9 +93,6 @@ class CssRequest extends Model
         switch ($this->getMode()) {
             case Settings::MODE_SECTION:
                 return 'mode:section|site:' . $this->requestUrl->getSiteId() . '|section:' . $this->requestUrl->getSectionHandle() . '|query:' . $this->requestUrl->getQueryString();
-                break;
-            case Settings::MODE_ENTRY_TYPE:
-                return $this->requestUrl->getEntryTypeHandle();
                 break;
             case Settings::MODE_URL:
             default:

@@ -14,7 +14,6 @@ class Settings extends Model
 
     const MODE_URL = 'url';
     const MODE_SECTION = 'section';
-    const MODE_ENTRY_TYPE = 'entryType';
 
     const CACHE_BEHAVIOUR_EXPIRE_URL = 'expireUrl';
     const CACHE_BEHAVIOUR_CLEAR_URL = 'clearUrl';
@@ -47,8 +46,8 @@ class Settings extends Model
     public ?string $baseUrlOverride = null;
 
     // what the default mode should be.
-    // this will detemine whether critical css
-    // is generated for each url or each entry type
+    // this will determine whether critical css
+    // is generated for each url or each section
     public string $defaultMode = self::MODE_URL;
 
     // the settings for each section
