@@ -84,6 +84,18 @@ class UrlModel extends Model
     }
 
     /**
+     * returns the domain for the url
+     * eg the domain for https://website.com/about/team?foo=bar is "website.com"
+     * returns null if the url is not valid or does not have a domain
+     */
+    public function getDomain(): ?string
+    {
+        $url = $this->getUrl();
+        $parsedUrl = parse_url($url);
+        return $parsedUrl['host'] ?? null;
+    }
+
+    /**
      * returns the 'matched element' for the url (if it exists)
      * ie the Entry associated with the url
      */

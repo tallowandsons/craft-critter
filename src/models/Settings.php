@@ -53,4 +53,13 @@ class Settings extends Model
 
     // the settings for each section
     public array $sectionSettings = [];
+
+    // mutex timeout for criticalcss.com API locking (in seconds)
+    public int $mutexTimeout = 30;
+
+    // maximum number of retries for retryable job failures (mutex locks, network issues, etc.)
+    public int $maxRetries = 3;
+
+    // base delay in seconds for retry exponential backoff
+    public int $retryBaseDelay = 30;
 }

@@ -265,8 +265,8 @@ class Critical extends Plugin
     /**
      * Translates a string using the plugin's translation context.
      */
-    static function translate(string $str): string
+    static function translate(string $str, array $params = []): string
     {
-        return Craft::t(Critical::getInstance()->getPluginHandle(), $str);
+        return Craft::t(Critical::getInstance()->getPluginHandle(), $str, $params);
     }
 }

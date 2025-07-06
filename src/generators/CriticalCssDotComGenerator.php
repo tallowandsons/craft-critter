@@ -7,6 +7,7 @@ use craft\helpers\App;
 use craft\helpers\Json;
 use mijewe\craftcriticalcssgenerator\Critical;
 use mijewe\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
+use mijewe\craftcriticalcssgenerator\exceptions\MutexLockException;
 use mijewe\craftcriticalcssgenerator\models\CssModel;
 use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
 use mijewe\craftcriticalcssgenerator\models\UrlModel;
@@ -58,65 +59,108 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
+        // Check if API key is configured
+        if (!$this->apiKey) {
+            return (new GeneratorResponse())->setSuccess(false)->setException();
+            return $generatorResponse;
+        }
 
-        // the criticalcss.com API works like this:
-        // 1.   trigger a generate job by POSTing to the API.
-        //      This will return a job number, while the CSS is being
-        //      generated on the criticalcss.com servers.
-        // 2.   poll the API with the job number to check the status of the job.
-        //      this will return the CSS when the job is complete.
-        // 3.   if the job is not complete, wait a few seconds and try again.
+        // Extract domain from URL for mutex locking
+        $domain = $urlModel->getDomain();
 
-        // if a generate job has been previously triggered, the API
-        // will have returned a resultId which is stored in the DB.
-        // this resultId can be used to check the status of the job
-        // from the API and get the css when the job is complete.
-        $resultId = $this->getResultId($urlModel);
+        // Use Craft's mutex system for domain-level locking for entire job lifecycle
+        // This ensures no new /generate requests until current job is complete
+        $mutex = Craft::$app->getMutex();
+        $lockName = Critical::getPluginHandle() . ':criticalcssdotcomgenerator:' . $domain;
+        $mutexTimeout = Critical::getInstance()->getSettings()->mutexTimeout ?? 30;
 
-        // if there is no resultId then no generate job has been triggered,
-        // so trigger a new job via the API.
-        if (!$resultId) {
-            $response = $this->api->generate($urlModel);
-            $resultId = $response->getJobId();
+        if (!$mutex->acquire($lockName, $mutexTimeout)) {
+            // If we can't acquire the lock, another job is already running for this domain
+            Craft::info(
+                "Failed to acquire mutex lock for domain: $domain (timeout: {$mutexTimeout}s)",
+                Critical::getPluginHandle()
+            );
 
+            $generatorResponse = new GeneratorResponse();
+            $generatorResponse->setSuccess(false);
+            $generatorResponse->setException(new MutexLockException(
+                Critical::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
+            ));
+            return $generatorResponse;
+        }
+
+        Craft::info(
+            "Acquired mutex lock for domain: $domain",
+            Critical::getPluginHandle()
+        );
+
+        try {
+            // the criticalcss.com API works like this:
+            // 1.   trigger a generate job by POSTing to the API.
+            //      This will return a job number, while the CSS is being
+            //      generated on the criticalcss.com servers.
+            // 2.   poll the API with the job number to check the status of the job.
+            //      this will return the CSS when the job is complete.
+            // 3.   if the job is not complete, wait a few seconds and try again.
+
+            // if a generate job has been previously triggered, the API
+            // will have returned a resultId which is stored in the DB.
+            // this resultId can be used to check the status of the job
+            // from the API and get the css when the job is complete.
+            $resultId = $this->getResultId($urlModel);
+
+            // if there is no resultId then no generate job has been triggered,
+            // so trigger a new job via the API.
             if (!$resultId) {
-                throw new \Exception('Failed to generate critical css from criticalcss.com API');
-            }
+                $response = $this->api->generate($urlModel);
+                $resultId = $response->getJobId();
 
-            Critical::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
-        }
-
-        $attemptCount = 0;
-
-        while ($attemptCount < $this->maxAttempts) {
-
-            $apiResponse = $this->getResultsById($resultId);
-
-            if ($apiResponse->isDone()) {
-                if ($apiResponse->hasCss()) {
-                    $cssStr = $apiResponse->getCss();
-
-                    $generatorResponse = new GeneratorResponse();
-                    $generatorResponse->setSuccess(true);
-                    $generatorResponse->setCss(new CssModel($cssStr));
-                    return $generatorResponse;
-                } else {
-
-                    // if the job is done but no css was returned,
-                    // this is an error.
-
-                    $generatorResponse = new GeneratorResponse();
-                    $generatorResponse->setSuccess(false);
-                    $generatorResponse->setException(new \Exception('No CSS returned from criticalcss.com API'));
-                    return $generatorResponse;
+                if (!$resultId) {
+                    throw new \Exception('Failed to generate critical css from criticalcss.com API');
                 }
+
+                Critical::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
             }
 
-            $attemptCount++;
-            sleep($this->attemptDelay);
-        }
+            $attemptCount = 0;
 
-        throw new \Exception('Failed to get critical css from criticalcss.com API');
+            while ($attemptCount < $this->maxAttempts) {
+
+                $apiResponse = $this->getResultsById($resultId);
+
+                if ($apiResponse->isDone()) {
+                    if ($apiResponse->hasCss()) {
+                        $cssStr = $apiResponse->getCss();
+
+                        $generatorResponse = new GeneratorResponse();
+                        $generatorResponse->setSuccess(true);
+                        $generatorResponse->setCss(new CssModel($cssStr));
+                        return $generatorResponse;
+                    } else {
+
+                        // if the job is done but no css was returned,
+                        // this is an error.
+
+                        $generatorResponse = new GeneratorResponse();
+                        $generatorResponse->setSuccess(false);
+                        $generatorResponse->setException(new \Exception('No CSS returned from criticalcss.com API'));
+                        return $generatorResponse;
+                    }
+                }
+
+                $attemptCount++;
+                sleep($this->attemptDelay);
+            }
+
+            throw new \Exception('Failed to get critical css from criticalcss.com API');
+        } finally {
+            // Always release the mutex lock when job is complete (success or failure)
+            Craft::info(
+                "Releasing mutex lock for domain: $domain",
+                Critical::getPluginHandle()
+            );
+            $mutex->release($lockName);
+        }
     }
 
     /**

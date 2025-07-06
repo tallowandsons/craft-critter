@@ -90,3 +90,27 @@
     value: settings.defaultMode,
     disabled: readOnly,
 }) }}
+
+{{ forms.textField({
+    label: "Max Retries"|t(pluginHandle),
+    instructions: "The maximum number of times to retry failed jobs (mutex locks, network issues, etc.)."|t(pluginHandle),
+    warning: config.maxRetries is defined ? configWarning('maxRetries') : null,
+    name: 'settings[maxRetries]',
+    value: settings.maxRetries ?? 3,
+    type: 'number',
+    min: 0,
+    max: 10,
+    disabled: readOnly,
+}) }}
+
+{{ forms.textField({
+    label: "Retry Base Delay"|t(pluginHandle),
+    instructions: "The base delay in seconds for exponential backoff between retries."|t(pluginHandle),
+    warning: config.retryBaseDelay is defined ? configWarning('retryBaseDelay') : null,
+    name: 'settings[retryBaseDelay]',
+    value: settings.retryBaseDelay ?? 30,
+    type: 'number',
+    min: 1,
+    max: 300,
+    disabled: readOnly,
+}) }}
