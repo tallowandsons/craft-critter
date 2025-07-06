@@ -24,6 +24,12 @@ class CriticalCssDotComGenerator extends BaseGenerator
     // the number of seconds to wait between each poll attempt
     public int $attemptDelay = 2;
 
+    // viewport width for critical CSS generation
+    public int $width = CriticalCssDotComApi::DEFAULT_WIDTH;
+
+    // viewport height for critical CSS generation
+    public int $height = CriticalCssDotComApi::DEFAULT_HEIGHT;
+
     // the API key for the criticalcss.com account
     public ?string $apiKey;
 
@@ -38,6 +44,10 @@ class CriticalCssDotComGenerator extends BaseGenerator
         // Load max attempts and attempt delay from settings, with fallback to defaults
         $this->maxAttempts = (int)($generatorSettings['maxAttempts'] ?? $this->maxAttempts);
         $this->attemptDelay = (int)($generatorSettings['attemptDelay'] ?? $this->attemptDelay);
+
+        // Load viewport dimensions from settings, with fallback to defaults
+        $this->width = (int)($generatorSettings['width'] ?? $this->width);
+        $this->height = (int)($generatorSettings['height'] ?? $this->height);
 
         if ($this->apiKey) {
             $this->api = new CriticalCssDotComApi($this->apiKey);
@@ -112,7 +122,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // if there is no resultId then no generate job has been triggered,
             // so trigger a new job via the API.
             if (!$resultId) {
-                $response = $this->api->generate($urlModel);
+                $response = $this->api->generate($urlModel, $this->width, $this->height);
                 $resultId = $response->getJobId();
 
                 if (!$resultId) {
@@ -172,6 +182,8 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'apiKey' => $this->apiKey,
             'maxAttempts' => $this->maxAttempts,
             'attemptDelay' => $this->attemptDelay,
+            'width' => $this->width,
+            'height' => $this->height,
             'settings' => Critical::getInstance()->getSettings(),
             'config' => Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle()),
         ];

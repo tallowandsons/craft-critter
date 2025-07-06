@@ -15,6 +15,10 @@ class CriticalCssDotComApi extends BaseRestApi
     // the base URI for the criticalcss.com API
     const API_BASE_URI = 'https://criticalcss.com/api/premium/';
 
+    // default viewport dimensions for critical CSS generation
+    const DEFAULT_WIDTH = 1400;
+    const DEFAULT_HEIGHT = 1080;
+
     // the API key for the criticalcss.com account
     private string $apiKey;
 
@@ -37,11 +41,15 @@ class CriticalCssDotComApi extends BaseRestApi
         return $this;
     }
 
-    public function generate(UrlModel $urlModel): ?CriticalCssDotComGenerateResponse
+    public function generate(UrlModel $urlModel, int $width = self::DEFAULT_WIDTH, int $height = self::DEFAULT_HEIGHT): ?CriticalCssDotComGenerateResponse
     {
-        $response = $this->post('generate', [
+        $data = [
             'url' => $urlModel->getAbsoluteUrl(),
-        ]);
+            'width' => $width,
+            'height' => $height,
+        ];
+
+        $response = $this->post('generate', $data);
 
         if ($response->isSuccess()) {
             return CriticalCssDotComGenerateResponse::createFromResponse($response->getData());
