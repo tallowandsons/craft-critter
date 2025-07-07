@@ -18,9 +18,10 @@ class GeneratorResponse extends BaseResponse
         $this->exception = null;
     }
 
-    public function setCss(CssModel $css): void
+    public function setCss(CssModel $css): self
     {
         $this->css = $css;
+        return $this;
     }
 
     public function getCss(): CssModel
@@ -28,9 +29,10 @@ class GeneratorResponse extends BaseResponse
         return $this->css;
     }
 
-    public function setTimestamp(\DateTime $timestamp)
+    public function setTimestamp(\DateTime $timestamp): self
     {
         $this->timestamp = $timestamp;
+        return $this;
     }
 
     public function getTimestamp(): \DateTime
@@ -38,9 +40,10 @@ class GeneratorResponse extends BaseResponse
         return $this->timestamp;
     }
 
-    public function setException(\Exception $exception): void
+    public function setException(\Exception $exception): self
     {
         $this->exception = $exception;
+        return $this;
     }
 
     public function getException(): ?\Exception

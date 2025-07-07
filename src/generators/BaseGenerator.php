@@ -21,11 +21,9 @@ class BaseGenerator extends Component implements GeneratorInterface
             return $this->getCriticalCss($url);
         } catch (\Exception $e) {
 
-            $response = new GeneratorResponse();
-            $response->setSuccess(false);
-            $response->setException($e);
-
-            return $response;
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException($e);
         }
     }
 
@@ -70,6 +68,6 @@ class BaseGenerator extends Component implements GeneratorInterface
      */
     protected function getCriticalCss(UrlModel $url): GeneratorResponse
     {
-        return new GeneratorResponse();
+        return (new GeneratorResponse())->setSuccess(true);
     }
 }

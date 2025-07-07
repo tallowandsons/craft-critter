@@ -71,8 +71,11 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         // Check if API key is configured
         if (!$this->apiKey) {
-            return (new GeneratorResponse())->setSuccess(false)->setException();
-            return $generatorResponse;
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException(new \Exception(
+                    Critical::translate('criticalcss.com API key is not configured')
+                ));
         }
 
         // Extract domain from URL for mutex locking
@@ -91,12 +94,11 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 Critical::getPluginHandle()
             );
 
-            $generatorResponse = new GeneratorResponse();
-            $generatorResponse->setSuccess(false);
-            $generatorResponse->setException(new MutexLockException(
-                Critical::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
-            ));
-            return $generatorResponse;
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException(new MutexLockException(
+                    Critical::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
+                ));
         }
 
         Craft::info(
@@ -142,19 +144,17 @@ class CriticalCssDotComGenerator extends BaseGenerator
                     if ($apiResponse->hasCss()) {
                         $cssStr = $apiResponse->getCss();
 
-                        $generatorResponse = new GeneratorResponse();
-                        $generatorResponse->setSuccess(true);
-                        $generatorResponse->setCss(new CssModel($cssStr));
-                        return $generatorResponse;
+                        return (new GeneratorResponse())
+                            ->setSuccess(true)
+                            ->setCss(new CssModel($cssStr));
                     } else {
 
                         // if the job is done but no css was returned,
                         // this is an error.
 
-                        $generatorResponse = new GeneratorResponse();
-                        $generatorResponse->setSuccess(false);
-                        $generatorResponse->setException(new \Exception('No CSS returned from criticalcss.com API'));
-                        return $generatorResponse;
+                        return (new GeneratorResponse())
+                            ->setSuccess(false)
+                            ->setException(new \Exception('No CSS returned from criticalcss.com API'));
                     }
                 }
 
