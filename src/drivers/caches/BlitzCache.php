@@ -28,13 +28,13 @@ class BlitzCache extends BaseCache implements CacheInterface
         }
 
         switch ($cacheBehaviour) {
-            case Settings::CACHE_BEHAVIOUR_EXPIRE_URL:
+            case Settings::CACHE_BEHAVIOUR_EXPIRE_URLS:
                 $this->expireUrls($urlModels);
                 break;
-            case Settings::CACHE_BEHAVIOUR_CLEAR_URL:
+            case Settings::CACHE_BEHAVIOUR_CLEAR_URLS:
                 $this->clearUrls($urlModels);
                 break;
-            case Settings::CACHE_BEHAVIOUR_REFRESH_URL:
+            case Settings::CACHE_BEHAVIOUR_REFRESH_URLS:
                 $this->refreshUrls($urlModels);
                 break;
         }
