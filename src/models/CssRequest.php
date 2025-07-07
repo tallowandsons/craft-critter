@@ -29,7 +29,7 @@ class CssRequest extends Model
         if ($this->getMode() == Settings::MODE_SECTION) {
             $section = $this->requestUrl->getSection();
             $sectionConfig = Critical::getInstance()->configService->getSectionConfig($section->id, $this->requestUrl->getSiteId());
-            $generateEntry = $sectionConfig->getEntry();
+            $generateEntry = $sectionConfig ? $sectionConfig->getEntry() : null;
 
             // if there is no specific entry for the section,
             // use the url as the generate url
