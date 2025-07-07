@@ -3,7 +3,8 @@
 namespace mijewe\craftcriticalcssgenerator\models;
 
 use craft\base\Model;
-use mijewe\craftcriticalcssgenerator\generators\DummyGenerator;
+use mijewe\craftcriticalcssgenerator\drivers\caches\BlitzCache;
+use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
 use mijewe\craftcriticalcssgenerator\storage\CraftCacheStorage;
 
 /**
@@ -26,13 +27,16 @@ class Settings extends Model
     public array $styleTagAttributes = [];
 
     // which generator type to use
-    public string $generatorType = DummyGenerator::class;
+    public string $generatorType = CriticalCssDotComGenerator::class;
+
+    // the settings for the generator
+    public array $generatorSettings = [];
 
     // which storage type to use
     public string $storageType = CraftCacheStorage::class;
 
     // which cache type to use
-    public ?string $cacheType = null;
+    public ?string $cacheType = BlitzCache::class;
 
     // what the cache behaviour should be
     public ?string $cacheBehaviour = null;
@@ -40,15 +44,15 @@ class Settings extends Model
     // which query string parameters are to be treated as unique urls
     public array $uniqueQueryParams = [];
 
-    // the settings for the generator
-    public array $generatorSettings = [];
-
+    // a base URL override for the critical css generator
+    // this is useful if you want to generate critical css for a different domain
+    // than the one the site is running on, for example on a staging environment.
     public ?string $baseUrlOverride = null;
 
     // what the default mode should be.
     // this will determine whether critical css
     // is generated for each url or each section
-    public string $defaultMode = self::MODE_URL;
+    public string $defaultMode = self::MODE_SECTION;
 
     // the settings for each section
     public array $sectionSettings = [];
