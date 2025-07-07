@@ -16,9 +16,9 @@ class Settings extends Model
     const MODE_URL = 'url';
     const MODE_SECTION = 'section';
 
-    const CACHE_BEHAVIOUR_EXPIRE_URL = 'expireUrl';
-    const CACHE_BEHAVIOUR_CLEAR_URL = 'clearUrl';
-    const CACHE_BEHAVIOUR_REFRESH_URL = 'refreshUrl';
+    const CACHE_BEHAVIOUR_EXPIRE_URLS = 'expireUrls';
+    const CACHE_BEHAVIOUR_CLEAR_URLS = 'clearUrls';
+    const CACHE_BEHAVIOUR_REFRESH_URLS = 'refreshUrls';
 
     // whether or not to automatically render the critical css
     public bool $autoRenderEnabled = true;
@@ -39,7 +39,7 @@ class Settings extends Model
     public ?string $cacheType = BlitzCache::class;
 
     // what the cache behaviour should be
-    public ?string $cacheBehaviour = null;
+    public ?string $cacheBehaviour = self::CACHE_BEHAVIOUR_REFRESH_URLS;
 
     // which query string parameters are to be treated as unique urls
     public array $uniqueQueryParams = [];

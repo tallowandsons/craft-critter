@@ -32,16 +32,16 @@ class SettingsHelper
     {
         return [
             [
-                'label' => Critical::translate('Clear URL'),
-                'value' => Settings::CACHE_BEHAVIOUR_CLEAR_URL,
+                'label' => Critical::translate('Clear URLs'),
+                'value' => Settings::CACHE_BEHAVIOUR_CLEAR_URLS,
             ],
             [
-                'label' => Critical::translate('Expire URL'),
-                'value' => Settings::CACHE_BEHAVIOUR_EXPIRE_URL,
+                'label' => Critical::translate('Expire URLs'),
+                'value' => Settings::CACHE_BEHAVIOUR_EXPIRE_URLS,
             ],
             [
-                'label' => Critical::translate('Refresh URL'),
-                'value' => Settings::CACHE_BEHAVIOUR_REFRESH_URL,
+                'label' => Critical::translate('Refresh URLs'),
+                'value' => Settings::CACHE_BEHAVIOUR_REFRESH_URLS,
             ],
         ];
     }
