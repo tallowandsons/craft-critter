@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\factories;
+namespace mijewe\critter\factories;
 
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
-use mijewe\craftcriticalcssgenerator\helpers\UrlHelper as CriticalUrlHelper;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\helpers\UrlHelper as CritterUrlHelper;
+use mijewe\critter\models\UrlModel;
 
 class UrlFactory
 {
@@ -24,7 +24,7 @@ class UrlFactory
         $uri = $request->getFullUri();
 
         // get query string
-        $queryParams = CriticalUrlHelper::getUniqueQueryParamsFromRequest($request);
+        $queryParams = CritterUrlHelper::getUniqueQueryParamsFromRequest($request);
 
         $urlModel = new UrlModel();
         $urlModel->siteId = $site->id;

@@ -1,12 +1,12 @@
 {% import '_includes/forms' as forms %}
-{% from 'critical-css-generator/macros' import configWarning, configGroupWarning %}
+{% from 'critter/macros' import configWarning, configGroupWarning %}
 
 {# whether or not allowAdminChanges is on #}
 {% set readOnly = readOnly ?? false %}
 
 {{ forms.autosuggestField({
-    label: "API Key"|t(craft.critical.pluginHandle),
-    instructions: "The API key for your criticalcss.com account."|t(craft.critical.pluginHandle),
+    label: "API Key"|t(craft.critter.pluginHandle),
+    instructions: "The API key for your criticalcss.com account."|t(craft.critter.pluginHandle),
     suggestEnvVars: true,
     suggestAliases: true,
     name: 'apiKey',
@@ -17,8 +17,8 @@
 }) }}
 
 {{ forms.textField({
-    label: "Max Attempts"|t(craft.critical.pluginHandle),
-    instructions: "The maximum number of times to poll the API for results before giving up."|t(craft.critical.pluginHandle),
+    label: "Max Attempts"|t(craft.critter.pluginHandle),
+    instructions: "The maximum number of times to poll the API for results before giving up."|t(craft.critter.pluginHandle),
     name: 'maxAttempts',
     value: settings.generatorSettings.maxAttempts ?? 10,
     type: 'number',
@@ -28,8 +28,8 @@
 }) }}
 
 {{ forms.textField({
-    label: "Attempt Delay"|t(craft.critical.pluginHandle),
-    instructions: "The number of seconds to wait between each polling attempt."|t(craft.critical.pluginHandle),
+    label: "Attempt Delay"|t(craft.critter.pluginHandle),
+    instructions: "The number of seconds to wait between each polling attempt."|t(craft.critter.pluginHandle),
     name: 'attemptDelay',
     value: settings.generatorSettings.attemptDelay ?? 2,
     type: 'number',
@@ -39,8 +39,8 @@
 }) }}
 
 {{ forms.textField({
-    label: "Viewport Width"|t(craft.critical.pluginHandle),
-    instructions: "The viewport width in pixels for critical CSS generation."|t(craft.critical.pluginHandle),
+    label: "Viewport Width"|t(craft.critter.pluginHandle),
+    instructions: "The viewport width in pixels for critical CSS generation."|t(craft.critter.pluginHandle),
     name: 'width',
     value: settings.generatorSettings.width ?? generator.width,
     type: 'number',
@@ -50,8 +50,8 @@
 }) }}
 
 {{ forms.textField({
-    label: "Viewport Height"|t(craft.critical.pluginHandle),
-    instructions: "The viewport height in pixels for critical CSS generation."|t(craft.critical.pluginHandle),
+    label: "Viewport Height"|t(craft.critter.pluginHandle),
+    instructions: "The viewport height in pixels for critical CSS generation."|t(craft.critter.pluginHandle),
     name: 'height',
     value: settings.generatorSettings.height ?? generator.height,
     type: 'number',

@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\drivers\caches;
+namespace mijewe\critter\drivers\caches;
 
 use craft\base\Model;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\models\UrlModel;
 
 class BaseCache extends Model implements CacheInterface
 {
@@ -16,6 +16,6 @@ class BaseCache extends Model implements CacheInterface
 
     protected function getCacheBehaviour()
     {
-        return Critical::getInstance()->settings->cacheBehaviour;
+        return Critter::getInstance()->settings->cacheBehaviour;
     }
 }

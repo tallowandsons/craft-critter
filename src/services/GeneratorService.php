@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use Craft;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
-use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
-use mijewe\craftcriticalcssgenerator\jobs\GenerateCriticalCssJob;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
-use mijewe\craftcriticalcssgenerator\records\RequestRecord;
+use mijewe\critter\Critter;
+use mijewe\critter\generators\GeneratorInterface;
+use mijewe\critter\helpers\GeneratorHelper;
+use mijewe\critter\jobs\GenerateCriticalCssJob;
+use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 use yii\base\Component;
 
 /**
@@ -22,7 +22,7 @@ class GeneratorService extends Component
 
     public function __construct()
     {
-        $generatorClass = Critical::getInstance()->settings->generatorType;
+        $generatorClass = Critter::getInstance()->settings->generatorType;
 
         // Validate the generator class using the GeneratorHelper
         if (!GeneratorHelper::isValidGenerator($generatorClass)) {
@@ -54,7 +54,7 @@ class GeneratorService extends Component
         $url = $cssRequest->getUrl();
 
         // set the uri record status to 'generating'
-        Critical::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_GENERATING);
+        Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_GENERATING);
 
         // generate the critical css
         $response = $this->generator->generate($url);
@@ -62,19 +62,19 @@ class GeneratorService extends Component
         if ($response->isSuccess()) {
 
             // update URI record
-            Critical::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
+            Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
 
             // store the css
             if ($storeResult) {
-                Critical::getInstance()->storage->save($cssRequest, $response->getCss());
+                Critter::getInstance()->storage->save($cssRequest, $response->getCss());
             }
 
             // resolve the cache
             if ($resolveCache) {
-                Critical::getInstance()->cache->resolveCache($cssRequest);
+                Critter::getInstance()->cache->resolveCache($cssRequest);
             }
         } else {
-            Critical::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_ERROR);
+            Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_ERROR);
 
             // throw an exception if the response has one.
             // this will fail the queue job and report the error.
@@ -101,13 +101,13 @@ class GeneratorService extends Component
         ]);
 
         if ($queueJobId = Craft::$app->queue->push($job)) {
-            Critical::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
+            Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
         }
     }
 
     private function isInQueue(UrlModel $url): bool
     {
-        $uriRecord = Critical::getInstance()->requestRecords->getRecordByUrl($url);
+        $uriRecord = Critter::getInstance()->requestRecords->getRecordByUrl($url);
 
         if ($uriRecord === null) {
             return false;

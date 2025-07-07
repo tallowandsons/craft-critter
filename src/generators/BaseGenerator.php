@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\generators;
+namespace mijewe\critter\generators;
 
 use Craft;
 use craft\base\Component;
 use craft\web\twig\TemplateLoaderException;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
-use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\generators\GeneratorInterface;
+use mijewe\critter\models\GeneratorResponse;
+use mijewe\critter\models\UrlModel;
 
 class BaseGenerator extends Component implements GeneratorInterface
 {
@@ -42,7 +42,7 @@ class BaseGenerator extends Component implements GeneratorInterface
 
         $templatePath = sprintf(
             '%s/cp/settings/includes/generators/%s/settings',
-            Critical::getPluginHandle(),
+            Critter::getPluginHandle(),
             $this->handle ?? 'base'
         );
 

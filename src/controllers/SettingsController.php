@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\controllers;
+namespace mijewe\critter\controllers;
 
 use Craft;
 use craft\helpers\Cp;
 use craft\web\Controller;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
-use mijewe\craftcriticalcssgenerator\helpers\SettingsHelper;
+use mijewe\critter\Critter;
+use mijewe\critter\helpers\GeneratorHelper;
+use mijewe\critter\helpers\SettingsHelper;
 use yii\web\Response;
 
 /**
@@ -29,18 +29,18 @@ class SettingsController extends Controller
     }
 
     /**
-     * critical-css-generator/settings/edit action
+     * critter/settings/edit action
      */
     public function actionEdit(): Response
     {
 
         $tabs = [
             'general' => [
-                'label' => Critical::translate('General'),
+                'label' => Critter::translate('General'),
                 'url' => '#general',
             ],
             'generator' => [
-                'label' => Critical::translate('Generator'),
+                'label' => Critter::translate('Generator'),
                 'url' => '#generator',
             ],
         ];
@@ -48,12 +48,12 @@ class SettingsController extends Controller
         $blitzIsEnabled = Craft::$app->plugins->getPlugin('blitz') !== null;
         if ($blitzIsEnabled) {
             $tabs['cache'] = [
-                'label' => Critical::translate('Cache'),
+                'label' => Critter::translate('Cache'),
                 'url' => '#cache',
             ];
         }
 
-        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/settings/general', [
+        return $this->renderTemplate(Critter::getPluginHandle() . '/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'generators' => GeneratorHelper::getGeneratorInstances(),
@@ -85,10 +85,10 @@ class SettingsController extends Controller
         $settings->generatorSettings = $generatorSettings[$settings->generatorType] ?? [];
 
         // save the settings into the project config
-        Craft::$app->getPlugins()->savePluginSettings(Critical::getInstance(), $settings->getAttributes());
+        Craft::$app->getPlugins()->savePluginSettings(Critter::getInstance(), $settings->getAttributes());
 
         // let the user know the settings were saved
-        $notice = Critical::translate('Settings saved.');
+        $notice = Critter::translate('Settings saved.');
         Craft::$app->getSession()->setSuccess($notice);
 
         // redirect to the settings page
@@ -96,14 +96,14 @@ class SettingsController extends Controller
     }
 
     /**
-     * critical-css-generator/settings/sections/edit action
+     * critter/settings/sections/edit action
      */
     public function actionSectionsEdit()
     {
-        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/settings/sections', [
+        return $this->renderTemplate(Critter::getPluginHandle() . '/cp/settings/sections', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'sections' => Critical::getInstance()->settingsService->getConfigurableSections(),
+            'sections' => Critter::getInstance()->settingsService->getConfigurableSections(),
             'modeOptions' => SettingsHelper::getModesAsSelectOptions(),
         ]);
     }
@@ -115,7 +115,7 @@ class SettingsController extends Controller
      */
     private function getSettings()
     {
-        return Critical::getInstance()->getSettings();
+        return Critter::getInstance()->getSettings();
     }
 
     /**
@@ -126,6 +126,6 @@ class SettingsController extends Controller
      */
     private function getConfig()
     {
-        return Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle());
+        return Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle());
     }
 }

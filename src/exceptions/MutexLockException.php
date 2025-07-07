@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\exceptions;
+namespace mijewe\critter\exceptions;
 
 /**
  * Exception thrown when a mutex lock cannot be acquired

@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use Craft;
 use craft\helpers\Json;
-use mijewe\craftcriticalcssgenerator\models\SectionConfig;
-use mijewe\craftcriticalcssgenerator\records\SectionConfigRecord;
+use mijewe\critter\models\SectionConfig;
+use mijewe\critter\records\SectionConfigRecord;
 use yii\base\Component;
 
 /**

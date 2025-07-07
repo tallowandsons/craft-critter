@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\controllers;
+namespace mijewe\critter\controllers;
 
 use Craft;
 use craft\helpers\Cp;
 use craft\web\Controller;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 use yii\web\Response;
 
 /**
@@ -22,13 +22,13 @@ class ConfigController extends Controller
     public function beforeAction($action): bool
     {
         // Check for sections management permission
-        $this->requirePermission(Critical::PERMISSION_MANAGE_SECTIONS_VIEW);
+        $this->requirePermission(Critter::PERMISSION_MANAGE_SECTIONS_VIEW);
 
         return parent::beforeAction($action);
     }
 
     /**
-     * critical-css-generator/settings/sections/edit action
+     * critter/settings/sections/edit action
      * loads the 'edit sections config' page.
      */
     public function actionSectionsEdit(): Response
@@ -41,28 +41,28 @@ class ConfigController extends Controller
 
         $crumbs = [
             [
-                'label' => Critical::getPluginName(),
-                'url' => Critical::cpUrl('/')
+                'label' => Critter::getPluginName(),
+                'url' => Critter::cpUrl('/')
             ],
             [
-                'label' => Critical::translate('Sections'),
-                'url' => Critical::cpUrl('/config/sections')
+                'label' => Critter::translate('Sections'),
+                'url' => Critter::cpUrl('/config/sections')
             ]
         ];
 
-        return $this->renderTemplate(Critical::getPluginHandle() . '/cp/config/sections', [
+        return $this->renderTemplate(Critter::getPluginHandle() . '/cp/config/sections', [
             'cpSite' => $cpSite,
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
-            'sections' => Critical::getInstance()->settingsService->getConfigurableSections($cpSite->id),
-            'sectionsConfig' => Critical::getInstance()->configService->getSectionConfigs(),
+            'sections' => Critter::getInstance()->settingsService->getConfigurableSections($cpSite->id),
+            'sectionsConfig' => Critter::getInstance()->configService->getSectionConfigs(),
             'crumbs' => $this->formatCrumbs($crumbs),
-            'pluginHandle' => Critical::getPluginHandle(),
+            'pluginHandle' => Critter::getPluginHandle(),
         ]);
     }
 
     /**
-     * critical-css-generator/settings/sections/save action
+     * critter/settings/sections/save action
      * saves all config to the database
      */
     public function actionSave(): ?Response
@@ -70,18 +70,18 @@ class ConfigController extends Controller
         $this->requirePostRequest();
 
         // Check for edit permission
-        $this->requirePermission(Critical::PERMISSION_MANAGE_SECTIONS_EDIT);
+        $this->requirePermission(Critter::PERMISSION_MANAGE_SECTIONS_EDIT);
 
         // get the settings from the POST
         $postedSettings = Craft::$app->getRequest()->getBodyParam('config', []);
 
-        if (!Critical::getInstance()->configService->save($postedSettings)) {
-            Craft::$app->getSession()->setError(Critical::translate('Unable to save settings.'));
+        if (!Critter::getInstance()->configService->save($postedSettings)) {
+            Craft::$app->getSession()->setError(Critter::translate('Unable to save settings.'));
             return null;
         }
 
         // set a success message
-        Craft::$app->getSession()->setNotice(Critical::translate('Settings saved.'));
+        Craft::$app->getSession()->setNotice(Critter::translate('Settings saved.'));
         return $this->redirectToPostedUrl();
     }
 
@@ -92,7 +92,7 @@ class ConfigController extends Controller
      */
     private function getSettings()
     {
-        return Critical::getInstance()->getSettings();
+        return Critter::getInstance()->getSettings();
     }
 
     /**
@@ -103,7 +103,7 @@ class ConfigController extends Controller
      */
     private function getConfig()
     {
-        return Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle());
+        return Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle());
     }
 
     /**

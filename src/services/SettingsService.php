@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use Craft;
 use craft\models\Section_SiteSettings;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 use yii\base\Component;
 
 /**
@@ -49,7 +49,7 @@ class SettingsService extends Component
      */
     public function getSectionMode(string $handle): ?string
     {
-        $settings = Critical::getInstance()->settings->sectionSettings[$handle] ?? null;
+        $settings = Critter::getInstance()->settings->sectionSettings[$handle] ?? null;
 
         if (!$settings) {
             return null;

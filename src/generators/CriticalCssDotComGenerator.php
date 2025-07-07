@@ -1,16 +1,16 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\generators;
+namespace mijewe\critter\generators;
 
 use Craft;
 use craft\helpers\App;
 use craft\helpers\Json;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\drivers\apis\CriticalCssDotComApi;
-use mijewe\craftcriticalcssgenerator\exceptions\MutexLockException;
-use mijewe\craftcriticalcssgenerator\models\CssModel;
-use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\drivers\apis\CriticalCssDotComApi;
+use mijewe\critter\exceptions\MutexLockException;
+use mijewe\critter\models\CssModel;
+use mijewe\critter\models\GeneratorResponse;
+use mijewe\critter\models\UrlModel;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {
@@ -37,7 +37,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
     public function __construct()
     {
-        $generatorSettings = Critical::getInstance()->settings->generatorSettings ?? [];
+        $generatorSettings = Critter::getInstance()->settings->generatorSettings ?? [];
         $apiKey = $generatorSettings['apiKey'] ?? null;
         $this->apiKey = $apiKey ? App::parseEnv($apiKey) : null;
 
@@ -61,7 +61,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Critical::translate('criticalcss.com Generator');
+        return Critter::translate('criticalcss.com Generator');
     }
 
     /**
@@ -74,7 +74,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             return (new GeneratorResponse())
                 ->setSuccess(false)
                 ->setException(new \Exception(
-                    Critical::translate('criticalcss.com API key is not configured')
+                    Critter::translate('criticalcss.com API key is not configured')
                 ));
         }
 
@@ -84,26 +84,26 @@ class CriticalCssDotComGenerator extends BaseGenerator
         // Use Craft's mutex system for domain-level locking for entire job lifecycle
         // This ensures no new /generate requests until current job is complete
         $mutex = Craft::$app->getMutex();
-        $lockName = Critical::getPluginHandle() . ':criticalcssdotcomgenerator:' . $domain;
-        $mutexTimeout = Critical::getInstance()->getSettings()->mutexTimeout ?? 30;
+        $lockName = Critter::getPluginHandle() . ':criticalcssdotcomgenerator:' . $domain;
+        $mutexTimeout = Critter::getInstance()->getSettings()->mutexTimeout ?? 30;
 
         if (!$mutex->acquire($lockName, $mutexTimeout)) {
             // If we can't acquire the lock, another job is already running for this domain
             Craft::info(
                 "Failed to acquire mutex lock for domain: $domain (timeout: {$mutexTimeout}s)",
-                Critical::getPluginHandle()
+                Critter::getPluginHandle()
             );
 
             return (new GeneratorResponse())
                 ->setSuccess(false)
                 ->setException(new MutexLockException(
-                    Critical::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
+                    Critter::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
                 ));
         }
 
         Craft::info(
             "Acquired mutex lock for domain: $domain",
-            Critical::getPluginHandle()
+            Critter::getPluginHandle()
         );
 
         try {
@@ -131,7 +131,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
                     throw new \Exception('Failed to generate critical css from criticalcss.com API');
                 }
 
-                Critical::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
+                Critter::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
             }
 
             $attemptCount = 0;
@@ -167,7 +167,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // Always release the mutex lock when job is complete (success or failure)
             Craft::info(
                 "Releasing mutex lock for domain: $domain",
-                Critical::getPluginHandle()
+                Critter::getPluginHandle()
             );
             $mutex->release($lockName);
         }
@@ -184,8 +184,8 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'attemptDelay' => $this->attemptDelay,
             'width' => $this->width,
             'height' => $this->height,
-            'settings' => Critical::getInstance()->getSettings(),
-            'config' => Craft::$app->getConfig()->getConfigFromFile(Critical::getPluginHandle()),
+            'settings' => Critter::getInstance()->getSettings(),
+            'config' => Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle()),
         ];
     }
 
@@ -196,7 +196,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
     private function getResultId(UrlModel $url)
     {
-        $record = Critical::getInstance()->requestRecords->getRecordByUrl($url);
+        $record = Critter::getInstance()->requestRecords->getRecordByUrl($url);
         if ($record) {
             $data = Json::decode($record->data);
             return $data['resultId'] ?? null;

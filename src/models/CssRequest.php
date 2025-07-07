@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 use Craft;
 use craft\base\Model;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 
 /**
  * Storage Request model
@@ -28,7 +28,7 @@ class CssRequest extends Model
     {
         if ($this->getMode() == Settings::MODE_SECTION) {
             $section = $this->requestUrl->getSection();
-            $sectionConfig = Critical::getInstance()->configService->getSectionConfig($section->id, $this->requestUrl->getSiteId());
+            $sectionConfig = Critter::getInstance()->configService->getSectionConfig($section->id, $this->requestUrl->getSiteId());
             $generateEntry = $sectionConfig ? $sectionConfig->getEntry() : null;
 
             // if there is no specific entry for the section,
@@ -55,7 +55,7 @@ class CssRequest extends Model
         $preferredMode = null;
 
         if ($this->requestUrl->hasSection()) {
-            $preferredMode = Critical::getInstance()->settingsService->getSectionMode($this->requestUrl->getSectionHandle());
+            $preferredMode = Critter::getInstance()->settingsService->getSectionMode($this->requestUrl->getSectionHandle());
         } else {
             return Settings::MODE_URL;
         }
@@ -84,7 +84,7 @@ class CssRequest extends Model
                 break;
 
             default:
-                return Critical::getInstance()->settings->defaultMode;
+                return Critter::getInstance()->settings->defaultMode;
         }
     }
 

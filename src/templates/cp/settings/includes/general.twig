@@ -1,5 +1,5 @@
 {% import '_includes/forms' as forms %}
-{% from 'critical-css-generator/macros' import configWarning %}
+{% from 'critter/macros' import configWarning %}
 
 {{ forms.lightswitchField({
     label: "Auto Render Enabled"|t(pluginHandle),
@@ -69,8 +69,8 @@
 }) }}
 
 {{ forms.autosuggestField({
-    label: "Base URL Override"|t(craft.critical.pluginHandle),
-    instructions: "An optional replacement base URL for generating critical CSS. This can be useful for testing or staging environments."|t(craft.critical.pluginHandle),
+    label: "Base URL Override"|t(craft.critter.pluginHandle),
+    instructions: "An optional replacement base URL for generating critical CSS. This can be useful for testing or staging environments."|t(craft.critter.pluginHandle),
     warning: config.baseUrlOverride is defined ? configWarning('baseUrlOverride') : null,
     suggestEnvVars: true,
     suggestAliases: true,

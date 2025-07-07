@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use Craft;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\factories\UrlFactory;
-use mijewe\craftcriticalcssgenerator\models\CssModel;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\factories\UrlFactory;
+use mijewe\critter\models\CssModel;
+use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\UrlModel;
 use yii\base\Component;
 
 /**
@@ -22,7 +22,7 @@ class CssService extends Component
     {
         if ($this->isCssableRequest()) {
             $css = $this->getCssForRequest();
-            Craft::$app->getView()->registerCss($css, $this->formatTagAttributes(Critical::getInstance()->settings->styleTagAttributes));
+            Craft::$app->getView()->registerCss($css, $this->formatTagAttributes(Critter::getInstance()->settings->styleTagAttributes));
         }
     }
 
@@ -37,17 +37,17 @@ class CssService extends Component
         $cssRequest = (new CssRequest())->setRequestUrl($url);
 
         // create a record for the URL if it doesn't exist
-        Critical::getInstance()->requestRecords->createRecordIfNotExists($cssRequest->getUrl());
+        Critter::getInstance()->requestRecords->createRecordIfNotExists($cssRequest->getUrl());
 
         // return css from storage if it exists
-        $cssModel = Critical::getInstance()->storage->get($cssRequest);
+        $cssModel = Critter::getInstance()->storage->get($cssRequest);
         if (!$cssModel->isEmpty()) {
             return $cssModel->getCss();
         }
 
         // if there is no css in storage, start generating new css and return fallback css
         if ($generate) {
-            Critical::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
+            Critter::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
         }
 
         return (new CssModel($this->fallbackCss))->getCss();

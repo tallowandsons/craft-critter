@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\generators;
+namespace mijewe\critter\generators;
 
 use Craft;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\CssModel;
-use mijewe\craftcriticalcssgenerator\models\GeneratorResponse;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\models\CssModel;
+use mijewe\critter\models\GeneratorResponse;
+use mijewe\critter\models\UrlModel;
 use Symfony\Component\Process\Process;
 
 class CriticalCssCliGenerator extends BaseGenerator
@@ -21,7 +21,7 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Critical::translate('@plone/critical-css-cli Generator');
+        return Critter::translate('@plone/critical-css-cli Generator');
     }
 
     /**

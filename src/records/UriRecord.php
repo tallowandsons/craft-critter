@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\records;
+namespace mijewe\critter\records;
 
 use Craft;
 use craft\db\ActiveRecord;

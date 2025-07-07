@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\drivers\apis;
+namespace mijewe\critter\drivers\apis;
 
 use Craft;
 use craft\helpers\App;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\api\CriticalCssDotComGenerateResponse;
-use mijewe\craftcriticalcssgenerator\models\api\CriticalCssDotComResultsResponse;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\models\api\CriticalCssDotComGenerateResponse;
+use mijewe\critter\models\api\CriticalCssDotComResultsResponse;
+use mijewe\critter\models\UrlModel;
 
 class CriticalCssDotComApi extends BaseRestApi
 {

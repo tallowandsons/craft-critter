@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\helpers;
+namespace mijewe\critter\helpers;
 
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\Settings;
+use mijewe\critter\Critter;
+use mijewe\critter\models\Settings;
 
 class SettingsHelper
 {
@@ -32,15 +32,15 @@ class SettingsHelper
     {
         return [
             [
-                'label' => Critical::translate('Clear URLs'),
+                'label' => Critter::translate('Clear URLs'),
                 'value' => Settings::CACHE_BEHAVIOUR_CLEAR_URLS,
             ],
             [
-                'label' => Critical::translate('Expire URLs'),
+                'label' => Critter::translate('Expire URLs'),
                 'value' => Settings::CACHE_BEHAVIOUR_EXPIRE_URLS,
             ],
             [
-                'label' => Critical::translate('Refresh URLs'),
+                'label' => Critter::translate('Refresh URLs'),
                 'value' => Settings::CACHE_BEHAVIOUR_REFRESH_URLS,
             ],
         ];

@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\drivers\caches;
+namespace mijewe\critter\drivers\caches;
 
-use mijewe\craftcriticalcssgenerator\models\Settings;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\models\Settings;
+use mijewe\critter\models\UrlModel;
 use putyourlightson\blitz\Blitz;
 use putyourlightson\blitz\models\SiteUriModel;
 

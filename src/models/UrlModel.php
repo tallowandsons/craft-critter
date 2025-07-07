@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 use Craft;
 use craft\base\Element;
@@ -10,7 +10,7 @@ use craft\elements\Entry;
 use craft\helpers\App;
 use craft\helpers\UrlHelper;
 use craft\models\Section;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 
 /**
  * Url Model model
@@ -30,7 +30,7 @@ class UrlModel extends Model
     public function getUrl(): string
     {
 
-        $baseUrlOverride = App::parseEnv(Critical::getInstance()->settings->baseUrlOverride ?? null);
+        $baseUrlOverride = App::parseEnv(Critter::getInstance()->settings->baseUrlOverride ?? null);
         if ($baseUrlOverride) {
             $baseUrlOverride = rtrim($baseUrlOverride, '/');
         }

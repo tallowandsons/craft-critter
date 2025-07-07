@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 /**
  * Storage Response model

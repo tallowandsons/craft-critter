@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\records;
+namespace mijewe\critter\records;
 
 use Craft;
 use craft\db\ActiveRecord;
@@ -20,7 +20,7 @@ class RequestRecord extends ActiveRecord
 
     public static function tableName()
     {
-        return '{{%criticalcssgenerator_requests}}';
+        return '{{%critter_requests}}';
     }
 
     public function isInQueue()

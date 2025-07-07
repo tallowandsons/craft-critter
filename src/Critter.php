@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator;
+namespace mijewe\critter;
 
 use Craft;
 use craft\base\Model;
@@ -12,23 +12,23 @@ use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
-use mijewe\craftcriticalcssgenerator\models\Settings;
-use mijewe\craftcriticalcssgenerator\services\CacheService;
-use mijewe\craftcriticalcssgenerator\services\ConfigService;
-use mijewe\craftcriticalcssgenerator\services\CssService;
-use mijewe\craftcriticalcssgenerator\services\GeneratorService;
-use mijewe\craftcriticalcssgenerator\services\SettingsService;
-use mijewe\craftcriticalcssgenerator\services\StorageService;
-use mijewe\craftcriticalcssgenerator\services\RequestRecordService;
-use mijewe\craftcriticalcssgenerator\variables\CriticalVariable;
-use mijewe\craftcriticalcssgenerator\helpers\GeneratorHelper;
+use mijewe\critter\models\Settings;
+use mijewe\critter\services\CacheService;
+use mijewe\critter\services\ConfigService;
+use mijewe\critter\services\CssService;
+use mijewe\critter\services\GeneratorService;
+use mijewe\critter\services\SettingsService;
+use mijewe\critter\services\StorageService;
+use mijewe\critter\services\RequestRecordService;
+use mijewe\critter\variables\CritterVariable;
+use mijewe\critter\helpers\GeneratorHelper;
 use yii\base\Event;
 use yii\base\View as BaseView;
 
 /**
- * Critical CSS Generator plugin
+ * Critter plugin
  *
- * @method static Critical getInstance()
+ * @method static Critter getInstance()
  * @method Settings getSettings()
  * @author mijewe <dev@honcho.agency>
  * @copyright mijewe
@@ -41,17 +41,17 @@ use yii\base\View as BaseView;
  * @property-read SettingsService $settingsService
  * @property-read ConfigService $configService
  */
-class Critical extends Plugin
+class Critter extends Plugin
 {
 
     //  plugin information
-    public const PLUGIN_NAME = 'Critical CSS Generator';
-    public const PLUGIN_HANDLE = 'critical-css-generator';
+    public const PLUGIN_NAME = 'Critter';
+    public const PLUGIN_HANDLE = 'critter';
 
     // user permissions
-    public const PERMISSION_MANAGE_SECTIONS = 'critical-css-generator:manageSections';
-    public const PERMISSION_MANAGE_SECTIONS_VIEW = 'critical-css-generator:manageSections:view';
-    public const PERMISSION_MANAGE_SECTIONS_EDIT = 'critical-css-generator:manageSections:edit';
+    public const PERMISSION_MANAGE_SECTIONS = 'critter:manageSections';
+    public const PERMISSION_MANAGE_SECTIONS_VIEW = 'critter:manageSections:view';
+    public const PERMISSION_MANAGE_SECTIONS_EDIT = 'critter:manageSections:edit';
 
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
@@ -147,8 +147,8 @@ class Critical extends Plugin
             View::class,
             BaseView::EVENT_END_PAGE,
             static function () {
-                if (Critical::getInstance()->getSettings()->autoRenderEnabled) {
-                    Critical::getInstance()->css->renderCss();
+                if (Critter::getInstance()->getSettings()->autoRenderEnabled) {
+                    Critter::getInstance()->css->renderCss();
                 }
             }
         );
@@ -191,7 +191,7 @@ class Critical extends Plugin
             function (Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
-                $variable->set('critical', CriticalVariable::class);
+                $variable->set('critter', CritterVariable::class);
             }
         );
     }
@@ -259,7 +259,7 @@ class Critical extends Plugin
         // strip trailing and leading slashes
         $path = trim($path, '/');
 
-        return UrlHelper::cpUrl(Critical::getInstance()->getPluginUrlSegment() . '/' . $path);
+        return UrlHelper::cpUrl(Critter::getInstance()->getPluginUrlSegment() . '/' . $path);
     }
 
     /**
@@ -267,6 +267,6 @@ class Critical extends Plugin
      */
     static function translate(string $str, array $params = []): string
     {
-        return Craft::t(Critical::getInstance()->getPluginHandle(), $str, $params);
+        return Craft::t(Critter::getInstance()->getPluginHandle(), $str, $params);
     }
 }

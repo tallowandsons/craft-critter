@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\events;
+namespace mijewe\critter\events;
 
 use yii\base\Event;
 

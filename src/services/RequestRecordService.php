@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use craft\helpers\Json;
 use DateTime;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
-use mijewe\craftcriticalcssgenerator\records\RequestRecord;
+use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 use yii\base\Component;
 
 /**

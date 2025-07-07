@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use Craft;
 use craft\elements\Entry;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\drivers\caches\CacheInterface;
-use mijewe\craftcriticalcssgenerator\factories\UrlFactory;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
-use mijewe\craftcriticalcssgenerator\models\Settings;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\Critter;
+use mijewe\critter\drivers\caches\CacheInterface;
+use mijewe\critter\factories\UrlFactory;
+use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\Settings;
+use mijewe\critter\models\UrlModel;
 use yii\base\Component;
 
 /**
@@ -21,7 +21,7 @@ class CacheService extends Component
 
     public function __construct()
     {
-        $cacheClass = Critical::getInstance()->settings->cacheType;
+        $cacheClass = Critter::getInstance()->settings->cacheType;
         $this->cache = new $cacheClass();
     }
 

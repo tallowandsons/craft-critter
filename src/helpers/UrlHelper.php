@@ -1,16 +1,16 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\helpers;
+namespace mijewe\critter\helpers;
 
 use craft\web\Request;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 
 class UrlHelper
 {
 
     static function getUniqueQueryParamsFromRequest(Request $request): array
     {
-        $uniqueQueryParamsSettings = Critical::getInstance()->settings->uniqueQueryParams ?? [];
+        $uniqueQueryParamsSettings = Critter::getInstance()->settings->uniqueQueryParams ?? [];
 
         // Extract enabled parameter names
         $enabledParams = [];

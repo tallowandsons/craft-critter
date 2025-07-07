@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 use craft\base\Model;
-use mijewe\craftcriticalcssgenerator\drivers\caches\BlitzCache;
-use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
-use mijewe\craftcriticalcssgenerator\storage\CraftCacheStorage;
+use mijewe\critter\drivers\caches\BlitzCache;
+use mijewe\critter\generators\CriticalCssDotComGenerator;
+use mijewe\critter\storage\CraftCacheStorage;
 
 /**
  * Critical CSS Generator settings

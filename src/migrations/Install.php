@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\migrations;
+namespace mijewe\critter\migrations;
 
 use Craft;
 use craft\db\Migration;
 use craft\records\Site;
-use mijewe\craftcriticalcssgenerator\records\RequestRecord;
-use mijewe\craftcriticalcssgenerator\records\SectionConfigRecord;
+use mijewe\critter\records\RequestRecord;
+use mijewe\critter\records\SectionConfigRecord;
 
 /**
  * Install migration for Critical CSS Generator plugin

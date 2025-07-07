@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\jobs;
+namespace mijewe\critter\jobs;
 
 use Craft;
 use craft\queue\BaseJob;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\exceptions\MutexLockException;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
+use mijewe\critter\Critter;
+use mijewe\critter\exceptions\MutexLockException;
+use mijewe\critter\models\CssRequest;
 use yii\queue\RetryableJobInterface;
 
 /**
@@ -24,7 +24,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
      */
     public function canRetry($attempt, $error): bool
     {
-        $settings = Critical::getInstance()->getSettings();
+        $settings = Critter::getInstance()->getSettings();
 
         // Retry on specific retryable exceptions, up to the configured max retries
         $retryableExceptions = [
@@ -54,7 +54,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
     function execute($queue): void
     {
         try {
-            Critical::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
+            Critter::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
         } catch (MutexLockException $e) {
             // Handle retryable exceptions with delay mechanism
             $this->handleRetryableException($e);
@@ -72,20 +72,20 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
     {
         // If this is a retry attempt, implement our own delay mechanism
         if ($this->retryAttempt > 0) {
-            $settings = Critical::getInstance()->getSettings();
+            $settings = Critter::getInstance()->getSettings();
             $delay = $settings->retryBaseDelay * (2 ** ($this->retryAttempt - 1));
 
             $url = $this->cssRequest->getUrl()->getAbsoluteUrl();
             $exceptionType = (new \ReflectionClass($e))->getShortName();
             Craft::info(
                 "{$exceptionType} for {$url}, sleeping for {$delay}s before retry {$this->retryAttempt}",
-                Critical::getPluginHandle()
+                Critter::getPluginHandle()
             );
 
             sleep($delay);
 
             // Try again after delay
-            Critical::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
+            Critter::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
         } else {
             // First attempt - queue a delayed retry manually to get exponential backoff
             $this->queueDelayedRetry($e);
@@ -97,7 +97,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
      */
     private function queueDelayedRetry(\Throwable $e): void
     {
-        $settings = Critical::getInstance()->getSettings();
+        $settings = Critter::getInstance()->getSettings();
         $nextAttempt = $this->retryAttempt + 1;
 
         if ($nextAttempt <= $settings->maxRetries) {
@@ -107,7 +107,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
             $exceptionType = (new \ReflectionClass($e))->getShortName();
             Craft::info(
                 "{$exceptionType} for {$url}, queueing retry {$nextAttempt} with {$delay}s delay",
-                Critical::getPluginHandle()
+                Critter::getPluginHandle()
             );
 
             // Create retry job with incremented attempt counter
@@ -125,7 +125,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
             $exceptionType = (new \ReflectionClass($e))->getShortName();
             Craft::error(
                 "{$exceptionType} for {$url}, max retries ({$settings->maxRetries}) exceeded",
-                Critical::getPluginHandle()
+                Critter::getPluginHandle()
             );
 
             throw $e; // Let this job fail

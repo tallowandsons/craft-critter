@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 use craft\base\Model;
 

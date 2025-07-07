@@ -1,16 +1,16 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\variables;
+namespace mijewe\critter\variables;
 
 use Craft;
-use mijewe\craftcriticalcssgenerator\Critical;
+use mijewe\critter\Critter;
 
-class CriticalVariable
+class CritterVariable
 {
 
     public function render()
     {
-        Critical::getInstance()->css->renderCss();
+        Critter::getInstance()->css->renderCss();
     }
 
     /**
@@ -18,16 +18,16 @@ class CriticalVariable
      */
     public function pluginHandle()
     {
-        return Critical::getPluginHandle();
+        return Critter::getPluginHandle();
     }
 
     /**
      * Get constants for use in templates.
-     * Usage: craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')
+     * Usage: craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')
      */
     public function const(string $constantName): string
     {
-        $constantFullName = 'mijewe\\craftcriticalcssgenerator\\Critical::' . $constantName;
+        $constantFullName = 'mijewe\\critter\\Critter::' . $constantName;
 
         if (defined($constantFullName)) {
             return constant($constantFullName);

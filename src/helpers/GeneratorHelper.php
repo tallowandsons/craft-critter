@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\helpers;
+namespace mijewe\critter\helpers;
 
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\events\RegisterGeneratorsEvent;
-use mijewe\craftcriticalcssgenerator\generators\CriticalCssCliGenerator;
-use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
-use mijewe\craftcriticalcssgenerator\generators\GeneratorInterface;
+use mijewe\critter\Critter;
+use mijewe\critter\events\RegisterGeneratorsEvent;
+use mijewe\critter\generators\CriticalCssCliGenerator;
+use mijewe\critter\generators\CriticalCssDotComGenerator;
+use mijewe\critter\generators\GeneratorInterface;
 use yii\base\Event;
 
 class GeneratorHelper
@@ -113,7 +113,7 @@ class GeneratorHelper
         // Add whatever generator is currently selected to the list of generator types,
         // as it may not be in the list above if the config file is
         // set up with a custom generator.
-        $currentGeneratorType = Critical::getInstance()->settings->generatorType;
+        $currentGeneratorType = Critter::getInstance()->settings->generatorType;
         if (self::isValidGenerator($currentGeneratorType)) {
             self::registerGenerator($currentGeneratorType);
         }

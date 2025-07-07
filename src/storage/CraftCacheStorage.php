@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\storage;
+namespace mijewe\critter\storage;
 
 use Craft;
-use mijewe\craftcriticalcssgenerator\models\CssModel;
-use mijewe\craftcriticalcssgenerator\models\StorageResponse;
+use mijewe\critter\models\CssModel;
+use mijewe\critter\models\StorageResponse;
 
 class CraftCacheStorage extends BaseStorage
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\models;
+namespace mijewe\critter\models;
 
 use Craft;
 use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\Json;
-use mijewe\craftcriticalcssgenerator\records\SectionConfigRecord;
+use mijewe\critter\records\SectionConfigRecord;
 
 /**
  * Section Config model

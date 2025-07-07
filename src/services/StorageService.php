@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\services;
+namespace mijewe\critter\services;
 
 use craft\helpers\ArrayHelper;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\CssModel;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
-use mijewe\craftcriticalcssgenerator\storage\StorageInterface;
+use mijewe\critter\Critter;
+use mijewe\critter\models\CssModel;
+use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\UrlModel;
+use mijewe\critter\storage\StorageInterface;
 use yii\base\Component;
 
 /**
@@ -20,7 +20,7 @@ class StorageService extends Component
 
     public function __construct()
     {
-        $storageClass = Critical::getInstance()->settings->storageType;
+        $storageClass = Critter::getInstance()->settings->storageType;
         $this->storage = new $storageClass();
     }
 

@@ -1,11 +1,11 @@
-{% extends 'critical-css-generator/_layouts/cp' %}
+{% extends 'critter/_layouts/cp' %}
 {% import '_includes/forms' as forms %}
 
-{# @var plugin \mijewe\craftcriticalcssgenerator\Critical #}
-{# @var settings \mijewe\craftcriticalcssgenerator\models\Settings #}
+{# @var plugin \mijewe\critter\Critical #}
+{# @var settings \mijewe\critter\models\Settings #}
 
 {% set title = 'Critical CSS Generator' %}
-{% set pluginHandle = 'critical-css-generator' %}
+{% set pluginHandle = 'critter' %}
 
 {# whether or not allowAdminChanges is on #}
 {% set readOnly = readOnly ?? false %}

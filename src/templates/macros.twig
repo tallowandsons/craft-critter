@@ -1,5 +1,5 @@
 {% macro configWarning(setting) -%}
-    {{ 'This is being overridden by the `{setting}` config setting.'|t('critical-css-generator', {setting: setting})|markdown(inlineOnly=true) }}
+    {{ 'This is being overridden by the `{setting}` config setting.'|t('critter', {setting: setting})|markdown(inlineOnly=true) }}
 {%- endmacro %}
 
 {% macro configGroupWarning(setting) -%}
@@ -8,7 +8,7 @@
             <span class="icon" aria-hidden="true"></span>
             <span class="visually-hidden">Warning: </span>
             <span>
-                {{ 'These settings are being overridden by the `{setting}` config setting.'|t(craft.critical.pluginHandle, {setting: setting })|markdown(inlineOnly=true) }}
+                {{ 'These settings are being overridden by the `{setting}` config setting.'|t(craft.critter.pluginHandle, {setting: setting })|markdown(inlineOnly=true) }}
             </span>
         </p>
     </div>

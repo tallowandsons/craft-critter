@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\console\controllers;
+namespace mijewe\critter\console\controllers;
 
 use Craft;
 use craft\console\Controller;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\factories\UrlFactory;
-use mijewe\craftcriticalcssgenerator\generators\CriticalCssDotComGenerator;
+use mijewe\critter\Critter;
+use mijewe\critter\factories\UrlFactory;
+use mijewe\critter\generators\CriticalCssDotComGenerator;
 use yii\console\ExitCode;
 
 /**
@@ -30,7 +30,7 @@ class TestController extends Controller
     }
 
     /**
-     * critical-css-generator/test command
+     * critter/test command
      */
     public function actionIndex(): int
     {
@@ -41,13 +41,13 @@ class TestController extends Controller
     public function actionGenerate()
     {
         $urlModel = UrlFactory::createFromUrl($this->testUrl);
-        Critical::getInstance()->generator->startGenerate($urlModel, false, true);
+        Critter::getInstance()->generator->startGenerate($urlModel, false, true);
     }
 
     public function actionGet()
     {
         $urlModel = UrlFactory::createFromUrl($this->testUrl);
-        $css = Critical::getInstance()->css->getCssForUrl($urlModel);
+        $css = Critter::getInstance()->css->getCssForUrl($urlModel);
         echo $css . PHP_EOL;
     }
 

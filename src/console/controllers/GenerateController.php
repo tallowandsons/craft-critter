@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\console\controllers;
+namespace mijewe\critter\console\controllers;
 
 use Craft;
 use craft\console\Controller;
-use mijewe\craftcriticalcssgenerator\Critical;
-use mijewe\craftcriticalcssgenerator\models\CssRequest;
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
-use mijewe\craftcriticalcssgenerator\records\RequestRecord;
+use mijewe\critter\Critter;
+use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 use yii\console\ExitCode;
 
 /**
@@ -43,7 +43,7 @@ class GenerateController extends Controller
     }
 
     /**
-     * critical-css-generator/generate command
+     * critter/generate command
      */
     public function actionIndex(): int
     {
@@ -124,7 +124,7 @@ class GenerateController extends Controller
                 $cssRequest = (new CssRequest())->setRequestUrl($urlModel);
 
                 // Start generating critical CSS using the queue
-                Critical::getInstance()->generator->startGenerate($cssRequest, true, true);
+                Critter::getInstance()->generator->startGenerate($cssRequest, true, true);
 
                 $queuedCount++;
                 $this->stdout("Queued generation for: {$record->uri}\n");

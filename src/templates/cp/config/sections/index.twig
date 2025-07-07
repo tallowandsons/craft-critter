@@ -1,7 +1,7 @@
-{% extends 'critical-css-generator/_layouts/cp' %}
+{% extends 'critter/_layouts/cp' %}
 
 {% import '_includes/forms' as forms %}
-{% from 'critical-css-generator/macros' import configWarning %}
+{% from 'critter/macros' import configWarning %}
 
 {% set fullPageForm = true %}
 
@@ -10,7 +10,7 @@
 {% block sidebar %}{% endblock %}
 
 {% block actionButton %}
-    {% if currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+    {% if currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
         <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
     {% endif %}
 {% endblock %}
@@ -25,7 +25,7 @@
             <h1>Sections</h1>
         </div>
 
-        {% if not currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+        {% if not currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
             <div class="readable">
                 <blockquote class="note">
                     <p><strong>{{ 'Read-only mode'|t(pluginHandle) }}</strong></p>
@@ -63,7 +63,7 @@
                 </div>
 
                 {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
-                {% set canEdit = currentUser.can(craft.critical.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+                {% set canEdit = currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
 
                 {{ forms.elementSelect({
                     id: 'section-entry-' ~ section.handle,

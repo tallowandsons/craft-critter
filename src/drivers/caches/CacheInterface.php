@@ -1,8 +1,8 @@
 <?php
 
-namespace mijewe\craftcriticalcssgenerator\drivers\caches;
+namespace mijewe\critter\drivers\caches;
 
-use mijewe\craftcriticalcssgenerator\models\UrlModel;
+use mijewe\critter\models\UrlModel;
 
 interface CacheInterface
 {

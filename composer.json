@@ -1,5 +1,5 @@
 {
-    "name": "mijewe/craft-critical-css-generator",
+    "name": "mijewe/craft-critter",
     "type": "craft-plugin",
     "license": "proprietary",
     "support": {
@@ -15,15 +15,15 @@
     },
     "autoload": {
         "psr-4": {
-            "mijewe\\craftcriticalcssgenerator\\": "src/"
+            "mijewe\\critter\\": "src/"
         }
     },
     "extra": {
-        "handle": "critical-css-generator",
-        "name": "Critical CSS Generator",
+        "handle": "critter",
+        "name": "Critter",
         "developer": "mijewe",
         "documentationUrl": "",
-        "class": "mijewe\\craftcriticalcssgenerator\\Critical"
+        "class": "mijewe\\critter\\Critter"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",
