@@ -15,30 +15,29 @@
     <input type="hidden" name="action" value="{{ pluginHandle }}/settings/save">
     <input type="hidden" name="pluginHandle" value="{{ pluginHandle }}">
 
-    <div class="field">
-        <div class="heading">
-            <h1>Sections</h1>
-        </div>
+    <h2>{{ 'Sections'|t('app' )}}</h2>
 
-        {# <div class="instructions">
-            <p>...</p>
-        </div> #}
+    <p>Here you can configure the critical CSS settings for each section.</p>
+    <p>Each section can be set to use either a unique CSS for each URL or a shared CSS for all URLs in that section.</p>
+    <ul>
+        <li><strong>URL:</strong> Unique CSS will be used for each URL in this section.</li>
+        <li><strong>Section:</strong> The same CSS will be used for all URLs in this section.</li>
+    </ul>
 
-        {% if config.sectionSettings is defined %}
-            <p class="warning has-icon">
-                <span class="icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
-            </p>
-        {% endif %}
+    {% if config.sectionSettings is defined %}
+        <p class="warning has-icon">
+            <span class="icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
+        </p>
+    {% endif %}
 
-        <hr>
-    </div>
+    <hr>
 
     {% for section in sections %}
         <div class="field">
-            <div class="heading">
+            {# <div class="heading">
                 <h2>{{ section.name }}</h2>
-            </div>
+            </div> #}
 
             {% set settingsMode = settings.sectionSettings[section.handle].mode ?? null %}
             {% set configMode = config.sectionSettings[section.handle].mode ?? null %}
@@ -47,8 +46,8 @@
             {% set value = isSingle ? 'url' : settingsMode %}
 
             {{ forms.selectField({
-                label: "Mode"|t(pluginHandle),
-                instructions: "Select the mode that entries in the <strong>#{section.name}</strong> section should use. \n <ul><li><strong>URL:</strong> Unique CSS will be used for each URL in this section.</li><li><strong>Section:</strong> The same CSS will be used for all URLs in this section.</li></ul>"|t(pluginHandle),
+                label: "'" ~ section.name ~ "' Mode"|t(pluginHandle),
+                instructions: "Select the mode that entries in the <strong>#{section.name}</strong> section should use. \n "|t(pluginHandle),
                 name: "settings[sectionSettings][#{section.handle}][mode]",
                 options: modeOptions,
                 value: value ?? settings.defaultMode,
@@ -57,9 +56,6 @@
                 tip: isSingle ? 'Singles always use URL mode.'|t(pluginHandle),
             }) }}
 
-            {% if not loop.last %}
-                <hr>
-            {% endif %}
         </div>
     {% endfor %}
 

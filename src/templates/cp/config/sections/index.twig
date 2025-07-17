@@ -20,33 +20,28 @@
     <input type="hidden" name="action" value="{{ pluginHandle }}/config/save">
     <input type="hidden" name="pluginHandle" value="{{ pluginHandle }}">
 
-    <div class="field">
-        <div class="heading">
-            <h1>Sections</h1>
+    {% if not currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+        <div class="readable">
+            <blockquote class="note">
+                <p><strong>{{ 'Read-only mode'|t(pluginHandle) }}</strong></p>
+                <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t(pluginHandle) }}</p>
+            </blockquote>
         </div>
+    {% endif %}
 
-        {% if not currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
-            <div class="readable">
-                <blockquote class="note">
-                    <p><strong>{{ 'Read-only mode'|t(pluginHandle) }}</strong></p>
-                    <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t(pluginHandle) }}</p>
-                </blockquote>
-            </div>
-        {% endif %}
+    <h2>{{ "Sections"|t('app') }}</h2>
 
-        {# <div class="instructions">
-            <p>...</p>
-        </div> #}
+    <p>Sections that are in <em>section</em> mode will generate one critical CSS file for all entries within that section. Here you can choose the entry that will be used to generate the critical CSS for each section.</p>
+    <p>Singles and sections in <em>URL</em> mode will generate a critical CSS file for each entry individually.</p>
 
-        {% if config.sectionSettings is defined %}
-            <p class="warning has-icon">
-                <span class="icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
-            </p>
-        {% endif %}
+    {% if config.sectionSettings is defined %}
+        <p class="warning has-icon">
+            <span class="icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
+        </p>
+    {% endif %}
 
-        <hr>
-    </div>
+    <hr>
 
     {% for section in sections %}
 
@@ -72,7 +67,7 @@
                     limit: 1,
                     showSiteMenu: false,
                     elements: elements,
-                    disabled: not canEdit
+                    disabled: not canEdit,
                 }) }}
 
                 {% if mode != 'section' %}
@@ -81,10 +76,6 @@
                         <span class="visually-hidden">Tip: </span>
                         <span>This won't have an effect because the <em>{{ section.name }}</em> section is in <em>{{ mode }}</em> mode.</span>
                     </p>
-                {% endif %}
-
-                {% if not loop.last %}
-                    <hr>
                 {% endif %}
 
             </div>
