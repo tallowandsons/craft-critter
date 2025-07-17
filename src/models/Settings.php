@@ -13,7 +13,7 @@ use mijewe\critter\storage\CraftCacheStorage;
 class Settings extends Model
 {
 
-    const MODE_URL = 'url';
+    const MODE_ENTRY = 'entry';
     const MODE_SECTION = 'section';
 
     const CACHE_BEHAVIOUR_EXPIRE_URLS = 'expireUrls';
@@ -51,7 +51,7 @@ class Settings extends Model
 
     // what the default mode should be.
     // this will determine whether critical css
-    // is generated for each url or each section
+    // is generated for each entry or each section
     public string $defaultMode = self::MODE_SECTION;
 
     // the settings for each section

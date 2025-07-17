@@ -34,7 +34,7 @@ class CacheService extends Component
         $mode = $cssRequest->getMode();
 
         switch ($mode) {
-            case Settings::MODE_URL:
+            case Settings::MODE_ENTRY:
                 $this->resolveCacheForUrl($url);
                 break;
             case Settings::MODE_SECTION:

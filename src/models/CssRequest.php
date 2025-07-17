@@ -46,7 +46,7 @@ class CssRequest extends Model
 
     /**
      * Each section has a 'mode', which determines whether to
-     * generate unique critical css for each url, or once
+     * generate unique critical css for each entry, or once
      * for the entire section.
      * This function returns the mode for the URL.
      */
@@ -57,30 +57,30 @@ class CssRequest extends Model
         if ($this->requestUrl->hasSection()) {
             $preferredMode = Critter::getInstance()->settingsService->getSectionMode($this->requestUrl->getSectionHandle());
         } else {
-            return Settings::MODE_URL;
+            return Settings::MODE_ENTRY;
         }
 
-        // if the section is a single, switch preferred mode to url
+        // if the section is a single, switch preferred mode to entry
         if ($this->requestUrl->isSingle()) {
-            $preferredMode = Settings::MODE_URL;
+            $preferredMode = Settings::MODE_ENTRY;
         }
 
         switch ($preferredMode) {
 
             // section mode is only possible if the url
             // has a matched section. Otherwise,
-            // fallback to url mode.
+            // fallback to entry mode.
             case Settings::MODE_SECTION:
                 if ($this->requestUrl->hasSection()) {
                     return Settings::MODE_SECTION;
                 } else {
-                    return Settings::MODE_URL;
+                    return Settings::MODE_ENTRY;
                 }
                 break;
 
-            // url mode is always possible
-            case Settings::MODE_URL:
-                return Settings::MODE_URL;
+            // entry mode is always possible
+            case Settings::MODE_ENTRY:
+                return Settings::MODE_ENTRY;
                 break;
 
             default:
@@ -94,7 +94,7 @@ class CssRequest extends Model
             case Settings::MODE_SECTION:
                 return 'mode:section|site:' . $this->requestUrl->getSiteId() . '|section:' . $this->requestUrl->getSectionHandle() . '|query:' . $this->requestUrl->getQueryString();
                 break;
-            case Settings::MODE_URL:
+            case Settings::MODE_ENTRY:
             default:
                 return $this->requestUrl->getAbsoluteUrl();
         }

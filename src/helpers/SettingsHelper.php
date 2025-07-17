@@ -15,8 +15,8 @@ class SettingsHelper
     {
         return [
             [
-                'label' => 'URL',
-                'value' => Settings::MODE_URL,
+                'label' => 'Entry',
+                'value' => Settings::MODE_ENTRY,
             ],
             [
                 'label' => 'Section',

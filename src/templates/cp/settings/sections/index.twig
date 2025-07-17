@@ -18,10 +18,10 @@
     <h2>{{ 'Sections'|t('app' )}}</h2>
 
     <p>Here you can configure the critical CSS settings for each section.</p>
-    <p>Each section can be set to use either a unique CSS for each URL or a shared CSS for all URLs in that section.</p>
+    <p>Each section can be set to use either a unique CSS for each entry or a shared CSS for all entries in that section.</p>
     <ul>
-        <li><strong>URL:</strong> Unique CSS will be used for each URL in this section.</li>
-        <li><strong>Section:</strong> The same CSS will be used for all URLs in this section.</li>
+        <li><strong>Entry:</strong> Unique CSS will be used for each entry in this section.</li>
+        <li><strong>Section:</strong> The same CSS will be used for all entries in this section.</li>
     </ul>
 
     {% if config.sectionSettings is defined %}
@@ -43,7 +43,7 @@
             {% set configMode = config.sectionSettings[section.handle].mode ?? null %}
 
             {% set isSingle = section.type == 'single' %}
-            {% set value = isSingle ? 'url' : settingsMode %}
+            {% set value = isSingle ? 'entry' : settingsMode %}
 
             {{ forms.selectField({
                 label: "'" ~ section.name ~ "' Mode"|t(pluginHandle),
@@ -53,7 +53,7 @@
                 value: value ?? settings.defaultMode,
                 toggle: true,
                 disabled: isSingle,
-                tip: isSingle ? 'Singles always use URL mode.'|t(pluginHandle),
+                tip: isSingle ? 'Singles always use Entry mode.'|t(pluginHandle),
             }) }}
 
         </div>
