@@ -1,4 +1,4 @@
-# Critical CSS Generator
+# Critter
 
 A powerful Craft CMS plugin for automatically generating and managing critical CSS to improve website performance by eliminating render-blocking CSS.
 
@@ -45,7 +45,7 @@ You can install this plugin from the Plugin Store or with Composer.
 
 #### From the Plugin Store
 
-Go to the Plugin Store in your project's Control Panel and search for "Critical CSS Generator". Then press "Install".
+Go to the Plugin Store in your project's Control Panel and search for "Critter". Then press "Install".
 
 #### With Composer
 
@@ -221,8 +221,8 @@ When used with Blitz caching:
 
 The plugin provides granular permissions:
 
-- **View Critical CSS Generator**: Access to plugin sections
-- **Edit Critical CSS Generator**: Modify plugin settings
+- **View Critter**: Access to plugin sections
+- **Edit Critter**: Modify plugin settings
 - **Manage Sections**: Configure section-specific settings
 
 ## Troubleshooting
@@ -288,4 +288,4 @@ Developed by [mijewe](https://github.com/mijewe) / [Honcho Agency](https://honch
 
 ---
 
-**Improve your website's performance with Critical CSS Generator!** 🚀
+**Improve your website's performance with Critter!** 🚀

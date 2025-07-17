@@ -1,4 +1,4 @@
-# Release Notes for Critical CSS Generator
+# Release Notes for Critter
 
 ## 1.0.0
 - Initial release

@@ -9,7 +9,7 @@ use mijewe\critter\records\RequestRecord;
 use mijewe\critter\records\SectionConfigRecord;
 
 /**
- * Install migration for Critical CSS Generator plugin
+ * Install migration for Critter plugin
  */
 class Install extends Migration
 {

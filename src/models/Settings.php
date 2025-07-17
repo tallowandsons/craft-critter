@@ -8,7 +8,7 @@ use mijewe\critter\generators\CriticalCssDotComGenerator;
 use mijewe\critter\storage\CraftCacheStorage;
 
 /**
- * Critical CSS Generator settings
+ * Critter settings
  */
 class Settings extends Model
 {
@@ -44,7 +44,7 @@ class Settings extends Model
     // which query string parameters are to be treated as unique urls
     public array $uniqueQueryParams = [];
 
-    // a base URL override for the critical css generator
+    // a base URL override for the Critter
     // this is useful if you want to generate critical css for a different domain
     // than the one the site is running on, for example on a staging environment.
     public ?string $baseUrlOverride = null;
