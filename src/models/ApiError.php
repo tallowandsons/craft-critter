@@ -17,6 +17,18 @@ class ApiError extends Model
     private $message = '';
     private $source;
 
+    /**
+     * Constructor
+     */
+    public function __construct($code = null, $message = null, $config = [])
+    {
+        $this->code = $code;
+        $this->message = $message;
+        $this->source = self::DEFAULT_SOURCE;
+
+        parent::__construct($config);
+    }
+
     public function getCode(): ?string
     {
         return $this->code;
@@ -46,10 +58,6 @@ class ApiError extends Model
     {
         $str = '';
 
-        if (!empty($this->source)) {
-            $str .= $this->source . ' says ';
-        }
-
         // if code
         if (!empty($this->code)) {
             $str .= $this->code . ': ';
@@ -66,14 +74,9 @@ class ApiError extends Model
 
     static public function createFromResponseContents($contents): ApiError
     {
-        $errorCode = $contents[0]['errorCode'] ?? null;
-        $type = $contents['Type'] ?? null;
-        $message = $contents[0]['message'] ?? $contents['Message'] ?? null;
+        $errorCode = $contents['errorCode'] ?? null;
+        $message = $contents['error'] ?? null;
 
-        if ($errorCode) {
-            return new ApiError($errorCode, $message);
-        }
-
-        return new ApiError($type, $message);
+        return new ApiError($errorCode, $message);
     }
 }

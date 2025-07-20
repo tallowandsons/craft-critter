@@ -125,10 +125,21 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // so trigger a new job via the API.
             if (!$resultId) {
                 $response = $this->getApi()->generate($urlModel, $this->width, $this->height);
+
+                // Check if the API response contains an error
+                if ($response->hasError()) {
+                    $error = $response->getError();
+                    return (new GeneratorResponse())
+                        ->setSuccess(false)
+                        ->setException(new \Exception('Failed to generate critical CSS from criticalcss.com API: ' . $error->toString()));
+                }
+
                 $resultId = $response->getJobId();
 
                 if (!$resultId) {
-                    throw new \Exception('Failed to generate critical css from criticalcss.com API');
+                    return (new GeneratorResponse())
+                        ->setSuccess(false)
+                        ->setException(new \Exception('Failed to generate critical css from criticalcss.com API: No job ID returned'));
                 }
 
                 Critter::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
@@ -139,6 +150,14 @@ class CriticalCssDotComGenerator extends BaseGenerator
             while ($attemptCount < $this->maxAttempts) {
 
                 $apiResponse = $this->getResultsById($resultId);
+
+                // Check if the API response contains an error
+                if ($apiResponse->hasError()) {
+                    $error = $apiResponse->getError();
+                    return (new GeneratorResponse())
+                        ->setSuccess(false)
+                        ->setException(new \Exception('Failed to get results from criticalcss.com API: ' . $error->toString()));
+                }
 
                 if ($apiResponse->isDone()) {
                     if ($apiResponse->hasCss()) {
@@ -180,7 +199,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         // Run validation to populate warnings/errors for display
         $this->validate();
-        
+
         return [
             'generator' => $this,
             'settings' => Critter::getInstance()->getSettings(),
@@ -195,12 +214,12 @@ class CriticalCssDotComGenerator extends BaseGenerator
     public function validateApiKey($attribute, $params): void
     {
         $apiKey = $this->getParsedApiKey();
-        
+
         if (empty($apiKey)) {
             $this->addError($attribute, 'API key is required for criticalcss.com generator.');
             return;
         }
-        
+
         // Basic format validation - API keys should be reasonable length strings
         if (strlen($apiKey) < 10) {
             $this->addWarning($attribute, 'API key appears to be too short - please verify it is correct.');

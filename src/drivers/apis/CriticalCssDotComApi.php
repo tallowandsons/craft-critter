@@ -2,9 +2,6 @@
 
 namespace mijewe\critter\drivers\apis;
 
-use Craft;
-use craft\helpers\App;
-use mijewe\critter\Critter;
 use mijewe\critter\models\api\CriticalCssDotComGenerateResponse;
 use mijewe\critter\models\api\CriticalCssDotComResultsResponse;
 use mijewe\critter\models\UrlModel;
@@ -41,7 +38,7 @@ class CriticalCssDotComApi extends BaseRestApi
         return $this;
     }
 
-    public function generate(UrlModel $urlModel, int $width = self::DEFAULT_WIDTH, int $height = self::DEFAULT_HEIGHT): ?CriticalCssDotComGenerateResponse
+    public function generate(UrlModel $urlModel, int $width = self::DEFAULT_WIDTH, int $height = self::DEFAULT_HEIGHT): CriticalCssDotComGenerateResponse
     {
         $data = [
             'url' => $urlModel->getAbsoluteUrl(),
@@ -55,10 +52,12 @@ class CriticalCssDotComApi extends BaseRestApi
             return CriticalCssDotComGenerateResponse::createFromResponse($response->getData());
         }
 
-        return null;
+        // if not successful, create a response with the error
+        $error = $response->getError();
+        return CriticalCssDotComGenerateResponse::createWithError($error);
     }
 
-    public function getResults(string $id): ?CriticalCssDotComResultsResponse
+    public function getResults(string $id): CriticalCssDotComResultsResponse
     {
         $response = $this->get('results', [
             'query' => [
@@ -70,6 +69,8 @@ class CriticalCssDotComApi extends BaseRestApi
             return CriticalCssDotComResultsResponse::createFromResponse($response->getData());
         }
 
-        return null;
+        // if not successful, create a response with the error
+        $error = $response->getError();
+        return CriticalCssDotComResultsResponse::createWithError($error);
     }
 }

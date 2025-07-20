@@ -3,15 +3,16 @@
 namespace mijewe\critter\models\api;
 
 use Craft;
-use craft\base\Model;
+use mijewe\critter\models\BaseResponse;
+use mijewe\critter\models\ApiError;
 
 /**
  * Critical Css Dot Com Generate Response model
  */
-class CriticalCssDotComGenerateResponse extends Model
+class CriticalCssDotComGenerateResponse extends BaseResponse
 {
-
-    public array $job;
+    public ?array $job = null;
+    private ?ApiError $error = null;
 
     public function getJobId()
     {
@@ -28,10 +29,35 @@ class CriticalCssDotComGenerateResponse extends Model
         return $this->job['error'] ?? null;
     }
 
-    static function createFromResponse(array $response)
+    public function setError(?ApiError $error): self
+    {
+        $this->error = $error;
+        $this->setSuccess(false);
+        return $this;
+    }
+
+    public function getError(): ?ApiError
+    {
+        return $this->error;
+    }
+
+    public function hasError(): bool
+    {
+        return $this->error !== null;
+    }
+
+    static function createFromResponse(array $response): self
     {
         $model = new self();
         $model->job = $response['job'] ?? null;
+        $model->setSuccess(true);
+        return $model;
+    }
+
+    static function createWithError(ApiError $error): self
+    {
+        $model = new self();
+        $model->setError($error);
         return $model;
     }
 }

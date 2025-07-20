@@ -3,14 +3,14 @@
 namespace mijewe\critter\models\api;
 
 use Craft;
-use craft\base\Model;
+use mijewe\critter\models\BaseResponse;
+use mijewe\critter\models\ApiError;
 
 /**
  * Critical Css Dot Com Results Response model
  */
-class CriticalCssDotComResultsResponse extends Model
+class CriticalCssDotComResultsResponse extends BaseResponse
 {
-
     public $insertId;
     public $url;
     public $width;
@@ -25,6 +25,8 @@ class CriticalCssDotComResultsResponse extends Model
     public $forceInclude;
     public $status;
     public $id;
+
+    private ?ApiError $error = null;
 
     public function isDone(): bool
     {
@@ -41,7 +43,24 @@ class CriticalCssDotComResultsResponse extends Model
         return $this->css;
     }
 
-    static function createFromResponse(array $response)
+    public function setError(?ApiError $error): self
+    {
+        $this->error = $error;
+        $this->setSuccess(false);
+        return $this;
+    }
+
+    public function getError(): ?ApiError
+    {
+        return $this->error;
+    }
+
+    public function hasError(): bool
+    {
+        return $this->error !== null;
+    }
+
+    static function createFromResponse(array $response): self
     {
         $model = new self();
         $model->insertId = $response['insertId'] ?? null;
@@ -58,6 +77,14 @@ class CriticalCssDotComResultsResponse extends Model
         $model->forceInclude = $response['forceInclude'] ?? null;
         $model->status = $response['status'] ?? null;
         $model->id = $response['id'] ?? null;
+        $model->setSuccess(true);
+        return $model;
+    }
+
+    static function createWithError(ApiError $error): self
+    {
+        $model = new self();
+        $model->setError($error);
         return $model;
     }
 }
