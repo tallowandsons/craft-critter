@@ -1,0 +1,40 @@
+{% import '_includes/forms' as forms %}
+{% from 'critter/macros' import configWarning, configGroupWarning %}
+
+{# whether or not allowAdminChanges is on #}
+{% set readOnly = readOnly ?? false %}
+
+{{ forms.textField({
+    label: "Timeout"|t(craft.critter.pluginHandle),
+    instructions: "The timeout in seconds for the critical CSS generation process."|t(craft.critter.pluginHandle),
+    name: 'timeout',
+    value: settings.generatorSettings.timeout ?? generator.timeout,
+    type: 'number',
+    min: 10,
+    max: 300,
+    disabled: readOnly,
+}) }}
+
+{{ forms.textField({
+    label: "Viewport Width"|t(craft.critter.pluginHandle),
+    instructions: "The viewport width in pixels for critical CSS generation."|t(craft.critter.pluginHandle),
+    name: 'width',
+    value: settings.generatorSettings.width ?? generator.width,
+    type: 'number',
+    min: 320,
+    max: 3840,
+    disabled: readOnly,
+}) }}
+
+{{ forms.textField({
+    label: "Viewport Height"|t(craft.critter.pluginHandle),
+    instructions: "The viewport height in pixels for critical CSS generation."|t(craft.critter.pluginHandle),
+    name: 'height',
+    value: settings.generatorSettings.height ?? generator.height,
+    type: 'number',
+    min: 240,
+    max: 2160,
+    disabled: readOnly,
+}) }}
+
+{{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}

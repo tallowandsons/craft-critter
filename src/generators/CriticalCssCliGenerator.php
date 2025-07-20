@@ -3,6 +3,7 @@
 namespace mijewe\critter\generators;
 
 use Craft;
+use craft\helpers\Console;
 use mijewe\critter\Critter;
 use mijewe\critter\models\CssModel;
 use mijewe\critter\models\GeneratorResponse;
@@ -16,12 +17,41 @@ class CriticalCssCliGenerator extends BaseGenerator
 
     public int $timeout = 60;
 
+    // viewport dimensions for critical CSS generation (default from @plone/critical-css-cli)
+    public int $width = 1300;
+    public int $height = 900;
+
+    public function __construct()
+    {
+        $generatorSettings = Critter::getInstance()->settings->generatorSettings ?? [];
+
+        // Load timeout and dimensions from settings, with fallback to defaults
+        $this->timeout = (int)($generatorSettings['timeout'] ?? $this->timeout);
+        $this->width = (int)($generatorSettings['width'] ?? $this->width);
+        $this->height = (int)($generatorSettings['height'] ?? $this->height);
+
+        parent::__construct();
+    }
+
     /**
      * @inheritdoc
      */
     public static function displayName(): string
     {
         return Critter::translate('@plone/critical-css-cli Generator');
+    }
+
+    /**
+     * Return the settings for this generator.
+     * This is used to display the settings in the CP.
+     */
+    public function getSettings(): array
+    {
+        return [
+            'settings' => Critter::getInstance()->getSettings(),
+            'config' => Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle()),
+            'pluginHandle' => Critter::getPluginHandle(),
+        ];
     }
 
     /**
@@ -36,36 +66,44 @@ class CriticalCssCliGenerator extends BaseGenerator
         $outputName = "$key.css";
         $output = $outputPath . '/' . $outputName;
 
-        $command = "node node_modules/@plone/critical-css-cli -o $output $url";
+        $command = [
+            'node',
+            'node_modules/@plone/critical-css-cli',
+            '-o',
+            $output,
+            '--dimensions',
+            "{$this->width}x{$this->height}",
+            $url
+        ];
 
-        $process = new Process(explode(' ', $command));
+        $process = new Process($command);
         $process->setTimeout($this->timeout);
-        $process->setWorkingDirectory(CRAFT_BASE_PATH);
-
-        $process->start();
-
-        // TODO: colourful output
-        foreach ($process as $type => $data) {
-            if ($process::OUT === $type) {
-                echo "\nRead from stdout: " . $data;
-            } else { // $process::ERR === $type
-                echo "\nRead from stderr: " . $data;
-            }
-        }
 
         try {
-            if ($process->isSuccessful()) {
+            $process->run();
+
+            Console::stdout($process->getOutput() . PHP_EOL, Console::FG_GREEN);
+            Console::stdout($process->getErrorOutput() . PHP_EOL, Console::FG_RED);
+
+            if ($process->isSuccessful() && is_readable($output)) {
                 $cssStr = file_get_contents($output);
 
-                $generatorResponse = new GeneratorResponse();
-                $generatorResponse->setSuccess(true);
-                $generatorResponse->setCss(new CssModel($cssStr));
-                return $generatorResponse;
+                return (new GeneratorResponse())
+                    ->setSuccess(true)
+                    ->setCss(new CssModel($cssStr));
             } else {
-                return new GeneratorResponse();
+                return (new GeneratorResponse())
+                    ->setSuccess(false)
+                    ->setException(new \Exception($process->getErrorOutput()));
             }
+        } catch (\Symfony\Component\Process\Exception\ProcessTimedOutException $e) {
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException(new \Exception("Critical CSS generation timed out after {$this->timeout} seconds. Consider increasing the timeout setting."));
         } catch (\Exception $e) {
-            throw $e;
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException($e);
         }
     }
 
