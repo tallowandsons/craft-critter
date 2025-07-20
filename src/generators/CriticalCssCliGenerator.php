@@ -173,21 +173,6 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     private function validateRequiredPackage(): array
     {
-        // Run validation and only fail on actual errors (security issues), not warnings
-        $this->validate();
-        
-        // Only fail if there are actual errors (not warnings)
-        if ($this->hasErrors()) {
-            $errors = [];
-            foreach ($this->getErrors() as $attribute => $attributeErrors) {
-                $errors = array_merge($errors, $attributeErrors);
-            }
-            return [
-                'success' => false,
-                'message' => implode(' ', $errors)
-            ];
-        }
-
         $nodeExecutable = $this->getParsedNodeExecutable();
         $packageExecutable = $this->getParsedPackageExecutable();
 

@@ -14,44 +14,44 @@ use mijewe\critter\models\UrlModel;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {
-
     public string $handle = 'criticalcssdotcom';
 
-    // the maximum number of times to poll the API for the results
-    // of a generate job before giving up.
+    /**
+     * @var string API key for the criticalcss.com account
+     */
+    public ?string $apiKey = null;
+
+    /**
+     * @var int The maximum number of times to poll the API for the results
+     */
     public int $maxAttempts = 10;
 
-    // the number of seconds to wait between each poll attempt
+    /**
+     * @var int The number of seconds to wait between each poll attempt
+     */
     public int $attemptDelay = 2;
 
-    // viewport width for critical CSS generation
+    /**
+     * @var int Viewport width for critical CSS generation
+     */
     public int $width = CriticalCssDotComApi::DEFAULT_WIDTH;
 
-    // viewport height for critical CSS generation
+    /**
+     * @var int Viewport height for critical CSS generation
+     */
     public int $height = CriticalCssDotComApi::DEFAULT_HEIGHT;
 
-    // the API key for the criticalcss.com account
-    public ?string $apiKey;
-
-    public CriticalCssDotComApi $api;
+    /**
+     * @var CriticalCssDotComApi Internal API client (not a model attribute)
+     */
+    private ?CriticalCssDotComApi $api = null;
 
     public function __construct()
     {
         $generatorSettings = Critter::getInstance()->settings->generatorSettings ?? [];
-        $apiKey = $generatorSettings['apiKey'] ?? null;
-        $this->apiKey = $apiKey ? App::parseEnv($apiKey) : null;
 
-        // Load max attempts and attempt delay from settings, with fallback to defaults
-        $this->maxAttempts = (int)($generatorSettings['maxAttempts'] ?? $this->maxAttempts);
-        $this->attemptDelay = (int)($generatorSettings['attemptDelay'] ?? $this->attemptDelay);
-
-        // Load viewport dimensions from settings, with fallback to defaults
-        $this->width = (int)($generatorSettings['width'] ?? $this->width);
-        $this->height = (int)($generatorSettings['height'] ?? $this->height);
-
-        if ($this->apiKey) {
-            $this->api = new CriticalCssDotComApi($this->apiKey);
-        }
+        // Load settings from configuration using setAttributes
+        $this->setAttributes($generatorSettings, false);
 
         parent::__construct();
     }
@@ -70,7 +70,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
     protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
         // Check if API key is configured
-        if (!$this->apiKey) {
+        if (!$this->getParsedApiKey()) {
             return (new GeneratorResponse())
                 ->setSuccess(false)
                 ->setException(new \Exception(
@@ -124,7 +124,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // if there is no resultId then no generate job has been triggered,
             // so trigger a new job via the API.
             if (!$resultId) {
-                $response = $this->api->generate($urlModel, $this->width, $this->height);
+                $response = $this->getApi()->generate($urlModel, $this->width, $this->height);
                 $resultId = $response->getJobId();
 
                 if (!$resultId) {
@@ -178,20 +178,69 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     public function getSettings(): array
     {
+        // Run validation to populate warnings/errors for display
+        $this->validate();
+        
         return [
-            'apiKey' => $this->apiKey,
-            'maxAttempts' => $this->maxAttempts,
-            'attemptDelay' => $this->attemptDelay,
-            'width' => $this->width,
-            'height' => $this->height,
+            'generator' => $this,
             'settings' => Critter::getInstance()->getSettings(),
             'config' => Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle()),
+            'pluginHandle' => Critter::getPluginHandle(),
+        ];
+    }
+
+    /**
+     * Validate API key
+     */
+    public function validateApiKey($attribute, $params): void
+    {
+        $apiKey = $this->getParsedApiKey();
+        
+        if (empty($apiKey)) {
+            $this->addError($attribute, 'API key is required for criticalcss.com generator.');
+            return;
+        }
+        
+        // Basic format validation - API keys should be reasonable length strings
+        if (strlen($apiKey) < 10) {
+            $this->addWarning($attribute, 'API key appears to be too short - please verify it is correct.');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules(): array
+    {
+        return [
+            [['apiKey'], 'string'],
+            [['apiKey'], 'required'],
+            [['apiKey'], 'validateApiKey'],
+            [['maxAttempts', 'attemptDelay', 'width', 'height'], 'integer', 'min' => 1],
+            [['maxAttempts'], 'integer', 'min' => 1, 'max' => 50],
+            [['attemptDelay'], 'integer', 'min' => 1, 'max' => 30],
+            [['width'], 'integer', 'min' => 320, 'max' => 3840],
+            [['height'], 'integer', 'min' => 240, 'max' => 2160],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'apiKey' => Critter::translate('API Key'),
+            'maxAttempts' => Critter::translate('Max Attempts'),
+            'attemptDelay' => Critter::translate('Attempt Delay'),
+            'width' => Critter::translate('Viewport Width'),
+            'height' => Critter::translate('Viewport Height'),
         ];
     }
 
     private function getResultsById(string $id)
     {
-        return $this->api->getResults($id);
+        return $this->getApi()->getResults($id);
     }
 
     private function getResultId(UrlModel $url)
@@ -202,5 +251,28 @@ class CriticalCssDotComGenerator extends BaseGenerator
             return $data['resultId'] ?? null;
         }
         return null;
+    }
+
+    /**
+     * Get the API client instance
+     */
+    private function getApi(): CriticalCssDotComApi
+    {
+        if ($this->api === null) {
+            $apiKey = $this->getParsedApiKey();
+            if (!$apiKey) {
+                throw new \Exception('API key is required to create API client');
+            }
+            $this->api = new CriticalCssDotComApi($apiKey);
+        }
+        return $this->api;
+    }
+
+    /**
+     * Get the parsed API key with environment variable support
+     */
+    public function getParsedApiKey(): ?string
+    {
+        return $this->apiKey ? App::parseEnv($this->apiKey) : null;
     }
 }

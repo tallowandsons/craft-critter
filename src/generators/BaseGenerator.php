@@ -56,6 +56,20 @@ class BaseGenerator extends Model implements GeneratorInterface
     public function generate(UrlModel $url): GeneratorResponse
     {
         try {
+            // Run validation first - only fail on actual errors (security issues), not warnings
+            $this->validate();
+            
+            // Only fail if there are actual errors (not warnings)
+            if ($this->hasErrors()) {
+                $errors = [];
+                foreach ($this->getErrors() as $attribute => $attributeErrors) {
+                    $errors = array_merge($errors, $attributeErrors);
+                }
+                return (new GeneratorResponse())
+                    ->setSuccess(false)
+                    ->setException(new \Exception(implode(' ', $errors)));
+            }
+            
             return $this->getCriticalCss($url);
         } catch (\Exception $e) {
 

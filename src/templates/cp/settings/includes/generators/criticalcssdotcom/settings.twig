@@ -10,32 +10,41 @@
     suggestEnvVars: true,
     suggestAliases: true,
     name: 'apiKey',
-    value: settings.generatorSettings.apiKey ?? null,
+    value: settings.generatorSettings.apiKey ?? generator.apiKey,
     required: true,
     disabled: readOnly,
-    code: true
+    code: true,
+    errors: generator.getErrors('apiKey'),
 }) }}
+
+{% if generator.hasWarnings('apiKey') %}
+    {% for warning in generator.getWarnings('apiKey') %}
+        <p class="warning">{{ warning }}</p>
+    {% endfor %}
+{% endif %}
 
 {{ forms.textField({
     label: "Max Attempts"|t(craft.critter.pluginHandle),
     instructions: "The maximum number of times to poll the API for results before giving up."|t(craft.critter.pluginHandle),
     name: 'maxAttempts',
-    value: settings.generatorSettings.maxAttempts ?? 10,
+    value: settings.generatorSettings.maxAttempts ?? generator.maxAttempts,
     type: 'number',
     min: 1,
     max: 50,
     disabled: readOnly,
+    errors: generator.getErrors('maxAttempts'),
 }) }}
 
 {{ forms.textField({
     label: "Attempt Delay"|t(craft.critter.pluginHandle),
     instructions: "The number of seconds to wait between each polling attempt."|t(craft.critter.pluginHandle),
     name: 'attemptDelay',
-    value: settings.generatorSettings.attemptDelay ?? 2,
+    value: settings.generatorSettings.attemptDelay ?? generator.attemptDelay,
     type: 'number',
     min: 1,
     max: 30,
     disabled: readOnly,
+    errors: generator.getErrors('attemptDelay'),
 }) }}
 
 {{ forms.textField({
@@ -47,6 +56,7 @@
     min: 320,
     max: 3840,
     disabled: readOnly,
+    errors: generator.getErrors('width'),
 }) }}
 
 {{ forms.textField({
@@ -58,6 +68,7 @@
     min: 240,
     max: 2160,
     disabled: readOnly,
+    errors: generator.getErrors('height'),
 }) }}
 
 {{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}
