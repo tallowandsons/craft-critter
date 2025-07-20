@@ -1,0 +1,24 @@
+{% import '_includes/forms' as forms %}
+{% from 'critter/macros' import configWarning %}
+
+{{ forms.selectField({
+    label: "Cache Type"|t(pluginHandle),
+    instructions: "Select the cache system to use for clearing/refreshing cached pages after critical CSS generation."|t(pluginHandle),
+    warning: (config.cacheType is defined ? configWarning('cacheType')),
+    name: 'settings[cacheType]',
+    options: cacheTypeOptions,
+    value: settings.cacheType,
+    toggle: true,
+    disabled: readOnly,
+}) }}
+
+{% for cache in caches %}
+    {% set cacheClassName = className(cache) %}
+    {% set isCurrent = (cacheClassName == settings.cacheType) %}
+
+    <div id="{{ cacheClassName|id }}" {{ not isCurrent ? 'class="hidden"' }}>
+        {% namespace 'cacheSettings[' ~ cacheClassName ~ ']' %}
+            {{ cache.getSettingsHtml()|raw }}
+        {% endnamespace %}
+    </div>
+{% endfor %}

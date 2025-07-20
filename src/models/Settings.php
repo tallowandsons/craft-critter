@@ -3,7 +3,7 @@
 namespace mijewe\critter\models;
 
 use craft\base\Model;
-use mijewe\critter\drivers\caches\BlitzCache;
+use mijewe\critter\drivers\caches\NoCache;
 use mijewe\critter\generators\CriticalCssDotComGenerator;
 use mijewe\critter\storage\CraftCacheStorage;
 
@@ -15,10 +15,6 @@ class Settings extends Model
 
     const MODE_ENTRY = 'entry';
     const MODE_SECTION = 'section';
-
-    const CACHE_BEHAVIOUR_EXPIRE_URLS = 'expireUrls';
-    const CACHE_BEHAVIOUR_CLEAR_URLS = 'clearUrls';
-    const CACHE_BEHAVIOUR_REFRESH_URLS = 'refreshUrls';
 
     // whether or not to automatically render the critical css
     public bool $autoRenderEnabled = true;
@@ -36,10 +32,10 @@ class Settings extends Model
     public string $storageType = CraftCacheStorage::class;
 
     // which cache type to use
-    public ?string $cacheType = BlitzCache::class;
+    public ?string $cacheType = NoCache::class;
 
-    // what the cache behaviour should be
-    public ?string $cacheBehaviour = self::CACHE_BEHAVIOUR_REFRESH_URLS;
+    // the settings for the cache
+    public array $cacheSettings = [];
 
     // which query string parameters are to be treated as unique urls
     public array $uniqueQueryParams = [];

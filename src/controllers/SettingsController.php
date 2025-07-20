@@ -6,8 +6,10 @@ use Craft;
 use craft\helpers\Cp;
 use craft\web\Controller;
 use mijewe\critter\Critter;
+use mijewe\critter\drivers\caches\BlitzCache;
 use mijewe\critter\helpers\GeneratorHelper;
 use mijewe\critter\helpers\SettingsHelper;
+use mijewe\critter\helpers\CacheHelper;
 use yii\web\Response;
 
 /**
@@ -43,25 +45,25 @@ class SettingsController extends Controller
                 'label' => Critter::translate('Generator'),
                 'url' => '#generator',
             ],
+            'cache' => [
+                'label' => Critter::translate('Cache'),
+                'url' => '#cache',
+            ],
         ];
 
         $blitzIsEnabled = Craft::$app->plugins->getPlugin('blitz') !== null;
-        if ($blitzIsEnabled) {
-            $tabs['cache'] = [
-                'label' => Critter::translate('Cache'),
-                'url' => '#cache',
-            ];
-        }
 
         return $this->renderTemplate(Critter::getPluginHandle() . '/cp/settings/general', [
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
             'generators' => GeneratorHelper::getGeneratorInstances(),
             'generatorTypeOptions' => GeneratorHelper::getGeneratorTypesAsSelectOptions(),
+            'caches' => CacheHelper::getCacheInstances(),
             'readOnly' => !Craft::$app->getConfig()->getGeneral()->allowAdminChanges,
             'tabs' => $tabs,
             'blitzIsEnabled' => $blitzIsEnabled,
-            'cacheBehaviourOptions' => SettingsHelper::getCacheBehavioursAsSelectOptions(),
+            'cacheTypeOptions' => CacheHelper::getCacheTypesAsSelectOptions(),
+            'cacheBehaviourOptions' => BlitzCache::getCacheBehaviourOptions(),
             'defaultModeOptions' => SettingsHelper::getModesAsSelectOptions(),
         ]);
     }
@@ -78,11 +80,13 @@ class SettingsController extends Controller
         // get the settings from the POST
         $postedSettings = $request->getBodyParam('settings', []);
         $generatorSettings = $request->getBodyParam('generatorSettings', []);
+        $cacheSettings = $request->getBodyParam('cacheSettings', []);
 
         // apply them to the settings model
         $settings = $this->getSettings();
         $settings->setAttributes($postedSettings, false);
         $settings->generatorSettings = $generatorSettings[$settings->generatorType] ?? [];
+        $settings->cacheSettings = $cacheSettings[$settings->cacheType] ?? [];
 
         // save the settings into the project config
         Craft::$app->getPlugins()->savePluginSettings(Critter::getInstance(), $settings->getAttributes());

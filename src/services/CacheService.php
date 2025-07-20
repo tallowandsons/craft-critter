@@ -6,6 +6,7 @@ use Craft;
 use craft\elements\Entry;
 use mijewe\critter\Critter;
 use mijewe\critter\drivers\caches\CacheInterface;
+use mijewe\critter\drivers\caches\NoCache;
 use mijewe\critter\factories\UrlFactory;
 use mijewe\critter\models\CssRequest;
 use mijewe\critter\models\Settings;
@@ -22,6 +23,12 @@ class CacheService extends Component
     public function __construct()
     {
         $cacheClass = Critter::getInstance()->settings->cacheType;
+
+        // Fallback to NoCache if the specified cache class doesn't exist
+        if (!$cacheClass || !class_exists($cacheClass)) {
+            $cacheClass = NoCache::class;
+        }
+
         $this->cache = new $cacheClass();
     }
 
