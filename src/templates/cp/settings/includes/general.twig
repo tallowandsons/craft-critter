@@ -114,3 +114,12 @@
     max: 300,
     disabled: readOnly,
 }) }}
+
+{{ forms.lightswitchField({
+    label: "Enable Debug Logging"|t(pluginHandle),
+    instructions: "When enabled, Critter will log detailed debug information to storage/logs/critter.log. This includes generation progress, cache operations, and detailed error information. Only enable this for troubleshooting as it can generate large log files."|t(pluginHandle),
+    warning: config.enableDebugLogging is defined ? configWarning('enableDebugLogging') : null,
+    name: 'settings[enableDebugLogging]',
+    on: settings.enableDebugLogging ?? false,
+    disabled: readOnly,
+}) }}

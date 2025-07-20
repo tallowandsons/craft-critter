@@ -173,7 +173,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
                         return (new GeneratorResponse())
                             ->setSuccess(false)
-                            ->setException(new \Exception('No CSS returned from criticalcss.com API'));
+                            ->setException(new \Exception('No CSS returned from criticalcss.com API - ' . $apiResponse->getResultStatus()));
                     }
                 }
 
@@ -181,7 +181,12 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 sleep($this->attemptDelay);
             }
 
-            throw new \Exception('Failed to get critical css from criticalcss.com API');
+            Critter::getInstance()->log->error(
+                "Failed to get critical CSS from criticalcss.com API after {$this->maxAttempts} attempts for URL: {$urlModel->getAbsoluteUrl()}",
+                'generation'
+            );
+
+            throw new \Exception("Failed to get critical css from criticalcss.com API after {$this->maxAttempts} attempts");
         } finally {
             // Always release the mutex lock when job is complete (success or failure)
             Craft::info(

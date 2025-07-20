@@ -39,6 +39,9 @@ class CacheService extends Component
     {
         $url = $cssRequest->getUrl();
         $mode = $cssRequest->getMode();
+        $cacheType = get_class($this->cache);
+
+        Critter::getInstance()->log->debug("Resolving cache for '{$url->getAbsoluteUrl()}' in {$mode} mode using {$cacheType}", 'cache');
 
         switch ($mode) {
             case Settings::MODE_ENTRY:
@@ -57,6 +60,8 @@ class CacheService extends Component
      */
     private function resolveCacheForUrl(UrlModel $url): void
     {
+        $cacheType = get_class($this->cache);
+        Critter::getInstance()->log->logCacheOperation('resolve-entry', $url->getAbsoluteUrl(), $cacheType);
         $this->cache->resolveCache([$url]);
     }
 
@@ -68,12 +73,15 @@ class CacheService extends Component
     {
         $sectionHandle = $url->getSectionHandle();
         if (!$sectionHandle) {
-            Craft::warning("Could not resolve cache for section; url does not have a section", __METHOD__);
+            Critter::getInstance()->log->warning("Could not resolve cache for section; url does not have a section: {$url->getAbsoluteUrl()}", 'cache');
             return;
         }
 
         // get all urls for the section
         $entries = Entry::find()->section($sectionHandle)->all();
+        $cacheType = get_class($this->cache);
+
+        Critter::getInstance()->log->logCacheOperation("resolve-section ({$sectionHandle}, " . count($entries) . " entries)", $url->getAbsoluteUrl(), $cacheType);
 
         $this->resolveCacheForEntries($entries);
     }

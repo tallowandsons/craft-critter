@@ -43,6 +43,11 @@ class CriticalCssDotComResultsResponse extends BaseResponse
         return $this->css;
     }
 
+    public function getResultStatus(): ?string
+    {
+        return $this->resultStatus;
+    }
+
     public function setError(?ApiError $error): self
     {
         $this->error = $error;

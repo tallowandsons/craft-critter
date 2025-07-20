@@ -61,4 +61,7 @@ class Settings extends Model
 
     // base delay in seconds for retry exponential backoff
     public int $retryBaseDelay = 30;
+
+    // whether to enable debug logging to storage/logs/critter.log
+    public bool $enableDebugLogging = false;
 }

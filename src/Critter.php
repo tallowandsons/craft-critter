@@ -18,6 +18,7 @@ use mijewe\critter\services\CacheService;
 use mijewe\critter\services\ConfigService;
 use mijewe\critter\services\CssService;
 use mijewe\critter\services\GeneratorService;
+use mijewe\critter\services\LogService;
 use mijewe\critter\services\SettingsService;
 use mijewe\critter\services\StorageService;
 use mijewe\critter\services\RequestRecordService;
@@ -42,6 +43,7 @@ use yii\base\View as BaseView;
  * @property-read RequestRecordService $requestRecords
  * @property-read SettingsService $settingsService
  * @property-read ConfigService $configService
+ * @property-read LogService $log
  */
 class Critter extends Plugin
 {
@@ -62,7 +64,16 @@ class Critter extends Plugin
     public static function config(): array
     {
         return [
-            'components' => ['storage' => StorageService::class, 'generator' => GeneratorService::class, 'css' => CssService::class, 'cache' => CacheService::class, 'requestRecords' => RequestRecordService::class, 'settingsService' => SettingsService::class, 'configService' => ConfigService::class],
+            'components' => [
+                'storage' => StorageService::class,
+                'generator' => GeneratorService::class,
+                'css' => CssService::class,
+                'cache' => CacheService::class,
+                'requestRecords' => RequestRecordService::class,
+                'settingsService' => SettingsService::class,
+                'configService' => ConfigService::class,
+                'log' => LogService::class
+            ],
         ];
     }
 

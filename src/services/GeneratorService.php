@@ -40,12 +40,16 @@ class GeneratorService extends Component
     {
         // Early abort: Don't start generation if NoGenerator is active
         if (NoGenerator::isActive()) {
-            Craft::info(
-                'Skipping critical CSS generation - NoGenerator is active (URL: ' . $cssRequest->getUrl()->getAbsoluteUrl() . ')',
-                Critter::getPluginHandle()
+            Critter::getInstance()->log->info(
+                'Skipping critical CSS generation - NoGenerator is active',
+                'generation'
             );
             return;
         }
+
+        $url = $cssRequest->getUrl()->getAbsoluteUrl();
+        $generatorClass = get_class($this->generator);
+        Critter::getInstance()->log->logGenerationStart($url, $generatorClass);
 
         if ($useQueue) {
             $this->queueIfNewJob($cssRequest, $storeResult);
@@ -60,8 +64,12 @@ class GeneratorService extends Component
      */
     public function generate(CssRequest $cssRequest, bool $storeResult = true, bool $resolveCache = true): void
     {
-
         $url = $cssRequest->getUrl();
+        $urlString = $url->getAbsoluteUrl();
+        $generatorClass = get_class($this->generator);
+        $startTime = microtime(true);
+
+        Critter::getInstance()->log->debug("Starting direct generation for '{$urlString}'", 'generation');
 
         // set the uri record status to 'generating'
         Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_GENERATING);
@@ -70,6 +78,8 @@ class GeneratorService extends Component
         $response = $this->generator->generate($url);
 
         if ($response->isSuccess()) {
+            $duration = microtime(true) - $startTime;
+            Critter::getInstance()->log->logGenerationComplete($urlString, $generatorClass, $duration);
 
             // update URI record
             Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
@@ -77,6 +87,7 @@ class GeneratorService extends Component
             // store the css
             if ($storeResult) {
                 Critter::getInstance()->storage->save($cssRequest, $response->getCss());
+                Critter::getInstance()->log->logStorageOperation('save', $urlString, 'CraftCacheStorage');
             }
 
             // resolve the cache
@@ -84,6 +95,9 @@ class GeneratorService extends Component
                 Critter::getInstance()->cache->resolveCache($cssRequest);
             }
         } else {
+            $errorMessage = $response->hasException() ? $response->getException()->getMessage() : 'Unknown error';
+            Critter::getInstance()->log->logGenerationFailure($urlString, $generatorClass, $errorMessage);
+
             Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_ERROR);
 
             // throw an exception if the response has one.
@@ -98,18 +112,20 @@ class GeneratorService extends Component
     {
         // Early abort: Don't queue jobs if NoGenerator is active
         if (NoGenerator::isActive()) {
-            Craft::info(
-                'Skipping queue job creation - NoGenerator is active (URL: ' . $cssRequest->getUrl()->getAbsoluteUrl() . ')',
-                Critter::getPluginHandle()
+            Critter::getInstance()->log->info(
+                'Skipping queue job creation - NoGenerator is active',
+                'queue'
             );
             return;
         }
 
         $url = $cssRequest->getUrl();
+        $urlString = $url->getAbsoluteUrl();
 
         // don't queue a new job if there is already one in the queue
         // for this URL
         if ($this->isInQueue($url)) {
+            Critter::getInstance()->log->debug("Job already queued for '{$urlString}'", 'queue');
             return;
         }
 
@@ -120,7 +136,10 @@ class GeneratorService extends Component
         ]);
 
         if ($queueJobId = Craft::$app->queue->push($job)) {
+            Critter::getInstance()->log->logQueueJob('created', $urlString, $queueJobId);
             Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
+        } else {
+            Critter::getInstance()->log->error("Failed to queue job for '{$urlString}'", 'queue');
         }
     }
 
