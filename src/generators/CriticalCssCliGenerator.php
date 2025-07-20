@@ -97,7 +97,7 @@ class CriticalCssCliGenerator extends BaseGenerator
     {
         // Run validation to populate warnings/errors for display
         $this->validate();
-        
+
         return [
             'generator' => $this,
             'settings' => Critter::getInstance()->getSettings(),
@@ -139,6 +139,7 @@ class CriticalCssCliGenerator extends BaseGenerator
 
         $process = new Process($command);
         $process->setTimeout($this->timeout);
+        $process->setWorkingDirectory(CRAFT_BASE_PATH);
 
         try {
             $process->run();
@@ -170,20 +171,35 @@ class CriticalCssCliGenerator extends BaseGenerator
 
     /**
      * Check if @plone/critical-css-cli is installed and accessible
+     * This method is designed to work in both web and CLI contexts
      */
     private function validateRequiredPackage(): array
     {
         $nodeExecutable = $this->getParsedNodeExecutable();
         $packageExecutable = $this->getParsedPackageExecutable();
+        $workingDirectory = CRAFT_BASE_PATH;
 
         // Test if Node.js is available
         $nodeCheck = new Process([$nodeExecutable, '--version']);
-        $nodeCheck->run();
-        
-        if (!$nodeCheck->isSuccessful()) {
+        $nodeCheck->setWorkingDirectory($workingDirectory);
+
+        // Set a reasonable timeout for validation
+        $nodeCheck->setTimeout(10);
+
+        try {
+            $nodeCheck->run();
+        } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => "Node.js executable not found at '$nodeExecutable'. Please check the Node.js Executable Path setting or install Node.js."
+                'message' => "Failed to execute Node.js: {$e->getMessage()}. Check that Node.js is installed and accessible."
+            ];
+        }
+
+        if (!$nodeCheck->isSuccessful()) {
+            $errorDetails = $nodeCheck->getErrorOutput() ?: 'No error output available';
+            return [
+                'success' => false,
+                'message' => "Node.js executable not found at '$nodeExecutable'. Error: $errorDetails\n\nPlease check the Node.js Executable Path setting or install Node.js."
             ];
         }
 
@@ -199,13 +215,24 @@ class CriticalCssCliGenerator extends BaseGenerator
         // Test if the critical-css-cli package is available
         $testCommand = [$nodeExecutable, $packageExecutable, '--help'];
         $testProcess = new Process($testCommand);
-        $testProcess->run();
+        $testProcess->setWorkingDirectory($workingDirectory);
+        $testProcess->setTimeout(10);
 
-        if (!$testProcess->isSuccessful()) {
-            $errorOutput = $testProcess->getErrorOutput();
+        try {
+            $testProcess->run();
+        } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => "Unable to execute '@plone/critical-css-cli' at '$packageExecutable'. Error: $errorOutput\n\nPlease check the Package Executable Path setting or install the package with 'npm install @plone/critical-css-cli'."
+                'message' => "Failed to execute @plone/critical-css-cli: {$e->getMessage()}\n\nCheck that the package is installed with 'npm install @plone/critical-css-cli'."
+            ];
+        }
+
+        if (!$testProcess->isSuccessful()) {
+            $errorOutput = $testProcess->getErrorOutput() ?: 'No error output available';
+            $context = Craft::$app->getRequest()->getIsConsoleRequest() ? 'CLI' : 'Web';
+            return [
+                'success' => false,
+                'message' => "Unable to execute '@plone/critical-css-cli' at '$packageExecutable' (Context: $context). Error: $errorOutput\n\nPlease check the Package Executable Path setting or install the package with 'npm install @plone/critical-css-cli'."
             ];
         }
 
@@ -219,8 +246,8 @@ class CriticalCssCliGenerator extends BaseGenerator
         }
 
         return [
-            'success' => true, 
-            'nodeExecutable' => $nodeExecutable, 
+            'success' => true,
+            'nodeExecutable' => $nodeExecutable,
             'packageExecutable' => $packageExecutable
         ];
     }
@@ -247,13 +274,13 @@ class CriticalCssCliGenerator extends BaseGenerator
     public function validateNodeExecutable($attribute, $params): void
     {
         $path = $this->getParsedNodeExecutable();
-        
+
         // Security checks - these BLOCK saving
         if ($this->isDangerousPath($path)) {
             $this->addError($attribute, 'Invalid Node.js executable path: contains dangerous patterns.');
             return;
         }
-        
+
         // Functionality checks - these just warn but don't block saving
         if (!$this->isExecutableAccessible($path)) {
             $this->addWarning($attribute, 'Node.js executable not found or not accessible at: ' . $path);
@@ -266,13 +293,13 @@ class CriticalCssCliGenerator extends BaseGenerator
     public function validatePackageExecutable($attribute, $params): void
     {
         $path = $this->getParsedPackageExecutable();
-        
+
         // Security checks - these BLOCK saving
         if ($this->isDangerousPath($path)) {
             $this->addError($attribute, 'Invalid package executable path: contains dangerous patterns.');
             return;
         }
-        
+
         // Functionality checks - these just warn but don't block saving
         if (!str_starts_with($path, '@') && !file_exists($path)) {
             $this->addWarning($attribute, 'Package executable not found at: ' . $path);
@@ -326,7 +353,7 @@ class CriticalCssCliGenerator extends BaseGenerator
             $process->run();
             return $process->isSuccessful();
         }
-        
+
         // For full paths, check if the file exists and is executable
         return file_exists($path) && is_executable($path);
     }
