@@ -83,7 +83,7 @@
 
 {{ forms.selectField({
     label: "Default Mode"|t(pluginHandle),
-    instructions: "The default mode to use when generating critical CSS. Entry mode: Critical CSS is generated for each unique URL. Section mode: Critical CSS is generated once for the entire section."|t(pluginHandle),
+    instructions: "The default mode to use when generating critical CSS.\n<strong>Entry mode</strong>: Critical CSS is generated for each unique URL.\n<strong>Section mode</strong>: Critical CSS is generated once for the entire section."|t(pluginHandle),
     warning: (config.defaultMode is defined ? configWarning('defaultMode')),
     name: 'settings[defaultMode]',
     options: defaultModeOptions,
