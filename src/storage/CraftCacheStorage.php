@@ -13,15 +13,25 @@ class CraftCacheStorage extends BaseStorage
         /** @var CssModel $css */
         $css = Craft::$app->getCache()->get($key);
 
-        $response = new StorageResponse();
-        $response->setSuccess($css !== false);
-        $response->setData($css);
-
-        return $response;
+        if ($css instanceof CssModel) {
+            return (new StorageResponse())
+                ->setSuccess(true)
+                ->setData($css);
+        } else {
+            // Not a valid CssModel (could be incomplete class, wrong format, etc.)
+            return (new StorageResponse())
+                ->setSuccess(false)
+                ->setData(new CssModel());
+        }
     }
 
     public function save(mixed $key, CssModel $cssModel): bool
     {
         return Craft::$app->getCache()->set($key, $cssModel);
+    }
+
+    public function delete(mixed $key): bool
+    {
+        return Craft::$app->getCache()->delete($key);
     }
 }

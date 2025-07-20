@@ -31,8 +31,10 @@ class StorageService extends Component
         $response = $this->storage->get($key);
 
         // if the response is not successful,
+        // delete the cache entry if it exists and
         // return an empty CssModel
         if (!$response->isSuccess()) {
+            $this->storage->delete($key);
             return new CssModel();
         }
 
@@ -49,6 +51,12 @@ class StorageService extends Component
 
         // save the CSS to the storage
         return $this->storage->save($key, $css);
+    }
+
+    public function delete(CssRequest $cssRequest): bool
+    {
+        $key = $this->getCacheKey($cssRequest->getKey());
+        return $this->storage->delete($key);
     }
 
     public function getCacheKey(mixed $key): mixed

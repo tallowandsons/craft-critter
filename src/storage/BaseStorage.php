@@ -17,4 +17,9 @@ class BaseStorage extends Model implements StorageInterface
     {
         return false;
     }
+
+    public function delete(mixed $key): bool
+    {
+        return false;
+    }
 }
