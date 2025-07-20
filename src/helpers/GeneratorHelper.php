@@ -7,6 +7,7 @@ use mijewe\critter\events\RegisterGeneratorsEvent;
 use mijewe\critter\generators\CriticalCssCliGenerator;
 use mijewe\critter\generators\CriticalCssDotComGenerator;
 use mijewe\critter\generators\GeneratorInterface;
+use mijewe\critter\generators\NoGenerator;
 use yii\base\Event;
 
 class GeneratorHelper
@@ -98,6 +99,7 @@ class GeneratorHelper
     {
         // Register default generators
         $defaultGenerators = [
+            NoGenerator::class,
             CriticalCssDotComGenerator::class,
             CriticalCssCliGenerator::class,
         ];

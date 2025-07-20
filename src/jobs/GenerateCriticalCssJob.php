@@ -6,6 +6,7 @@ use Craft;
 use craft\queue\BaseJob;
 use mijewe\critter\Critter;
 use mijewe\critter\exceptions\MutexLockException;
+use mijewe\critter\generators\NoGenerator;
 use mijewe\critter\models\CssRequest;
 use yii\queue\RetryableJobInterface;
 
@@ -53,6 +54,16 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
     }
     function execute($queue): void
     {
+        // Early abort: Skip execution if NoGenerator is active
+        // This handles cases where jobs were queued before NoGenerator was configured
+        if (NoGenerator::isActive()) {
+            Craft::info(
+                'Skipping job execution - NoGenerator is active (URL: ' . $this->cssRequest->getUrl()->getAbsoluteUrl() . ')',
+                Critter::getPluginHandle()
+            );
+            return;
+        }
+
         try {
             Critter::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
         } catch (MutexLockException $e) {

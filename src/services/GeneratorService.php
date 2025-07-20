@@ -5,6 +5,7 @@ namespace mijewe\critter\services;
 use Craft;
 use mijewe\critter\Critter;
 use mijewe\critter\generators\GeneratorInterface;
+use mijewe\critter\generators\NoGenerator;
 use mijewe\critter\helpers\GeneratorHelper;
 use mijewe\critter\jobs\GenerateCriticalCssJob;
 use mijewe\critter\models\CssRequest;
@@ -37,6 +38,15 @@ class GeneratorService extends Component
      */
     public function startGenerate(CssRequest $cssRequest, bool $useQueue = true, bool $storeResult = true): void
     {
+        // Early abort: Don't start generation if NoGenerator is active
+        if (NoGenerator::isActive()) {
+            Craft::info(
+                'Skipping critical CSS generation - NoGenerator is active (URL: ' . $cssRequest->getUrl()->getAbsoluteUrl() . ')',
+                Critter::getPluginHandle()
+            );
+            return;
+        }
+
         if ($useQueue) {
             $this->queueIfNewJob($cssRequest, $storeResult);
         } else {
@@ -86,6 +96,15 @@ class GeneratorService extends Component
 
     private function queueIfNewJob(CssRequest $cssRequest, bool $storeResult): void
     {
+        // Early abort: Don't queue jobs if NoGenerator is active
+        if (NoGenerator::isActive()) {
+            Craft::info(
+                'Skipping queue job creation - NoGenerator is active (URL: ' . $cssRequest->getUrl()->getAbsoluteUrl() . ')',
+                Critter::getPluginHandle()
+            );
+            return;
+        }
+
         $url = $cssRequest->getUrl();
 
         // don't queue a new job if there is already one in the queue

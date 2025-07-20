@@ -51,6 +51,15 @@ class BaseGenerator extends Model implements GeneratorInterface
     }
 
     /**
+     * Check if this generator class is currently configured as the active generator
+     */
+    public static function isActive(): bool
+    {
+        $generatorType = Critter::getInstance()->settings->generatorType;
+        return $generatorType === static::class;
+    }
+
+    /**
      * @inheritdoc
      */
     public function generate(UrlModel $url): GeneratorResponse
@@ -58,7 +67,7 @@ class BaseGenerator extends Model implements GeneratorInterface
         try {
             // Run validation first - only fail on actual errors (security issues), not warnings
             $this->validate();
-            
+
             // Only fail if there are actual errors (not warnings)
             if ($this->hasErrors()) {
                 $errors = [];
@@ -69,7 +78,7 @@ class BaseGenerator extends Model implements GeneratorInterface
                     ->setSuccess(false)
                     ->setException(new \Exception(implode(' ', $errors)));
             }
-            
+
             return $this->getCriticalCss($url);
         } catch (\Exception $e) {
 
