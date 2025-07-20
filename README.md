@@ -60,10 +60,10 @@ composer require mijewe/craft-critter
 
 ### 🔄 Auto Render Mode
 
-**Automatic Rendering** (Default)
+#### Automatic Rendering (Default)
 Critter automatically detects when critical CSS is needed and handles generation and rendering seamlessly. Perfect for most use cases.
 
-**Manual Rendering**
+#### Manual Rendering
 For advanced control, disable Auto Render and call the render method manually:
 
 ```twig
@@ -79,7 +79,7 @@ Generators are responsible for creating the critical CSS. Critter comes with bui
 
 - The [criticalcss.com](https://criticalcss.com) API, for cloud-based critical CSS generation.
 - The [@plone/critical-css-cli package](https://github.com/plone/critical-css-cli), for local critical CSS generation.
-- You can also implement your own generator by writing a class that implements the `GeneratorInterface` and registering it with Critter.
+- You can also implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
 
 Each of the generators can be configured in the plugin settings under Critter → Settings → General → Generator, with options for viewport dimensions, API keys, and more.
 
@@ -91,7 +91,7 @@ The cache integrations allow you to configure how Critter interacts with your ca
 
 Critter comes with built-in support for the [Blitz](https://putyourlightson.com/plugins/blitz) static caching plugin, which allows you to automatically clear, expire, or refresh the Blitz cache when critical CSS changes.
 
-You can also implement your own cache driver by writing a class that implements the `CacheInterface` and registering it with Critter.
+You can also implement your own cache driver by writing a class that extends the `BaseCache` and registering it with Critter.
 
 ### Per-Section Configuration
 
@@ -103,25 +103,64 @@ This allows you to optimise performance based on the layout consistency of your 
 
 Over in Critter → Sections, you can also configure which entry should be used as the representative entry for each section. If this is left blank, the first entry to be visited by a user will be used as the representative entry for that section.
 
-## Generators
+## Extending
 
-### criticalcss.com Integration
+### Bring Your Own Generator
 
-The plugin integrates seamlessly with the criticalcss.com API:
+You can implement your own critical CSS generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
 
-1. **Sign up** at [criticalcss.com](https://criticalcss.com)
-2. **Get your API key** from your account dashboard
-3. **Configure** the API key in the Critter plugin settings
+``` php
+class PinkGenerator extends BaseGenerator
+{
+    protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
+    {
+        $css = '* { color: pink; }';
 
-### @plone/critical-css-cli Integration
+        return (new GeneratorResponse())
+            ->setSuccess(true)
+            ->setCss(new CssModel($css));
+    }
+}
+```
 
-Critter also supports the [@plone/critical-css-cli](https://github.com/plone/critical-css-cli) package for local critical CSS generation:
+Then register your generator using the `RegisterGeneratorsEvent` event
 
-1. **Install** the package via npm
-    ``` bash
-    npm install @plone/critical-css-cli --save-dev
-    ```
-2. **Configure** the CLI options in the Critter plugin settings
+```php
+Event::on(
+    GeneratorHelper::class,
+    GeneratorHelper::EVENT_REGISTER_GENERATORS,
+    function(RegisterGeneratorsEvent $event) {
+        $event->generators[] = PinkGenerator::class;
+    }
+);
+```
+
+### Bring Your Own Cache Driver
+
+You can implement your own cache driver by writing a class that extends the `BaseCache` and registering it with Critter.
+
+```php
+class MyCustomStaticCache extends BaseCache
+{
+    public function resolveCache(UrlModel|array $urlModels): void
+    {
+        // Custom logic to clear the cache for the provided URLs
+        AnotherStaticCachingPlugin::getInstance()->clearCacheForUrls($urlModels);
+    }
+}
+```
+
+Then register your cache driver using the `RegisterCacheEvent` event
+
+```php
+Event::on(
+    CacheHelper::class,
+    CacheHelper::EVENT_REGISTER_CACHES,
+    function(RegisterCachesEvent $event) {
+        $event->caches[] = MyCustomStaticCache::class;
+    }
+);
+```
 
 ## License
 
