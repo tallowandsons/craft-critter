@@ -1,0 +1,16 @@
+.critter-info-block {
+    padding: 16px;
+    border-radius: 3px;
+    border: 1px solid ;
+    margin-bottom: 24px;
+}
+
+.critter-info-block--info {
+    background: #f3f7fc;
+    border-color: #cbd6e2;
+}
+
+.critter-info-block--warning {
+    background: #fff8f0;
+    border-color: #ffb74d;
+}

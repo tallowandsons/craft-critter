@@ -4,6 +4,17 @@
 {# whether or not allowAdminChanges is on #}
 {% set readOnly = readOnly ?? false %}
 
+<div class="critter-info-block critter-info-block--info">
+    <p>To set up @plone/critical-css-cli:</p>
+    <ol>
+        <li>Install <a href="https://github.com/plone/critical-css-cli" target="_blank">@plone/critical-css-cli</a> via npm:</li>
+        <pre><code>npm install @plone/critical-css-cli</code></pre>
+        <li>Ensure the package is accessible in your project.</li>
+        <li>Configure the executable paths below.</li>
+        <li>🎉</li>
+    </ol>
+</div>
+
 <h3>{{ "Security Configuration"|t(craft.critter.pluginHandle) }}</h3>
 <p class="warning">{{ "Warning: Executable paths should be configured carefully as they can pose security risks if misconfigured. For production environments, consider using environment variables."|t(craft.critter.pluginHandle) }}</p>
 

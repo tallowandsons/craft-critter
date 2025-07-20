@@ -4,6 +4,19 @@
 {# whether or not allowAdminChanges is on #}
 {% set readOnly = readOnly ?? false %}
 
+<div class="critter-info-block critter-info-block--info">
+    <p>To get your criticalcss.com API key:</p>
+    <ol>
+        <li>Sign up at <a href="https://criticalcss.com/signup" target="_blank">criticalcss.com/signup</a>.</li>
+        <li>Choose the 'Wordpress' plan (this gives you API access; it's not just for Wordpress).</li>
+        <li>Complete payment and log in to your account.</li>
+        <li>Go to <a href="https://criticalcss.com/account/api-keys" target="_blank">Account → API Keys</a>.</li>
+        <li>Copy your API key and save it as an environment variable.</li>
+        <li>Add your environment variable below.</li>
+        <li>🎉</li>
+    </ol>
+</div>
+
 {{ forms.autosuggestField({
     label: "API Key"|t(craft.critter.pluginHandle),
     instructions: "The API key for your criticalcss.com account."|t(craft.critter.pluginHandle),

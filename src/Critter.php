@@ -7,6 +7,7 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\events\TemplateEvent;
 use craft\helpers\UrlHelper;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
@@ -22,6 +23,7 @@ use mijewe\critter\services\StorageService;
 use mijewe\critter\services\RequestRecordService;
 use mijewe\critter\variables\CritterVariable;
 use mijewe\critter\helpers\GeneratorHelper;
+use mijewe\critter\web\assets\cp\CpAsset;
 use yii\base\Event;
 use yii\base\View as BaseView;
 
@@ -69,6 +71,7 @@ class Critter extends Plugin
         parent::init();
 
         $this->registerVariables();
+        $this->registerAssetBundles();
         $this->attachEventHandlers();
         $this->registerPermissions();
 
@@ -192,6 +195,23 @@ class Critter extends Plugin
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
                 $variable->set('critter', CritterVariable::class);
+            }
+        );
+    }
+
+    /**
+     * Registers asset bundles
+     */
+    private function registerAssetBundles(): void
+    {
+        // Load CSS before template is rendered
+        Event::on(
+            View::class,
+            View::EVENT_BEFORE_RENDER_TEMPLATE,
+            function (TemplateEvent $event) {
+                if (Craft::$app->getRequest()->getIsCpRequest()) {
+                    Craft::$app->view->registerAssetBundle(CpAsset::class);
+                }
             }
         );
     }
