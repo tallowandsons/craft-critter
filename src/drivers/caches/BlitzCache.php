@@ -22,12 +22,12 @@ class BlitzCache extends BaseCache implements CacheInterface
     const CACHE_BEHAVIOUR_REFRESH_URLS = 'refreshUrls';
 
     // the cache behaviour to use when resolving cache
-    public string $cacheBehaviour;
+    public string $cacheBehaviour = self::CACHE_BEHAVIOUR_REFRESH_URLS;
 
     public function __construct()
     {
         $cacheSettings = Critter::getInstance()->settings->cacheSettings ?? [];
-        $this->cacheBehaviour = $cacheSettings['cacheBehaviour'] ?? self::CACHE_BEHAVIOUR_REFRESH_URLS;
+        $this->cacheBehaviour = $cacheSettings['cacheBehaviour'] ?? $this->cacheBehaviour;
 
         parent::__construct();
     }
@@ -37,7 +37,7 @@ class BlitzCache extends BaseCache implements CacheInterface
      */
     public static function displayName(): string
     {
-        return 'Blitz Cache';
+        return 'Blitz';
     }
 
     /**

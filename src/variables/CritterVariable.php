@@ -24,10 +24,12 @@ class CritterVariable
     /**
      * Get constants for use in templates.
      * Usage: craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')
+     * Usage: craft.critter.const('CACHE_BEHAVIOUR_REFRESH_URLS', 'drivers\\caches\\BlitzCache')
      */
-    public function const(string $constantName): string
+    public function const(string $constantName, string $namespace = 'Critter'): string
     {
-        $constantFullName = 'mijewe\\critter\\Critter::' . $constantName;
+        $fullNamespace = 'mijewe\\critter\\' . $namespace;
+        $constantFullName = $fullNamespace . '::' . $constantName;
 
         if (defined($constantFullName)) {
             return constant($constantFullName);
@@ -38,6 +40,6 @@ class CritterVariable
             return constant($constantName);
         }
 
-        throw new \InvalidArgumentException("Constant '{$constantName}' not found in Critical class");
+        throw new \InvalidArgumentException("Constant '{$constantName}' not found in {$fullNamespace} class");
     }
 }

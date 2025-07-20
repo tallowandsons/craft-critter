@@ -9,7 +9,7 @@
     instructions: "Since critical CSS is generated in a queue, pages may have been cached with outdated or no critical CSS. Here you can configure how cached pages should be handled after critical CSS is generated."|t(craft.critter.pluginHandle),
     name: 'cacheBehaviour',
     options: cacheBehaviourOptions,
-    value: settings.cacheSettings.cacheBehaviour ?? constant('CACHE_BEHAVIOUR_REFRESH_URLS', 'mijewe\\critter\\drivers\\caches\\BlitzCache'),
+    value: settings.cacheSettings.cacheBehaviour ?? cache.cacheBehaviour,
     toggle: true,
     disabled: readOnly,
     tooltip: ""
