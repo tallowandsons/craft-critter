@@ -3,6 +3,7 @@
 namespace mijewe\critter\generators;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\Console;
 use mijewe\critter\Critter;
 use mijewe\critter\models\CssModel;
@@ -12,25 +13,72 @@ use Symfony\Component\Process\Process;
 
 class CriticalCssCliGenerator extends BaseGenerator
 {
-
     public string $handle = 'critical-css-cli';
 
+    /**
+     * @var string Node.js executable path
+     */
+    public string $nodeExecutable = 'node';
+
+    /**
+     * @var string Package executable path
+     */
+    public string $packageExecutable = 'node_modules/@plone/critical-css-cli';
+
+    /**
+     * @var int Timeout in seconds
+     */
     public int $timeout = 60;
 
-    // viewport dimensions for critical CSS generation (default from @plone/critical-css-cli)
+    /**
+     * @var int Viewport width
+     */
     public int $width = 1300;
+
+    /**
+     * @var int Viewport height
+     */
     public int $height = 900;
 
     public function __construct()
     {
         $generatorSettings = Critter::getInstance()->settings->generatorSettings ?? [];
 
-        // Load timeout and dimensions from settings, with fallback to defaults
-        $this->timeout = (int)($generatorSettings['timeout'] ?? $this->timeout);
-        $this->width = (int)($generatorSettings['width'] ?? $this->width);
-        $this->height = (int)($generatorSettings['height'] ?? $this->height);
+        // Load settings from configuration
+        $this->setAttributes($generatorSettings, false);
 
         parent::__construct();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules(): array
+    {
+        return [
+            [['nodeExecutable', 'packageExecutable'], 'string'],
+            [['nodeExecutable', 'packageExecutable'], 'required'],
+            [['nodeExecutable'], 'validateNodeExecutable'],
+            [['packageExecutable'], 'validatePackageExecutable'],
+            [['timeout', 'width', 'height'], 'integer', 'min' => 1],
+            [['timeout'], 'integer', 'min' => 10, 'max' => 300],
+            [['width'], 'integer', 'min' => 320, 'max' => 3840],
+            [['height'], 'integer', 'min' => 240, 'max' => 2160],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'nodeExecutable' => Critter::translate('Node.js Executable Path'),
+            'packageExecutable' => Critter::translate('Package Executable Path'),
+            'timeout' => Critter::translate('Timeout'),
+            'width' => Critter::translate('Viewport Width'),
+            'height' => Critter::translate('Viewport Height'),
+        ];
     }
 
     /**
@@ -47,7 +95,11 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     public function getSettings(): array
     {
+        // Run validation to populate warnings/errors for display
+        $this->validate();
+        
         return [
+            'generator' => $this,
             'settings' => Critter::getInstance()->getSettings(),
             'config' => Craft::$app->getConfig()->getConfigFromFile(Critter::getPluginHandle()),
             'pluginHandle' => Critter::getPluginHandle(),
@@ -59,6 +111,14 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
+        // Check if @plone/critical-css-cli is installed before proceeding
+        $packageCheck = $this->validateRequiredPackage();
+        if (!$packageCheck['success']) {
+            return (new GeneratorResponse())
+                ->setSuccess(false)
+                ->setException(new \Exception($packageCheck['message']));
+        }
+
         $url = $urlModel->getAbsoluteUrl();
         $key = $this->getFilenameFromUrl($url);
 
@@ -66,9 +126,10 @@ class CriticalCssCliGenerator extends BaseGenerator
         $outputName = "$key.css";
         $output = $outputPath . '/' . $outputName;
 
+        // Use the generator's own properties for command construction
         $command = [
-            'node',
-            'node_modules/@plone/critical-css-cli',
+            $this->getParsedNodeExecutable(),
+            $this->getParsedPackageExecutable(),
             '-o',
             $output,
             '--dimensions',
@@ -105,6 +166,184 @@ class CriticalCssCliGenerator extends BaseGenerator
                 ->setSuccess(false)
                 ->setException($e);
         }
+    }
+
+    /**
+     * Check if @plone/critical-css-cli is installed and accessible
+     */
+    private function validateRequiredPackage(): array
+    {
+        // Run validation and only fail on actual errors (security issues), not warnings
+        $this->validate();
+        
+        // Only fail if there are actual errors (not warnings)
+        if ($this->hasErrors()) {
+            $errors = [];
+            foreach ($this->getErrors() as $attribute => $attributeErrors) {
+                $errors = array_merge($errors, $attributeErrors);
+            }
+            return [
+                'success' => false,
+                'message' => implode(' ', $errors)
+            ];
+        }
+
+        $nodeExecutable = $this->getParsedNodeExecutable();
+        $packageExecutable = $this->getParsedPackageExecutable();
+
+        // Test if Node.js is available
+        $nodeCheck = new Process([$nodeExecutable, '--version']);
+        $nodeCheck->run();
+        
+        if (!$nodeCheck->isSuccessful()) {
+            return [
+                'success' => false,
+                'message' => "Node.js executable not found at '$nodeExecutable'. Please check the Node.js Executable Path setting or install Node.js."
+            ];
+        }
+
+        // Verify Node.js version output looks legitimate
+        $nodeVersion = trim($nodeCheck->getOutput());
+        if (!preg_match('/^v\d+\.\d+\.\d+/', $nodeVersion)) {
+            return [
+                'success' => false,
+                'message' => "Invalid Node.js executable - unexpected version output: '$nodeVersion'"
+            ];
+        }
+
+        // Test if the critical-css-cli package is available
+        $testCommand = [$nodeExecutable, $packageExecutable, '--help'];
+        $testProcess = new Process($testCommand);
+        $testProcess->run();
+
+        if (!$testProcess->isSuccessful()) {
+            $errorOutput = $testProcess->getErrorOutput();
+            return [
+                'success' => false,
+                'message' => "Unable to execute '@plone/critical-css-cli' at '$packageExecutable'. Error: $errorOutput\n\nPlease check the Package Executable Path setting or install the package with 'npm install @plone/critical-css-cli'."
+            ];
+        }
+
+        // Verify the help output contains expected content
+        $helpOutput = $testProcess->getOutput();
+        if (!str_contains($helpOutput, 'critical') && !str_contains($helpOutput, 'CSS')) {
+            return [
+                'success' => false,
+                'message' => "The executable at '$packageExecutable' does not appear to be the @plone/critical-css-cli package."
+            ];
+        }
+
+        return [
+            'success' => true, 
+            'nodeExecutable' => $nodeExecutable, 
+            'packageExecutable' => $packageExecutable
+        ];
+    }
+
+    /**
+     * Get the parsed Node.js executable path with environment variable support
+     */
+    public function getParsedNodeExecutable(): string
+    {
+        return App::parseEnv($this->nodeExecutable);
+    }
+
+    /**
+     * Get the parsed package executable path with environment variable support
+     */
+    public function getParsedPackageExecutable(): string
+    {
+        return App::parseEnv($this->packageExecutable);
+    }
+
+    /**
+     * Validate Node.js executable path
+     */
+    public function validateNodeExecutable($attribute, $params): void
+    {
+        $path = $this->getParsedNodeExecutable();
+        
+        // Security checks - these BLOCK saving
+        if ($this->isDangerousPath($path)) {
+            $this->addError($attribute, 'Invalid Node.js executable path: contains dangerous patterns.');
+            return;
+        }
+        
+        // Functionality checks - these just warn but don't block saving
+        if (!$this->isExecutableAccessible($path)) {
+            $this->addWarning($attribute, 'Node.js executable not found or not accessible at: ' . $path);
+        }
+    }
+
+    /**
+     * Validate package executable path
+     */
+    public function validatePackageExecutable($attribute, $params): void
+    {
+        $path = $this->getParsedPackageExecutable();
+        
+        // Security checks - these BLOCK saving
+        if ($this->isDangerousPath($path)) {
+            $this->addError($attribute, 'Invalid package executable path: contains dangerous patterns.');
+            return;
+        }
+        
+        // Functionality checks - these just warn but don't block saving
+        if (!str_starts_with($path, '@') && !file_exists($path)) {
+            $this->addWarning($attribute, 'Package executable not found at: ' . $path);
+        }
+    }
+
+    /**
+     * Check if a path contains dangerous patterns
+     */
+    private function isDangerousPath(string $path): bool
+    {
+        $dangerousPatterns = [
+            '../',
+            '~/',
+            '/etc/',
+            '/usr/bin/rm',
+            '/usr/bin/sudo',
+            '/bin/rm',
+            '/bin/sudo',
+            'rm ',
+            'sudo ',
+            'chmod ',
+            'chown ',
+            '; ',
+            '&& ',
+            '|| ',
+            '| ',
+            '$()',
+            '`',
+            '$(',
+        ];
+
+        foreach ($dangerousPatterns as $pattern) {
+            if (str_contains($path, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if an executable is accessible
+     */
+    private function isExecutableAccessible(string $path): bool
+    {
+        // For environment variables or commands without full paths, try to find them
+        if (!str_contains($path, '/')) {
+            // This is likely a command name, try to find it with 'which'
+            $process = new \Symfony\Component\Process\Process(['which', $path]);
+            $process->run();
+            return $process->isSuccessful();
+        }
+        
+        // For full paths, check if the file exists and is executable
+        return file_exists($path) && is_executable($path);
     }
 
     private function getFilenameFromUrl(string $url): string

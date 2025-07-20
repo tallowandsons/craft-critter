@@ -4,6 +4,57 @@
 {# whether or not allowAdminChanges is on #}
 {% set readOnly = readOnly ?? false %}
 
+<h3>{{ "Security Configuration"|t(craft.critter.pluginHandle) }}</h3>
+<p class="warning">{{ "Warning: Executable paths should be configured carefully as they can pose security risks if misconfigured. For production environments, consider using environment variables."|t(craft.critter.pluginHandle) }}</p>
+
+{{ forms.autosuggestField({
+    label: "Node.js Executable Path"|t(craft.critter.pluginHandle),
+    instructions: "Path to the Node.js executable. For security, consider using environment variables. Defaults to 'node' if not specified."|t(craft.critter.pluginHandle),
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'nodeExecutable',
+    value: settings.generatorSettings.nodeExecutable ?? generator.nodeExecutable,
+    placeholder: 'node',
+    disabled: readOnly,
+    code: true,
+    errors: generator.getErrors('nodeExecutable'),
+}) }}
+
+{% if generator.hasWarnings('nodeExecutable') %}
+    {% for warning in generator.getWarnings('nodeExecutable') %}
+        <p class="warning has-icon">
+            <span class="icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Warning: </span><span>{{ warning }}</span>
+        </p>
+    {% endfor %}
+{% endif %}
+
+{{ forms.autosuggestField({
+    label: "Package Executable Path"|t(craft.critter.pluginHandle),
+    instructions: "Path to the @plone/critical-css-cli package. For security, consider using environment variables. Defaults to 'node_modules/@plone/critical-css-cli' if not specified."|t(craft.critter.pluginHandle),
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'packageExecutable',
+    value: settings.generatorSettings.packageExecutable ?? generator.packageExecutable,
+    placeholder: 'node_modules/@plone/critical-css-cli',
+    disabled: readOnly,
+    code: true,
+    errors: generator.getErrors('packageExecutable'),
+}) }}
+
+{% if generator.hasWarnings('packageExecutable') %}
+    {% for warning in generator.getWarnings('packageExecutable') %}
+        <p class="warning has-icon">
+            <span class="icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Warning: </span><span>{{ warning }}</span>
+        </p>
+    {% endfor %}
+{% endif %}
+
+<hr>
+
+<h3>{{ "Generation Settings"|t(craft.critter.pluginHandle) }}</h3>
+
 {{ forms.textField({
     label: "Timeout"|t(craft.critter.pluginHandle),
     instructions: "The timeout in seconds for the critical CSS generation process."|t(craft.critter.pluginHandle),
@@ -13,6 +64,7 @@
     min: 10,
     max: 300,
     disabled: readOnly,
+    errors: generator.getErrors('timeout'),
 }) }}
 
 {{ forms.textField({
@@ -24,6 +76,7 @@
     min: 320,
     max: 3840,
     disabled: readOnly,
+    errors: generator.getErrors('width'),
 }) }}
 
 {{ forms.textField({
@@ -35,6 +88,7 @@
     min: 240,
     max: 2160,
     disabled: readOnly,
+    errors: generator.getErrors('height'),
 }) }}
 
 {{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}

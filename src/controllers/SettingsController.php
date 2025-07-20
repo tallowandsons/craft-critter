@@ -82,6 +82,43 @@ class SettingsController extends Controller
         $generatorSettings = $request->getBodyParam('generatorSettings', []);
         $cacheSettings = $request->getBodyParam('cacheSettings', []);
 
+        // Get the selected generator type to validate only that generator
+        $selectedGeneratorType = $postedSettings['generatorType'] ?? null;
+        
+        // Validate only the currently selected generator
+        if ($selectedGeneratorType && isset($generatorSettings[$selectedGeneratorType])) {
+            if (class_exists($selectedGeneratorType)) {
+                $generator = new $selectedGeneratorType();
+                $generator->setAttributes($generatorSettings[$selectedGeneratorType], false);
+
+                // Run validation
+                $generator->validate();
+                
+                // Check for errors (security issues) - these BLOCK saving
+                if ($generator->hasErrors()) {
+                    $errors = [];
+                    foreach ($generator->getErrors() as $attribute => $attributeErrors) {
+                        foreach ($attributeErrors as $error) {
+                            $errors[] = $generator->getAttributeLabel($attribute) . ': ' . $error;
+                        }
+                    }
+                    Craft::$app->getSession()->setError(implode(' ', $errors));
+                    return null;
+                }
+                
+                // Check for warnings (functionality issues) - these DON'T block saving
+                if ($generator->hasWarnings()) {
+                    $warnings = [];
+                    foreach ($generator->getWarnings() as $attribute => $attributeWarnings) {
+                        foreach ($attributeWarnings as $warning) {
+                            $warnings[] = $generator->getAttributeLabel($attribute) . ': ' . $warning;
+                        }
+                    }
+                    Craft::$app->getSession()->setNotice('Settings saved with warnings: ' . implode(' ', $warnings));
+                }
+            }
+        }
+
         // apply them to the settings model
         $settings = $this->getSettings();
         $settings->setAttributes($postedSettings, false);
