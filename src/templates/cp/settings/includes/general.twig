@@ -123,3 +123,13 @@
     on: settings.enableDebugLogging ?? false,
     disabled: readOnly,
 }) }}
+
+{{ forms.selectField({
+    label: "On Entry Save Behaviour"|t(pluginHandle),
+    instructions: "Choose what happens when an entry is saved.\n<strong>Do Nothing</strong>: Critical CSS remains cached and unchanged.\n<strong>Expire Related Critical CSS</strong>: Marks the cached Critical CSS as expired (cached data is preserved but will be regenerated on next request)."|t(pluginHandle),
+    warning: config.onEntrySaveBehaviour is defined ? configWarning('onEntrySaveBehaviour') : null,
+    name: 'settings[onEntrySaveBehaviour]',
+    options: entrySaveBehaviourOptions,
+    value: settings.onEntrySaveBehaviour ?? 'expireRelatedCss',
+    disabled: readOnly,
+}) }}

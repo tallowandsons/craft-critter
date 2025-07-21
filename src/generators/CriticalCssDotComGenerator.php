@@ -9,6 +9,7 @@ use mijewe\critter\Critter;
 use mijewe\critter\drivers\apis\CriticalCssDotComApi;
 use mijewe\critter\exceptions\MutexLockException;
 use mijewe\critter\models\CssModel;
+use mijewe\critter\models\CssRequest;
 use mijewe\critter\models\GeneratorResponse;
 use mijewe\critter\models\UrlModel;
 
@@ -142,7 +143,9 @@ class CriticalCssDotComGenerator extends BaseGenerator
                         ->setException(new \Exception('Failed to generate critical css from criticalcss.com API: No job ID returned'));
                 }
 
-                Critter::getInstance()->requestRecords->setData($urlModel, ['resultId' => $resultId]);
+                // Create a CssRequest from the UrlModel for RequestRecordService
+                $cssRequest = (new CssRequest())->setRequestUrl($urlModel);
+                Critter::getInstance()->requestRecords->setData($cssRequest, ['resultId' => $resultId]);
             }
 
             $attemptCount = 0;

@@ -37,7 +37,7 @@ class CssService extends Component
         $cssRequest = (new CssRequest())->setRequestUrl($url);
 
         // create a record for the URL if it doesn't exist
-        Critter::getInstance()->requestRecords->createRecordIfNotExists($cssRequest->getUrl());
+        Critter::getInstance()->requestRecords->createRecordIfNotExists($cssRequest);
 
         // return css from storage if it exists
         $cssModel = Critter::getInstance()->storage->get($cssRequest);

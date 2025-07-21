@@ -72,7 +72,7 @@ class GeneratorService extends Component
         Critter::getInstance()->log->debug("Starting direct generation for '{$urlString}'", 'generation');
 
         // set the uri record status to 'generating'
-        Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_GENERATING);
+        Critter::getInstance()->requestRecords->setStatus($cssRequest, RequestRecord::STATUS_GENERATING);
 
         // generate the critical css
         $response = $this->generator->generate($url);
@@ -82,7 +82,7 @@ class GeneratorService extends Component
             Critter::getInstance()->log->logGenerationComplete($urlString, $generatorClass, $duration);
 
             // update URI record
-            Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
+            Critter::getInstance()->requestRecords->createOrUpdateRecord($cssRequest, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
 
             // store the css
             if ($storeResult) {
@@ -98,7 +98,7 @@ class GeneratorService extends Component
             $errorMessage = $response->hasException() ? $response->getException()->getMessage() : 'Unknown error';
             Critter::getInstance()->log->logGenerationFailure($urlString, $generatorClass, $errorMessage);
 
-            Critter::getInstance()->requestRecords->setStatus($url, RequestRecord::STATUS_ERROR);
+            Critter::getInstance()->requestRecords->setStatus($cssRequest, RequestRecord::STATUS_ERROR);
 
             // throw an exception if the response has one.
             // this will fail the queue job and report the error.
@@ -137,7 +137,7 @@ class GeneratorService extends Component
 
         if ($queueJobId = Craft::$app->queue->push($job)) {
             Critter::getInstance()->log->logQueueJob('created', $urlString, $queueJobId);
-            Critter::getInstance()->requestRecords->createOrUpdateRecord($url, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
+            Critter::getInstance()->requestRecords->createOrUpdateRecord($cssRequest, RequestRecord::STATUS_QUEUED, ['jobId' => $queueJobId], new \DateTime());
         } else {
             Critter::getInstance()->log->error("Failed to queue job for '{$urlString}'", 'queue');
         }

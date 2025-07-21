@@ -16,6 +16,10 @@ class Settings extends Model
     const MODE_ENTRY = 'entry';
     const MODE_SECTION = 'section';
 
+    // Entry save behaviour options
+    const ENTRY_SAVE_DO_NOTHING = 'doNothing';
+    const ENTRY_SAVE_EXPIRE_CSS = 'expireRelatedCss';
+
     // whether or not to automatically render the critical css
     public bool $autoRenderEnabled = true;
 
@@ -64,4 +68,7 @@ class Settings extends Model
 
     // whether to enable debug logging to storage/logs/critter.log
     public bool $enableDebugLogging = false;
+
+    // what to do when an entry is saved (expire critical CSS or do nothing)
+    public string $onEntrySaveBehaviour = self::ENTRY_SAVE_EXPIRE_CSS;
 }

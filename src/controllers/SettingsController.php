@@ -65,6 +65,7 @@ class SettingsController extends Controller
             'cacheTypeOptions' => CacheHelper::getCacheTypesAsSelectOptions(),
             'cacheBehaviourOptions' => BlitzCache::getCacheBehaviourOptions(),
             'defaultModeOptions' => SettingsHelper::getModesAsSelectOptions(),
+            'entrySaveBehaviourOptions' => SettingsHelper::getEntrySaveBehaviourOptions(),
         ]);
     }
 
@@ -84,7 +85,7 @@ class SettingsController extends Controller
 
         // Get the selected generator type to validate only that generator
         $selectedGeneratorType = $postedSettings['generatorType'] ?? null;
-        
+
         // Validate only the currently selected generator
         if ($selectedGeneratorType && isset($generatorSettings[$selectedGeneratorType])) {
             if (class_exists($selectedGeneratorType)) {
@@ -93,7 +94,7 @@ class SettingsController extends Controller
 
                 // Run validation
                 $generator->validate();
-                
+
                 // Check for errors (security issues) - these BLOCK saving
                 if ($generator->hasErrors()) {
                     $errors = [];
@@ -105,7 +106,7 @@ class SettingsController extends Controller
                     Craft::$app->getSession()->setError(implode(' ', $errors));
                     return null;
                 }
-                
+
                 // Check for warnings (functionality issues) - these DON'T block saving
                 if ($generator->hasWarnings()) {
                     $warnings = [];

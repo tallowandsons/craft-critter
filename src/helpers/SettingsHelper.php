@@ -24,4 +24,21 @@ class SettingsHelper
             ]
         ];
     }
+
+    /**
+     * Returns an array of entry save behaviour options as <select> options.
+     */
+    static function getEntrySaveBehaviourOptions(): array
+    {
+        return [
+            [
+                'label' => 'Do Nothing',
+                'value' => Settings::ENTRY_SAVE_DO_NOTHING,
+            ],
+            [
+                'label' => 'Expire Related Critical CSS',
+                'value' => Settings::ENTRY_SAVE_EXPIRE_CSS,
+            ]
+        ];
+    }
 }

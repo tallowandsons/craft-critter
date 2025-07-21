@@ -5,10 +5,13 @@ namespace mijewe\critter;
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\elements\Entry;
+use craft\events\ElementEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\TemplateEvent;
 use craft\helpers\UrlHelper;
+use craft\services\Elements;
 use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use craft\web\View;
@@ -17,6 +20,7 @@ use mijewe\critter\models\Settings;
 use mijewe\critter\services\CacheService;
 use mijewe\critter\services\ConfigService;
 use mijewe\critter\services\CssService;
+use mijewe\critter\services\ExpirationService;
 use mijewe\critter\services\GeneratorService;
 use mijewe\critter\services\LogService;
 use mijewe\critter\services\SettingsService;
@@ -72,7 +76,8 @@ class Critter extends Plugin
                 'requestRecords' => RequestRecordService::class,
                 'settingsService' => SettingsService::class,
                 'configService' => ConfigService::class,
-                'log' => LogService::class
+                'log' => LogService::class,
+                'expiration' => ExpirationService::class,
             ],
         ];
     }
@@ -163,6 +168,36 @@ class Critter extends Plugin
             static function () {
                 if (Critter::getInstance()->getSettings()->autoRenderEnabled) {
                     Critter::getInstance()->css->renderCss();
+                }
+            }
+        );
+
+        // Entry save event handler for critical CSS expiration
+        Event::on(
+            Elements::class,
+            Elements::EVENT_AFTER_SAVE_ELEMENT,
+            function (ElementEvent $event) {
+                // Only handle Entry elements
+                if (!$event->element instanceof Entry) {
+                    return;
+                }
+
+                /** @var Entry $entry */
+                $entry = $event->element;
+
+                // Get plugin settings
+                $settings = Critter::getInstance()->getSettings();
+
+                // Check if we should expire critical CSS on entry save
+                if ($settings->onEntrySaveBehaviour === Settings::ENTRY_SAVE_EXPIRE_CSS) {
+                    // Use expiration service to expire related CSS
+
+                    // if the entry has no url, abort
+                    if (!$entry->getUrl()) {
+                        return;
+                    }
+
+                    Critter::getInstance()->expiration->expireCriticalCssForEntry($entry);
                 }
             }
         );

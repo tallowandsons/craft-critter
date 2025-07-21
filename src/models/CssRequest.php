@@ -4,7 +4,9 @@ namespace mijewe\critter\models;
 
 use Craft;
 use craft\base\Model;
+use craft\elements\Entry;
 use mijewe\critter\Critter;
+use mijewe\critter\factories\UrlFactory;
 
 /**
  * Storage Request model
@@ -98,5 +100,28 @@ class CssRequest extends Model
             default:
                 return $this->requestUrl->getAbsoluteUrl();
         }
+    }
+
+    /**
+     * Get the tag for this request (used for expiration grouping)
+     */
+    public function getTag(): string
+    {
+        switch ($this->getMode()) {
+            case Settings::MODE_SECTION:
+                return 'section:' . $this->requestUrl->getSectionHandle();
+            case Settings::MODE_ENTRY:
+            default:
+                // For entry mode, we need the entry ID from the URL
+                $entry = $this->requestUrl->getMatchedElement();
+                return $entry ? 'entry:' . $entry->id : 'url:' . md5($this->requestUrl->getAbsoluteUrl());
+        }
+    }
+
+    static public function createFromEntry(Entry $entry): self
+    {
+        $cssRequest = new self();
+        $cssRequest->setRequestUrl(UrlFactory::createFromEntry($entry));
+        return $cssRequest;
     }
 }
