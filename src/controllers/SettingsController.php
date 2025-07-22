@@ -66,6 +66,7 @@ class SettingsController extends Controller
             'cacheBehaviourOptions' => BlitzCache::getCacheBehaviourOptions(),
             'defaultModeOptions' => SettingsHelper::getModesAsSelectOptions(),
             'entrySaveBehaviourOptions' => SettingsHelper::getEntrySaveBehaviourOptions(),
+            'regenerateExpiredCssOptions' => SettingsHelper::getRegenerateExpiredCssOptions(),
         ]);
     }
 

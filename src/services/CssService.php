@@ -7,6 +7,7 @@ use mijewe\critter\Critter;
 use mijewe\critter\factories\UrlFactory;
 use mijewe\critter\models\CssModel;
 use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\Settings;
 use mijewe\critter\models\UrlModel;
 use yii\base\Component;
 
@@ -39,9 +40,34 @@ class CssService extends Component
         // create a record for the URL if it doesn't exist
         Critter::getInstance()->requestRecords->createRecordIfNotExists($cssRequest);
 
-        // return css from storage if it exists
+        // check if we have cached CSS
         $cssModel = Critter::getInstance()->storage->get($cssRequest);
         if (!$cssModel->isEmpty()) {
+            // check if the CSS is expired
+            if ($this->isCssExpired($cssRequest)) {
+                // CSS is expired - handle according to settings
+                $settings = Critter::getInstance()->getSettings();
+
+                if ($settings->regenerateExpiredCss === Settings::REGENERATE_ON_REQUEST) {
+                    // Regenerate on request - start generation and return existing CSS for now
+                    if ($generate) {
+
+                        Critter::getInstance()->log->info("CSS for URL '{$url->getAbsoluteUrl()}' is expired and will be regenerated.", 'css');
+
+                        Critter::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
+                    }
+                    // Return the expired CSS while regeneration happens
+                    return $cssModel->getCss();
+                } else {
+                    // Manual regeneration - return expired CSS without triggering regeneration
+
+                    Critter::getInstance()->log->info("CSS for URL '{$url->getAbsoluteUrl()}' is expired and must be regenerated manually.", 'css');
+
+                    return $cssModel->getCss();
+                }
+            }
+
+            // CSS is not expired, return it
             return $cssModel->getCss();
         }
 
@@ -101,5 +127,20 @@ class CssService extends Component
             }
         }
         return $result;
+    }
+
+    /**
+     * Check if CSS is expired based on the request record
+     */
+    private function isCssExpired(CssRequest $cssRequest): bool
+    {
+        $record = Critter::getInstance()->requestRecords->getRecordByCssRequest($cssRequest);
+
+        if (!$record || !$record->expiryDate) {
+            return false;
+        }
+
+        $now = new \DateTime();
+        return $record->expiryDate < $now;
     }
 }

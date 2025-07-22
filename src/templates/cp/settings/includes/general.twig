@@ -133,3 +133,13 @@
     value: settings.onEntrySaveBehaviour ?? 'expireRelatedCss',
     disabled: readOnly,
 }) }}
+
+{{ forms.selectField({
+    label: "Regenerate Expired CSS"|t(pluginHandle),
+    instructions: "Choose how expired Critical CSS is regenerated.\n<strong>Manually</strong>: Expired CSS is not automatically regenerated - use cronjobs or manual regeneration.\n<strong>Regenerate on next request</strong>: When expired CSS is requested, automatically trigger regeneration."|t(pluginHandle),
+    warning: config.regenerateExpiredCss is defined ? configWarning('regenerateExpiredCss') : null,
+    name: 'settings[regenerateExpiredCss]',
+    options: regenerateExpiredCssOptions,
+    value: settings.regenerateExpiredCss ?? 'manually',
+    disabled: readOnly,
+}) }}

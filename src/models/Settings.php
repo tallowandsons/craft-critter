@@ -20,6 +20,10 @@ class Settings extends Model
     const ENTRY_SAVE_DO_NOTHING = 'doNothing';
     const ENTRY_SAVE_EXPIRE_CSS = 'expireRelatedCss';
 
+    // Regenerate expired CSS options
+    const REGENERATE_MANUALLY = 'manually';
+    const REGENERATE_ON_REQUEST = 'onRequest';
+
     // whether or not to automatically render the critical css
     public bool $autoRenderEnabled = true;
 
@@ -71,4 +75,7 @@ class Settings extends Model
 
     // what to do when an entry is saved (expire critical CSS or do nothing)
     public string $onEntrySaveBehaviour = self::ENTRY_SAVE_EXPIRE_CSS;
+
+    // how to handle regeneration of expired critical CSS
+    public string $regenerateExpiredCss = self::REGENERATE_MANUALLY;
 }

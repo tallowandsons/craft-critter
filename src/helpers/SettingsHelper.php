@@ -41,4 +41,21 @@ class SettingsHelper
             ]
         ];
     }
+
+    /**
+     * Returns an array of regenerate expired CSS options as <select> options.
+     */
+    static function getRegenerateExpiredCssOptions(): array
+    {
+        return [
+            [
+                'label' => 'Manually',
+                'value' => Settings::REGENERATE_MANUALLY,
+            ],
+            [
+                'label' => 'Regenerate on next request',
+                'value' => Settings::REGENERATE_ON_REQUEST,
+            ]
+        ];
+    }
 }

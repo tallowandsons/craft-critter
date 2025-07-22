@@ -84,6 +84,9 @@ class GeneratorService extends Component
             // update URI record
             Critter::getInstance()->requestRecords->createOrUpdateRecord($cssRequest, RequestRecord::STATUS_COMPLETE, null, null, $response->getTimestamp());
 
+            // nullify expiry date since fresh CSS was generated
+            Critter::getInstance()->requestRecords->nullifyExpiryDate($cssRequest);
+
             // store the css
             if ($storeResult) {
                 Critter::getInstance()->storage->save($cssRequest, $response->getCss());

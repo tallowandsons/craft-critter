@@ -147,6 +147,16 @@ class RequestRecordService extends Component
     }
 
     /**
+     * Nullify the expiry date for a record (removes expiry)
+     */
+    public function nullifyExpiryDate(CssRequest $cssRequest): bool
+    {
+        $record = $this->getOrCreateRecord($cssRequest);
+        $record->expiryDate = null;
+        return $record->save();
+    }
+
+    /**
      * Expire all records with a specific tag
      */
     public function expireRecordsByTag(string $tag): bool
