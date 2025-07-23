@@ -1,5 +1,17 @@
 
 
+<h1>Critter Utilities</h1>
+
+<p>Use these utilities to manage Critical CSS generation and expiration.</p>
+
+<hr>
+
+<h2>Expiration</h2>
+
+<h3>Expire all critical CSS</h3>
+
+<p>Mark all critical CSS records as expired.<br>Expired CSS will still be rendered on the page until new CSS is generated.</p>
+
 <form class="utility" method="post" accept-charset="UTF-8">
     {{ actionInput('critter/utility/expire-all') }}
     {{ redirectInput('utilities/critter') }}
@@ -7,6 +19,14 @@
 
     <input type="submit" class="btn submit" value="{{ "Expire all"|t('critter') }}">
 </form>
+
+<hr>
+
+<h2>Regeneration</h2>
+
+<h3>Regenerate expired critical CSS</h3>
+
+<p>Queue regeneration of all expired critical CSS records.</p>
 
 <form class="utility" method="post" accept-charset="UTF-8">
     {{ actionInput('critter/utility/regenerate-expired') }}
