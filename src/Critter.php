@@ -345,4 +345,36 @@ class Critter extends Plugin
     {
         return Craft::t(Critter::getInstance()->getPluginHandle(), $str, $params);
     }
+
+    /**
+     * Logs an info message using the plugin's logger.
+     */
+    static function info(string $message, ?string $category = null): void
+    {
+        Critter::getInstance()->log->info($message, $category);
+    }
+
+    /**
+     * Logs an error message using the plugin's logger.
+     */
+    static function error(string $message, ?string $category = null): void
+    {
+        Critter::getInstance()->log->error($message, $category);
+    }
+
+    /**
+     * Logs a debug message using the plugin's logger.
+     */
+    static function debug(string $message, ?string $category = null): void
+    {
+        Critter::getInstance()->log->debug($message, $category);
+    }
+
+    /**
+     * Logs a warning message using the plugin's logger.
+     */
+    static function warning(string $message, ?string $category = null): void
+    {
+        Critter::getInstance()->log->warning($message, $category);
+    }
 }

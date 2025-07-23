@@ -26,11 +26,34 @@ class CssController extends Controller
         return $options;
     }
 
+    /**
+     * Expire all cached Critical CSS records by updating their expiry dates.
+     * php craft critter/css/expire
+     */
     public function actionExpire()
     {
         $this->printInfo("Expiring all CSS records...");
 
         $response = Critter::getInstance()->utilityService->expireAll();
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Regenerate all expired Critical CSS records
+     * php craft critter/css/regenerate-expired
+     */
+    public function actionRegenerateExpired()
+    {
+        $this->printInfo("Regenerating expired CSS records...");
+
+        $response = Critter::getInstance()->utilityService->regenerateExpired();
 
         if ($response->isSuccess()) {
             $this->printSuccess($response->getMessage());

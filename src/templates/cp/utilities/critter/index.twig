@@ -7,3 +7,11 @@
 
     <input type="submit" class="btn submit" value="{{ "Expire all"|t('critter') }}">
 </form>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/regenerate-expired') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    <input type="submit" class="btn submit" value="{{ "Regenerate expired"|t('critter') }}">
+</form>
