@@ -1,4 +1,4 @@
-
+{% import '_includes/forms' as forms %}
 
 <h1>Critter Utilities</h1>
 
@@ -18,6 +18,28 @@
     {{ csrfInput() }}
 
     <input type="submit" class="btn submit" value="{{ "Expire all"|t('critter') }}">
+</form>
+
+<h3>Expire CSS for specific entry</h3>
+
+<p>Mark critical CSS records for a specific entry as expired.<br>Select an entry to expire all associated CSS records.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/expire-entry') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {{ forms.elementSelectField({
+        label: "Entry"|t('critter'),
+        id: 'entryIds',
+        name: 'entryIds',
+        elementType: 'craft\\elements\\Entry',
+        selectionLabel: "Choose an entry"|t('critter'),
+        limit: 1,
+        required: true
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Expire entry CSS"|t('critter') }}">
 </form>
 
 <hr>

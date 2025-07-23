@@ -35,6 +35,35 @@ class UtilityController extends Controller
     }
 
     /**
+     * Expire Critical CSS records for a specific entry.
+     * /action/critter/utility/expire-entry
+     */
+    public function actionExpireEntry(): Response
+    {
+        $this->requirePostRequest();
+
+        $entryIds = $this->request->getBodyParam('entryIds', []);
+
+        if (empty($entryIds)) {
+            Craft::$app->getSession()->setError(Critter::translate('No entry selected.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        // Take the first entry ID if multiple are selected
+        $entryId = (int) $entryIds[0];
+
+        $response = Critter::getInstance()->utilityService->expireEntry($entryId);
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
      * Regenerate all expired Critical CSS records.
      * /action/critter/utility/regenerate-expired
      */
