@@ -7,12 +7,14 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\ElementEvent;
+use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\TemplateEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Elements;
 use craft\services\UserPermissions;
+use craft\services\Utilities;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
@@ -28,6 +30,7 @@ use mijewe\critter\services\RequestRecordService;
 use mijewe\critter\services\SettingsService;
 use mijewe\critter\services\StorageService;
 use mijewe\critter\services\UtilityService;
+use mijewe\critter\utilities\CritterUtility;
 use mijewe\critter\variables\CritterVariable;
 use mijewe\critter\web\assets\cp\CpAsset;
 use yii\base\Event;
@@ -204,6 +207,10 @@ class Critter extends Plugin
                 }
             }
         );
+
+        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITIES, function (RegisterComponentTypesEvent $event) {
+            $event->types[] = CritterUtility::class;
+        });
     }
 
     /**

@@ -1,0 +1,9 @@
+
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/expire-all') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    <input type="submit" class="btn submit" value="{{ "Expire all"|t('critter') }}">
+</form>
