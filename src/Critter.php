@@ -16,6 +16,7 @@ use craft\services\UserPermissions;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
+use mijewe\critter\helpers\GeneratorHelper;
 use mijewe\critter\models\Settings;
 use mijewe\critter\services\CacheService;
 use mijewe\critter\services\ConfigService;
@@ -23,11 +24,11 @@ use mijewe\critter\services\CssService;
 use mijewe\critter\services\ExpirationService;
 use mijewe\critter\services\GeneratorService;
 use mijewe\critter\services\LogService;
+use mijewe\critter\services\RequestRecordService;
 use mijewe\critter\services\SettingsService;
 use mijewe\critter\services\StorageService;
-use mijewe\critter\services\RequestRecordService;
+use mijewe\critter\services\UtilityService;
 use mijewe\critter\variables\CritterVariable;
-use mijewe\critter\helpers\GeneratorHelper;
 use mijewe\critter\web\assets\cp\CpAsset;
 use yii\base\Event;
 use yii\base\View as BaseView;
@@ -48,6 +49,7 @@ use yii\base\View as BaseView;
  * @property-read SettingsService $settingsService
  * @property-read ConfigService $configService
  * @property-read LogService $log
+ * @property-read UtilityService $utilityService
  */
 class Critter extends Plugin
 {
@@ -78,6 +80,7 @@ class Critter extends Plugin
                 'configService' => ConfigService::class,
                 'log' => LogService::class,
                 'expiration' => ExpirationService::class,
+                'utilityService' => UtilityService::class,
             ],
         ];
     }

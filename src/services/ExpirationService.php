@@ -16,6 +16,7 @@ use yii\base\Component;
  */
 class ExpirationService extends Component
 {
+
     /**
      * Expire Critical CSS for an entry by updating request record expiry dates
      * This marks the CSS as expired without deleting the cached data
