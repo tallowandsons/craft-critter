@@ -6,9 +6,9 @@
 
 <hr>
 
-<h2>Expiration</h2>
+{# <h2>Expiration</h2> #}
 
-<h3>Expire all critical CSS</h3>
+<h2>Expire all critical CSS</h2>
 
 <p>Mark all critical CSS records as expired.<br>Expired CSS will still be rendered on the page until new CSS is generated.</p>
 
@@ -20,7 +20,9 @@
     <input type="submit" class="btn submit" value="{{ "Expire all"|t('critter') }}">
 </form>
 
-<h3>Expire CSS for specific entry</h3>
+<hr>
+
+<h2>Expire CSS for specific entry</h2>
 
 <p>Mark critical CSS records for a specific entry as expired.<br>Select an entry to expire all associated CSS records.</p>
 
@@ -42,7 +44,9 @@
     <input type="submit" class="btn submit" value="{{ "Expire entry CSS"|t('critter') }}">
 </form>
 
-<h3>Expire CSS for specific section</h3>
+<hr>
+
+<h2>Expire CSS for specific section</h2>
 
 <p>Mark critical CSS records for a specific section as expired.<br>Select a section to expire all associated CSS records.</p>
 
@@ -67,9 +71,7 @@
 
 <hr>
 
-<h2>Regeneration</h2>
-
-<h3>Regenerate expired critical CSS</h3>
+<h2>Regenerate expired critical CSS</h2>
 
 <p>Queue regeneration of all expired critical CSS records.</p>
 
