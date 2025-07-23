@@ -42,6 +42,29 @@
     <input type="submit" class="btn submit" value="{{ "Expire entry CSS"|t('critter') }}">
 </form>
 
+<h3>Expire CSS for specific section</h3>
+
+<p>Mark critical CSS records for a specific section as expired.<br>Select a section to expire all associated CSS records.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/expire-section') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {{ forms.selectField({
+        label: "Section"|t('critter'),
+        id: 'sectionHandle',
+        name: 'sectionHandle',
+        options: craft.app.entries.allSections|map(section => {
+            value: section.handle,
+            label: section.name
+        }),
+        required: true
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Expire section CSS"|t('critter') }}">
+</form>
+
 <hr>
 
 <h2>Regeneration</h2>

@@ -110,4 +110,65 @@ class UtilityService extends Component
                 ]));
         }
     }
+
+    /**
+     * Expire CSS records for a specific section by section handle
+     * This will find all records with the section:x tag and expire them
+     */
+    public function expireSection(string $sectionHandle)
+    {
+        try {
+            // Find section to validate it exists
+            $section = Craft::$app->entries->getSectionByHandle($sectionHandle);
+            if (!$section) {
+                return (new UtilityActionResponse())
+                    ->setSuccess(false)
+                    ->setMessage(Critter::translate('Section with handle "{handle}" not found.', ['handle' => $sectionHandle]));
+            }
+
+            // Find records with the section:x tag (using section handle)
+            $sectionTag = "section:{$sectionHandle}";
+            $records = RequestRecord::find()
+                ->where(['like', 'tag', $sectionTag])
+                ->andWhere(['or', ['expiryDate' => null], ['>', 'expiryDate', (new DateTime())->format('Y-m-d H:i:s')]])
+                ->all();
+
+            if (empty($records)) {
+                return (new UtilityActionResponse())
+                    ->setSuccess(true)
+                    ->setMessage(Critter::translate('No unexpired CSS records found for section "{name}" (handle: {handle}).', [
+                        'name' => $section->name,
+                        'handle' => $sectionHandle
+                    ]));
+            }
+
+            // Set expiry date to now for all matching records
+            $now = new DateTime();
+            $updatedCount = RequestRecord::updateAll(
+                ['expiryDate' => $now->format('Y-m-d H:i:s')],
+                ['like', 'tag', $sectionTag]
+            );
+
+            return (new UtilityActionResponse())
+                ->setSuccess(true)
+                ->setMessage(Critter::translate('Successfully expired {count} CSS records for section "{name}" (handle: {handle}).', [
+                    'count' => $updatedCount,
+                    'name' => $section->name,
+                    'handle' => $sectionHandle
+                ]))
+                ->setData([
+                    'count' => $updatedCount,
+                    'sectionId' => $section->id,
+                    'sectionHandle' => $sectionHandle,
+                    'sectionName' => $section->name
+                ]);
+        } catch (\Exception $e) {
+            return (new UtilityActionResponse())
+                ->setSuccess(false)
+                ->setMessage(Critter::translate('Failed to expire CSS for section handle "{handle}": {error}', [
+                    'handle' => $sectionHandle,
+                    'error' => $e->getMessage()
+                ]));
+        }
+    }
 }

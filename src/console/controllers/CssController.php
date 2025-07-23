@@ -25,6 +25,11 @@ class CssController extends Controller
      */
     public ?int $entry = null;
 
+    /**
+     * @var string|null Section handle to expire CSS for specific section
+     */
+    public ?string $section = null;
+
     public function options($actionID): array
     {
         $options = parent::options($actionID);
@@ -32,6 +37,7 @@ class CssController extends Controller
             case 'expire':
                 $options[] = 'all';
                 $options[] = 'entry';
+                $options[] = 'section';
                 break;
             case 'index':
                 // $options[] = '...';
@@ -44,20 +50,22 @@ class CssController extends Controller
      * Expire cached Critical CSS records by updating their expiry dates.
      * php craft critter/css/expire --all
      * php craft critter/css/expire --entry=123
+     * php craft critter/css/expire --section=news
      */
     public function actionExpire()
     {
-        $optionsCount = ($this->all ? 1 : 0) + ($this->entry ? 1 : 0);
+        $optionsCount = ($this->all ? 1 : 0) + ($this->entry ? 1 : 0) + ($this->section ? 1 : 0);
 
         if ($optionsCount === 0) {
-            $this->printError("Error: You must specify either --all or --entry option.");
+            $this->printError("Error: You must specify either --all, --entry, or --section option.");
             $this->printInfo("Usage: php craft critter/css/expire --all");
             $this->printInfo("   or: php craft critter/css/expire --entry=123");
+            $this->printInfo("   or: php craft critter/css/expire --section=news");
             return ExitCode::USAGE;
         }
 
         if ($optionsCount > 1) {
-            $this->printError("Error: You can only specify one of --all or --entry options.");
+            $this->printError("Error: You can only specify one of --all, --entry, or --section options.");
             return ExitCode::USAGE;
         }
 
@@ -67,6 +75,10 @@ class CssController extends Controller
 
         if ($this->entry) {
             return $this->expireEntry($this->entry);
+        }
+
+        if ($this->section) {
+            return $this->expireSection($this->section);
         }
 
         return ExitCode::USAGE;
@@ -92,6 +104,21 @@ class CssController extends Controller
         $this->printInfo("Expiring CSS records for entry ID: {$entryId}...");
 
         $response = Critter::getInstance()->utilityService->expireEntry($entryId);
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    private function expireSection(string $sectionHandle): int
+    {
+        $this->printInfo("Expiring CSS records for section handle: {$sectionHandle}...");
+
+        $response = Critter::getInstance()->utilityService->expireSection($sectionHandle);
 
         if ($response->isSuccess()) {
             $this->printSuccess($response->getMessage());

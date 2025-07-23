@@ -64,6 +64,32 @@ class UtilityController extends Controller
     }
 
     /**
+     * Expire Critical CSS records for a specific section.
+     * /action/critter/utility/expire-section
+     */
+    public function actionExpireSection(): Response
+    {
+        $this->requirePostRequest();
+
+        $sectionHandle = $this->request->getBodyParam('sectionHandle');
+
+        if (!$sectionHandle) {
+            Craft::$app->getSession()->setError(Critter::translate('No section selected.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        $response = Critter::getInstance()->utilityService->expireSection($sectionHandle);
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
      * Regenerate all expired Critical CSS records.
      * /action/critter/utility/regenerate-expired
      */
