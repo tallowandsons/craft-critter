@@ -6,6 +6,7 @@ use Craft;
 use craft\queue\BaseJob;
 use mijewe\critter\Critter;
 use mijewe\critter\exceptions\MutexLockException;
+use mijewe\critter\exceptions\RetryableCssGenerationException;
 use mijewe\critter\generators\NoGenerator;
 use mijewe\critter\models\CssRequest;
 use yii\queue\RetryableJobInterface;
@@ -30,9 +31,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
         // Retry on specific retryable exceptions, up to the configured max retries
         $retryableExceptions = [
             MutexLockException::class,
-            // Add more retryable exception types here as needed:
-            // NetworkException::class,
-            // TemporaryApiException::class,
+            RetryableCssGenerationException::class
         ];
 
         foreach ($retryableExceptions as $exceptionClass) {
@@ -50,7 +49,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
     public function getTtr(): int
     {
         // Allow longer time for jobs that might need to wait for mutex locks and API polling
-        return 300; // 5 minutes
+        return 10; // 10 seconds
     }
     function execute($queue): void
     {
@@ -68,6 +67,9 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
             Critter::getInstance()->generator->generate($this->cssRequest, $this->storeResult);
         } catch (MutexLockException $e) {
             // Handle retryable exceptions with delay mechanism
+            $this->handleRetryableException($e);
+        } catch (RetryableCssGenerationException $e) {
+            // Handle retryable CSS generation failures with delay mechanism
             $this->handleRetryableException($e);
         }
         // TODO: Add more catch blocks for other retryable exceptions as needed

@@ -8,10 +8,13 @@ use craft\helpers\Json;
 use mijewe\critter\Critter;
 use mijewe\critter\drivers\apis\CriticalCssDotComApi;
 use mijewe\critter\exceptions\MutexLockException;
+use mijewe\critter\exceptions\RetryableCssGenerationException;
+use mijewe\critter\models\api\CriticalCssDotComResultsResponse;
 use mijewe\critter\models\CssModel;
 use mijewe\critter\models\CssRequest;
 use mijewe\critter\models\GeneratorResponse;
 use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {
@@ -41,6 +44,17 @@ class CriticalCssDotComGenerator extends BaseGenerator
      * @var int Viewport height for critical CSS generation
      */
     public int $height = CriticalCssDotComApi::DEFAULT_HEIGHT;
+
+    /**
+     * @var bool Enable test mode for simulating API responses
+     */
+    public bool $testMode = false;
+
+    /**
+     * @var string The result status to simulate in test mode
+     * Options: 'PENTHOUSE_TIMEOUT'
+     */
+    public ?string $testResultStatus = null;
 
     /**
      * @var CriticalCssDotComApi Internal API client (not a model attribute)
@@ -152,7 +166,13 @@ class CriticalCssDotComGenerator extends BaseGenerator
 
             while ($attemptCount < $this->maxAttempts) {
 
-                $apiResponse = $this->getResultsById($resultId);
+                // TEST MODE: Simulate different failure responses (only in developer mode)
+                if ($this->isTestMode()) {
+                    $apiResponse = $this->simulateTestResponse();
+                } else {
+                    // Normal operation: Poll the API for results using the resultId
+                    $apiResponse = $this->getResultsById($resultId);
+                }
 
                 // Check if the API response contains an error
                 if ($apiResponse->hasError()) {
@@ -170,13 +190,27 @@ class CriticalCssDotComGenerator extends BaseGenerator
                             ->setSuccess(true)
                             ->setCss(new CssModel($cssStr));
                     } else {
-
                         // if the job is done but no css was returned,
-                        // this is an error.
+                        // check if this is a retryable failure (like PENTHOUSE_TIMEOUT)
+                        $resultStatus = $apiResponse->getResultStatus();
 
-                        return (new GeneratorResponse())
-                            ->setSuccess(false)
-                            ->setException(new \Exception('No CSS returned from criticalcss.com API - ' . $apiResponse->getResultStatus()));
+                        if ($this->isRetryableFailure($resultStatus)) {
+                            // Clear the record data to allow a fresh attempt
+                            $this->clearRecordData($urlModel);
+
+                            Critter::getInstance()->log->info(
+                                "Retryable failure '{$resultStatus}' for URL: {$urlModel->getAbsoluteUrl()}. Record cleared for retry.",
+                                'generation'
+                            );
+
+                            return (new GeneratorResponse())
+                                ->setSuccess(false)
+                                ->setException(new RetryableCssGenerationException("Retryable failure from criticalcss.com: {$resultStatus}. Record cleared for retry."));
+                        } else {
+                            return (new GeneratorResponse())
+                                ->setSuccess(false)
+                                ->setException(new \Exception('No CSS returned from criticalcss.com API - ' . $resultStatus));
+                        }
                     }
                 }
 
@@ -239,7 +273,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             [['apiKey'], 'string'],
             [['apiKey'], 'required'],
             [['apiKey'], 'validateApiKey'],
@@ -249,6 +283,20 @@ class CriticalCssDotComGenerator extends BaseGenerator
             [['width'], 'integer', 'min' => 320, 'max' => 3840],
             [['height'], 'integer', 'min' => 240, 'max' => 2160],
         ];
+
+        // Only add test mode validation rules when developer mode is enabled
+        if (Critter::getInstance()->settings->developerMode) {
+            $rules[] = [['testMode'], 'boolean'];
+            $rules[] = [['testResultStatus'], 'string'];
+            $rules[] = [['testResultStatus'], 'in', 'range' => [
+                CriticalCssDotComApi::RESULT_STATUS_PENTHOUSE_TIMEOUT,
+                CriticalCssDotComApi::RESULT_STATUS_SERVER_ERROR,
+                CriticalCssDotComApi::RESULT_STATUS_CSS_TIMEOUT,
+                CriticalCssDotComApi::RESULT_STATUS_HTML_TIMEOUT,
+            ]];
+        }
+
+        return $rules;
     }
 
     /**
@@ -262,6 +310,8 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'attemptDelay' => Critter::translate('Attempt Delay'),
             'width' => Critter::translate('Viewport Width'),
             'height' => Critter::translate('Viewport Height'),
+            'testMode' => Critter::translate('Enable Test Mode'),
+            'testResultStatus' => Critter::translate('Test Result Status'),
         ];
     }
 
@@ -301,5 +351,63 @@ class CriticalCssDotComGenerator extends BaseGenerator
     public function getParsedApiKey(): ?string
     {
         return $this->apiKey ? App::parseEnv($this->apiKey) : null;
+    }
+
+    /**
+     * Check if test mode is enabled and developer mode is active
+     */
+    private function isTestMode(): bool
+    {
+        return $this->testMode && Critter::getInstance()->settings->developerMode;
+    }
+
+    /**
+     * Check if a result status indicates a retryable failure
+     */
+    private function isRetryableFailure(?string $resultStatus): bool
+    {
+        $retryableStatuses = [
+            CriticalCssDotComApi::RESULT_STATUS_PENTHOUSE_TIMEOUT,
+        ];
+
+        return in_array($resultStatus, $retryableStatuses, true);
+    }
+
+    /**
+     * Simulate test responses for development/testing
+     */
+    private function simulateTestResponse(): CriticalCssDotComResultsResponse
+    {
+        $resultStatus = $this->testResultStatus ?: CriticalCssDotComApi::RESULT_STATUS_PENTHOUSE_TIMEOUT;
+
+        Critter::getInstance()->log->info(
+            "TEST MODE: Simulating {$resultStatus} response",
+            'generation'
+        );
+
+        return CriticalCssDotComResultsResponse::createFromResponse([
+            'status' => CriticalCssDotComApi::STATUS_JOB_DONE,
+            'resultStatus' => $resultStatus,
+            'css' => null
+        ]);
+    }
+
+    /**
+     * Clear the record data to allow a fresh generation attempt
+     */
+    private function clearRecordData(UrlModel $urlModel): void
+    {
+        $record = Critter::getInstance()->requestRecords->getRecordByUrl($urlModel);
+        if ($record) {
+            // Clear the stored data (including resultId) and reset status
+            $record->data = null;
+            $record->status = RequestRecord::STATUS_TODO;
+            $record->save();
+
+            Critter::getInstance()->log->debug(
+                "Cleared record data for URL: {$urlModel->getAbsoluteUrl()}",
+                'generation'
+            );
+        }
     }
 }

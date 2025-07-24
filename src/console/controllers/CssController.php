@@ -148,6 +148,25 @@ class CssController extends Controller
         return ExitCode::OK;
     }
 
+    /**
+     * Clear stuck CSS generation records
+     * php craft critter/css/clear-stuck
+     */
+    public function actionClearStuck()
+    {
+        $this->printInfo("Clearing stuck CSS records...");
+
+        $response = Critter::getInstance()->utilityService->clearStuckRecords();
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
     private function printSuccess(string $message, bool $newline = true): void
     {
         $this->stdout("✔ ", Console::FG_GREEN);

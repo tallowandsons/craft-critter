@@ -171,4 +171,51 @@ class UtilityService extends Component
                 ]));
         }
     }
+
+    /**
+     * Clear stuck CSS generation records
+     * This will find and clear records that have API data but no CSS (stuck jobs)
+     */
+    public function clearStuckRecords()
+    {
+        try {
+            // Find records that have API data (indicating a job was started) but are in error state
+            // or have been pending for a long time
+            $records = RequestRecord::find()
+                ->where(['not', ['data' => null]])
+                ->andWhere(['status' => RequestRecord::STATUS_ERROR])
+                ->all();
+
+            if (empty($records)) {
+                return (new UtilityActionResponse())
+                    ->setSuccess(true)
+                    ->setMessage(Critter::translate('No stuck CSS records found.'));
+            }
+
+            $clearedCount = 0;
+            foreach ($records as $record) {
+                // Clear the data and reset status to allow fresh generation
+                $record->data = null;
+                $record->status = RequestRecord::STATUS_TODO;
+                if ($record->save()) {
+                    $clearedCount++;
+                }
+            }
+
+            return (new UtilityActionResponse())
+                ->setSuccess(true)
+                ->setMessage(Critter::translate('Successfully cleared {count} stuck CSS records.', [
+                    'count' => $clearedCount
+                ]))
+                ->setData([
+                    'count' => $clearedCount
+                ]);
+        } catch (\Exception $e) {
+            return (new UtilityActionResponse())
+                ->setSuccess(false)
+                ->setMessage(Critter::translate('Failed to clear stuck records: {error}', [
+                    'error' => $e->getMessage()
+                ]));
+        }
+    }
 }

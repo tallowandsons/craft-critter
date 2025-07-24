@@ -90,6 +90,25 @@ class UtilityController extends Controller
     }
 
     /**
+     * Clear stuck CSS generation records.
+     * /action/critter/utility/clear-stuck
+     */
+    public function actionClearStuck(): Response
+    {
+        $this->requirePostRequest();
+
+        $response = Critter::getInstance()->utilityService->clearStuckRecords();
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
      * Regenerate all expired Critical CSS records.
      * /action/critter/utility/regenerate-expired
      */

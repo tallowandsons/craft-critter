@@ -84,4 +84,36 @@
     errors: generator.getErrors('height'),
 }) }}
 
+{% if settings.developerMode %}
+
+    <hr>
+
+    <h2>Developer Settings</h2>
+    <p>These settings are for development and testing purposes only.<br />Hide these by setting <code>developerMode</code> to <code>false</code> in your config.</p>
+
+    {{ forms.lightswitchField({
+        label: "🚧 " ~ "Enable Test Mode"|t(craft.critter.pluginHandle),
+        instructions: "Enable test mode to simulate API responses for development/testing."|t(craft.critter.pluginHandle),
+        name: 'testMode',
+        on: settings.generatorSettings.testMode ?? generator.testMode,
+        disabled: readOnly,
+        errors: generator.getErrors('testMode'),
+    }) }}
+
+    {{ forms.selectField({
+        label: "🚧 " ~ "Test Result Status"|t(craft.critter.pluginHandle),
+        instructions: "The result status to simulate when test mode is enabled."|t(craft.critter.pluginHandle),
+        name: 'testResultStatus',
+        value: settings.generatorSettings.testResultStatus ?? generator.testResultStatus,
+        options: [
+            { label: 'PENTHOUSE_TIMEOUT', value: 'PENTHOUSE_TIMEOUT' },
+            { label: 'SERVER_ERROR', value: 'SERVER_ERROR' },
+            { label: 'CSS_TIMEOUT', value: 'CSS_TIMEOUT' },
+            { label: 'HTML_TIMEOUT', value: 'HTML_TIMEOUT' }
+        ],
+        disabled: readOnly,
+        errors: generator.getErrors('testResultStatus'),
+    }) }}
+{% endif %}
+
 {{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}

@@ -78,4 +78,7 @@ class Settings extends Model
 
     // how to handle regeneration of expired critical CSS
     public string $regenerateExpiredCss = self::REGENERATE_MANUALLY;
+
+    // developer mode - enables advanced/experimental features (no UI, config file only)
+    public bool $developerMode = false;
 }

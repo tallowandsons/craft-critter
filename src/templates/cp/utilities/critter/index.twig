@@ -82,3 +82,17 @@
 
     <input type="submit" class="btn submit" value="{{ "Regenerate expired"|t('critter') }}">
 </form>
+
+<hr>
+
+<h2>Clear stuck CSS records</h2>
+
+<p>Clear CSS generation records that are stuck due to API timeouts or failures.<br>This allows failed jobs to be retried from scratch.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/clear-stuck') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    <input type="submit" class="btn submit" value="{{ "Clear stuck records"|t('critter') }}">
+</form>
