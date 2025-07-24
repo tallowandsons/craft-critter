@@ -20,9 +20,18 @@ class CritterUtility extends Utility
         return 'critter';
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function icon(): ?string
     {
-        return 'wrench';
+        $iconPath = Craft::getAlias('@mijewe/critter/icon-mask.svg');
+
+        if (!is_string($iconPath)) {
+            return null;
+        }
+
+        return $iconPath;
     }
 
     static function contentHtml(): string
