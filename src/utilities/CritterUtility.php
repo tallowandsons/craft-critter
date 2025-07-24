@@ -12,7 +12,7 @@ class CritterUtility extends Utility
 {
     public static function displayName(): string
     {
-        return Craft::t('critter', 'Critter');
+        return Craft::t('critter', 'Critter Tools');
     }
 
     static function id(): string

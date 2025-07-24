@@ -332,6 +332,14 @@ class Critter extends Plugin
             ];
         }
 
+        // Only show link to Utility if user has permission
+        if ($user->checkPermission(CritterUtility::class)) {
+            $subNavs['utility'] = [
+                'label' => Craft::t('app', 'Utilities'),
+                'url' => UrlHelper::cpUrl('utilities/critter'),
+            ];
+        }
+
         if ($user->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
             $subNavs['settings'] = [
                 'label' => $this->translate('Settings'),
