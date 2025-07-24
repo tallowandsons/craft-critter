@@ -30,7 +30,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
     /**
      * @var int The number of seconds to wait between each poll attempt
      */
-    public int $attemptDelay = 2;
+    public int $attemptDelay = 4;
 
     /**
      * @var int Viewport width for critical CSS generation
