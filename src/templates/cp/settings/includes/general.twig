@@ -10,6 +10,26 @@
     disabled: readOnly,
 }) }}
 
+{{ forms.selectField({
+    label: "On Entry Save Behaviour"|t(pluginHandle),
+    instructions: "Choose what happens when an entry is saved.\n<strong>Do Nothing</strong>: Critical CSS remains cached and unchanged.\n<strong>Expire Related Critical CSS</strong>: Marks the cached Critical CSS as expired (cached data is preserved but will be regenerated on next request)."|t(pluginHandle),
+    warning: config.onEntrySaveBehaviour is defined ? configWarning('onEntrySaveBehaviour') : null,
+    name: 'settings[onEntrySaveBehaviour]',
+    options: entrySaveBehaviourOptions,
+    value: settings.onEntrySaveBehaviour ?? 'expireRelatedCss',
+    disabled: readOnly,
+}) }}
+
+{{ forms.selectField({
+    label: "Regenerate Expired CSS"|t(pluginHandle),
+    instructions: "Choose how expired Critical CSS is regenerated.\n<strong>Manually</strong>: Expired CSS is not automatically regenerated - use cronjobs or manual regeneration.\n<strong>Regenerate on next request</strong>: When expired CSS is requested, automatically trigger regeneration."|t(pluginHandle),
+    warning: config.regenerateExpiredCss is defined ? configWarning('regenerateExpiredCss') : null,
+    name: 'settings[regenerateExpiredCss]',
+    options: regenerateExpiredCssOptions,
+    value: settings.regenerateExpiredCss ?? 'manually',
+    disabled: readOnly,
+}) }}
+
 {{ forms.editableTableField({
     label: "Style Tag Attributes"|t(pluginHandle),
     instructions:  "Define attributes to be added to the critical css style tag rendered by the plugin"|t(pluginHandle),
@@ -121,25 +141,5 @@
     warning: config.enableDebugLogging is defined ? configWarning('enableDebugLogging') : null,
     name: 'settings[enableDebugLogging]',
     on: settings.enableDebugLogging ?? false,
-    disabled: readOnly,
-}) }}
-
-{{ forms.selectField({
-    label: "On Entry Save Behaviour"|t(pluginHandle),
-    instructions: "Choose what happens when an entry is saved.\n<strong>Do Nothing</strong>: Critical CSS remains cached and unchanged.\n<strong>Expire Related Critical CSS</strong>: Marks the cached Critical CSS as expired (cached data is preserved but will be regenerated on next request)."|t(pluginHandle),
-    warning: config.onEntrySaveBehaviour is defined ? configWarning('onEntrySaveBehaviour') : null,
-    name: 'settings[onEntrySaveBehaviour]',
-    options: entrySaveBehaviourOptions,
-    value: settings.onEntrySaveBehaviour ?? 'expireRelatedCss',
-    disabled: readOnly,
-}) }}
-
-{{ forms.selectField({
-    label: "Regenerate Expired CSS"|t(pluginHandle),
-    instructions: "Choose how expired Critical CSS is regenerated.\n<strong>Manually</strong>: Expired CSS is not automatically regenerated - use cronjobs or manual regeneration.\n<strong>Regenerate on next request</strong>: When expired CSS is requested, automatically trigger regeneration."|t(pluginHandle),
-    warning: config.regenerateExpiredCss is defined ? configWarning('regenerateExpiredCss') : null,
-    name: 'settings[regenerateExpiredCss]',
-    options: regenerateExpiredCssOptions,
-    value: settings.regenerateExpiredCss ?? 'manually',
     disabled: readOnly,
 }) }}
