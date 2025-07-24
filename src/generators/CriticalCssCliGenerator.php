@@ -284,6 +284,7 @@ class CriticalCssCliGenerator extends BaseGenerator
         // Functionality checks - these just warn but don't block saving
         if (!$this->isExecutableAccessible($path)) {
             $this->addWarning($attribute, 'Node.js executable not found or not accessible at: ' . $path);
+            Critter::warning("Node.js executable validation failed: Node.js not found at '$path'");
         }
     }
 
@@ -301,8 +302,11 @@ class CriticalCssCliGenerator extends BaseGenerator
         }
 
         // Functionality checks - these just warn but don't block saving
-        if (!str_starts_with($path, '@') && !file_exists($path)) {
-            $this->addWarning($attribute, 'Package executable not found at: ' . $path);
+        // Use the comprehensive package validation that actually tests execution
+        $packageCheck = $this->validateRequiredPackage();
+        if (!$packageCheck['success']) {
+            $this->addWarning($attribute, 'Package executable not found at: ' . $path . '. Check the Critter logs for more details.');
+            Critter::warning("Package executable validation failed: {$packageCheck['message']}");
         }
     }
 
