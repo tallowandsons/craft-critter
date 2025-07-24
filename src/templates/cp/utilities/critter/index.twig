@@ -96,3 +96,17 @@
 
     <input type="submit" class="btn submit" value="{{ "Clear stuck records"|t('critter') }}">
 </form>
+
+<hr>
+
+<h2>Clear Cache</h2>
+
+<p>Clear all critical CSS data from the cache.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/clear-cache') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    <input type="submit" class="btn submit" value="{{ "Clear cache"|t('critter') }}">
+</form>

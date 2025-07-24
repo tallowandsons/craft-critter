@@ -12,4 +12,6 @@ interface StorageInterface
     public function save(mixed $key, CssModel $css): bool;
 
     public function delete(mixed $key): bool;
+
+    public function clearAll(): bool;
 }

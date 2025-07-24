@@ -22,4 +22,9 @@ class BaseStorage extends Model implements StorageInterface
     {
         return false;
     }
+
+    public function clearAll(): bool
+    {
+        return false;
+    }
 }

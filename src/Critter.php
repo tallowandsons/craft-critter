@@ -7,6 +7,7 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\Entry;
 use craft\events\ElementEvent;
+use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
@@ -15,6 +16,7 @@ use craft\helpers\UrlHelper;
 use craft\services\Elements;
 use craft\services\UserPermissions;
 use craft\services\Utilities;
+use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
@@ -94,6 +96,7 @@ class Critter extends Plugin
 
         $this->registerVariables();
         $this->registerAssetBundles();
+        $this->registerClearCaches();
         $this->attachEventHandlers();
         $this->registerPermissions();
 
@@ -268,6 +271,24 @@ class Critter extends Plugin
                 if (Craft::$app->getRequest()->getIsCpRequest()) {
                     Craft::$app->view->registerAssetBundle(CpAsset::class);
                 }
+            }
+        );
+    }
+
+    /**
+     * Registers clear caches
+     */
+    private function registerClearCaches(): void
+    {
+        Event::on(
+            ClearCaches::class,
+            ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
+            function (RegisterCacheOptionsEvent $event) {
+                $event->options[] = [
+                    'key' => 'critter',
+                    'label' => Critter::translate('Critter cache'),
+                    'action' => [Critter::getInstance()->storage, 'clearAll'],
+                ];
             }
         );
     }

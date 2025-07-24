@@ -217,4 +217,25 @@ class UtilityService extends Component
                 ]));
         }
     }
+
+    /**
+     * Clear all Critter cache data
+     * This will clear all cached CSS without affecting other cached data
+     */
+    public function clearCache()
+    {
+        try {
+            Critter::getInstance()->storage->clearAll();
+
+            return (new UtilityActionResponse())
+                ->setSuccess(true)
+                ->setMessage(Critter::translate('Successfully cleared Critter cache data.'));
+        } catch (\Exception $e) {
+            return (new UtilityActionResponse())
+                ->setSuccess(false)
+                ->setMessage(Critter::translate('Failed to clear cache: {error}', [
+                    'error' => $e->getMessage()
+                ]));
+        }
+    }
 }

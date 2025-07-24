@@ -126,4 +126,24 @@ class UtilityController extends Controller
 
         return $this->redirectToPostedUrl();
     }
+
+    /**
+     * Clear the Critter cache.
+     * This will clear all cached CSS and related data.
+     * /action/critter/utility/clear-cache
+     */
+    public function actionClearCache(): Response
+    {
+        $this->requirePostRequest();
+
+        $response = Critter::getInstance()->storage->clearAll();
+
+        if ($response) {
+            Craft::$app->getSession()->setNotice(Critter::translate('Cache cleared successfully.'));
+        } else {
+            Craft::$app->getSession()->setError(Critter::translate('Failed to clear cache.'));
+        }
+
+        return $this->redirectToPostedUrl();
+    }
 }

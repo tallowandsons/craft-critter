@@ -59,6 +59,11 @@ class StorageService extends Component
         return $this->storage->delete($key);
     }
 
+    public function clearAll(): bool
+    {
+        return $this->storage->clearAll();
+    }
+
     public function getCacheKey(mixed $key): mixed
     {
         // return ArrayHelper::merge(['critical-css'], $url->toArray());

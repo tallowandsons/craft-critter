@@ -167,6 +167,26 @@ class CssController extends Controller
         return ExitCode::OK;
     }
 
+    /**
+     * Clear Critter cache
+     * php craft critter/css/clear-cache
+     */
+    public function actionClearCache()
+    {
+        $this->printInfo("Clearing Critter cache...");
+
+        $response = Critter::getInstance()->utilityService->clearCache();
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        return ExitCode::OK;
+    }
+
     private function printSuccess(string $message, bool $newline = true): void
     {
         $this->stdout("✔ ", Console::FG_GREEN);
