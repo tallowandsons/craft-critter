@@ -49,7 +49,7 @@ class GenerateCriticalCssJob extends BaseJob implements RetryableJobInterface
     public function getTtr(): int
     {
         // Allow longer time for jobs that might need to wait for mutex locks and API polling
-        return 10; // 10 seconds
+        return 300; // 5 minutes
     }
     function execute($queue): void
     {
