@@ -59,7 +59,7 @@
         label: "Section"|t('critter'),
         id: 'sectionHandle',
         name: 'sectionHandle',
-        options: craft.app.entries.allSections|map(section => {
+        options: craft.app.entries.allSections|filter(section => section.type != 'single')|map(section => {
             value: section.handle,
             label: section.name
         }),
