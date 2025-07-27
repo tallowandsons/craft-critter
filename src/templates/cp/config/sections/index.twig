@@ -63,11 +63,11 @@
                 {{ forms.elementSelect({
                     id: 'section-entry-' ~ section.handle,
                     name: 'config[sections][' ~ section.id ~ '][' ~ cpSite.id ~ '][entryId]',
-                    elementType: 'craft\elements\Entry',
+                    elementType: 'craft\\elements\\Entry',
                     limit: 1,
                     showSiteMenu: false,
                     elements: elements,
-                    disabled: not canEdit,
+                    disabled: not canEdit
                 }) }}
 
                 {% if mode != 'section' %}
