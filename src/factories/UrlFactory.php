@@ -8,6 +8,7 @@ use craft\helpers\UrlHelper;
 use craft\web\Request;
 use mijewe\critter\helpers\UrlHelper as CritterUrlHelper;
 use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 
 class UrlFactory
 {
@@ -52,5 +53,23 @@ class UrlFactory
     {
         $url = UrlHelper::siteUrl($entry->getUrl(), null, null, $entry->siteId);
         return self::createFromUrl($url);
+    }
+
+    /**
+     * Create a UrlModel from a RequestRecord
+     *
+     * @param RequestRecord $record
+     * @return UrlModel
+     */
+    static function createFromRecord(RequestRecord $record): UrlModel
+    {
+        $urlModel = new UrlModel($record->uri, $record->siteId);
+
+        if ($record->queryString) {
+            parse_str($record->queryString, $queryParams);
+            $urlModel->setQueryParams($queryParams);
+        }
+
+        return $urlModel;
     }
 }

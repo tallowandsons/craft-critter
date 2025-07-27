@@ -17,22 +17,17 @@ class RequestRecordService extends Component
 
     public function getRecordByCssRequest(CssRequest $cssRequest): ?RequestRecord
     {
-        $url = $cssRequest->getUrl();
-        $uri = $url->getRelativeUrl();
-        $siteId = $url->siteId;
-
-        return RequestRecord::find()
-            ->where(['uri' => $uri, 'siteId' => $siteId])
-            ->one();
+        return $this->getRecordByUrl($cssRequest->getUrl());
     }
 
     public function getRecordByUrl(UrlModel $url): ?RequestRecord
     {
-        $uri = $url->getRelativeUrl();
+        $uri = $url->getPath(); // Store path without query string
+        $queryString = $url->getQueryString() ?: null; // Returns without ?, empty string becomes null
         $siteId = $url->siteId;
 
         return RequestRecord::find()
-            ->where(['uri' => $uri, 'siteId' => $siteId])
+            ->where(['uri' => $uri, 'siteId' => $siteId, 'queryString' => $queryString])
             ->one();
     }
 
@@ -43,7 +38,8 @@ class RequestRecordService extends Component
         if (!$record) {
             $url = $cssRequest->getUrl();
             $record = new RequestRecord();
-            $record->uri = $url->getRelativeUrl();
+            $record->uri = $url->getPath(); // Store path without query string
+            $record->queryString = $url->getQueryString() ?: null; // Returns without ?, empty string becomes null
             $record->siteId = $url->siteId;
             $record->tag = $cssRequest->getTag();
             $record->status = RequestRecord::STATUS_TODO;
@@ -58,7 +54,8 @@ class RequestRecordService extends Component
 
         if (!$record) {
             $record = new RequestRecord();
-            $record->uri = $url->getRelativeUrl();
+            $record->uri = $url->getPath(); // Store path without query string
+            $record->queryString = $url->getQueryString() ?: null; // Returns without ?, empty string becomes null
             $record->siteId = $url->siteId;
             $record->status = RequestRecord::STATUS_TODO;
         }

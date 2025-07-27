@@ -51,6 +51,7 @@ class Install extends Migration
                 'id' => $this->primaryKey(),
                 'siteId' => $this->integer()->notNull(),
                 'uri' => $this->string(500)->notNull(),
+                'queryString' => $this->string(500),
                 'tag' => $this->string(100),
                 'status' => $this->string(50)->defaultValue('todo'),
                 'data' => $this->text(),
@@ -85,7 +86,8 @@ class Install extends Migration
     protected function createIndexes(): void
     {
         // Create indexes for requests table
-        $this->createIndex(null, RequestRecord::tableName(), ['siteId', 'uri'], true);
+        $this->createIndex(null, RequestRecord::tableName(), ['siteId', 'uri']);
+        $this->createIndex(null, RequestRecord::tableName(), 'queryString');
         $this->createIndex(null, RequestRecord::tableName(), 'tag');
         $this->createIndex(null, RequestRecord::tableName(), 'status');
         $this->createIndex(null, RequestRecord::tableName(), 'expiryDate');

@@ -17,14 +17,16 @@ use mijewe\critter\Critter;
  */
 class UrlModel extends Model
 {
-    public ?string $url = '';
-    public ?int $siteId = null;
-    public array $queryParams = [];
+    private ?string $url = '';
+    private ?int $siteId = null;
+    private array $queryParams = [];
 
     public function __construct(?string $url = null, ?int $siteId = null)
     {
-        $this->siteId = $siteId ?? Craft::$app->getSites()->getCurrentSite()->id;
-        $this->url = $url;
+        $this->setSiteId($siteId ?? Craft::$app->getSites()->getCurrentSite()->id);
+        if ($url) {
+            $this->setUrl($url);
+        }
     }
 
     public function getUrl(): string
@@ -179,16 +181,88 @@ class UrlModel extends Model
      */
     public function setQueryParams(array $queryParams): self
     {
-        $this->queryParams = $queryParams;
+        $this->queryParams = $this->getFilteredQueryParams($queryParams);
         return $this;
     }
 
     /**
-     * Returns the query parameters as a query string.
+     * Sets the URL and automatically extracts query parameters
+     */
+    public function setUrl(string $url): self
+    {
+        // Use Craft's UrlHelper to cleanly separate URL from query string
+        $this->url = UrlHelper::stripQueryString($url);
+
+        // Extract query parameters if they exist
+        if (str_contains($url, '?')) {
+            $queryString = substr($url, strpos($url, '?') + 1);
+            parse_str($queryString, $allQueryParams);
+            $this->queryParams = $this->getFilteredQueryParams($allQueryParams);
+        } else {
+            $this->queryParams = [];
+        }
+
+        return $this;
+    }
+
+    /**
+     * Sets the site ID
+     */
+    public function setSiteId(int $siteId): self
+    {
+        $this->siteId = $siteId;
+        return $this;
+    }
+
+    /**
+     * Gets the raw URL (path only, without query string)
+     */
+    public function getRawUrl(): string
+    {
+        return $this->url ?? '';
+    }
+
+    /**
+     * Returns the query parameters as a query string (without leading ?).
      */
     public function getQueryString()
     {
-        $params = http_build_query($this->queryParams);
-        return $params ? '?' . $params : '';
+        return UrlHelper::buildQuery($this->queryParams);
+    }
+
+    /**
+     * Filter query parameters based on uniqueQueryParams settings
+     */
+    private function getFilteredQueryParams(array $queryParams): array
+    {
+        try {
+            $settings = Critter::getInstance()->settings ?? null;
+            if (!$settings) {
+                // If no settings available, return all params
+                return $queryParams;
+            }
+
+            $uniqueQueryParamsSettings = $settings->uniqueQueryParams ?? [];
+
+            // Extract enabled parameter names
+            $enabledParams = [];
+            foreach ($uniqueQueryParamsSettings as $setting) {
+                $isEnabled = !empty($setting['enabled']) && filter_var($setting['enabled'], FILTER_VALIDATE_BOOLEAN);
+                if ($isEnabled && !empty($setting['param'])) {
+                    $enabledParams[] = $setting['param'];
+                }
+            }
+
+            // If no parameters are configured as enabled, return all params
+            if (empty($enabledParams)) {
+                return $queryParams;
+            }
+
+            // Keep only allowed query string params
+            return array_intersect_key($queryParams, array_flip($enabledParams));
+        } catch (\Exception $e) {
+            // If settings aren't available, return all params
+            return $queryParams;
+        }
     }
 }

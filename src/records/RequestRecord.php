@@ -4,6 +4,7 @@ namespace mijewe\critter\records;
 
 use Craft;
 use craft\db\ActiveRecord;
+use craft\helpers\UrlHelper;
 
 /**
  * Request Record record
