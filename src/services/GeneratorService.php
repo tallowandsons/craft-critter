@@ -148,12 +148,12 @@ class GeneratorService extends Component
 
     private function isInQueue(UrlModel $url): bool
     {
-        $uriRecord = Critter::getInstance()->requestRecords->getRecordByUrl($url);
+        $record = Critter::getInstance()->requestRecords->getRecordByUrl($url);
 
-        if ($uriRecord === null) {
+        if ($record === null) {
             return false;
         }
 
-        return $uriRecord->isInQueue();
+        return $record->isInQueue();
     }
 }
