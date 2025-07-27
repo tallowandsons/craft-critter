@@ -127,7 +127,7 @@ class GeneratorService extends Component
 
         // don't queue a new job if there is already one in the queue
         // for this URL
-        if ($this->isInQueue($url)) {
+        if ($this->isInQueue($cssRequest)) {
             Critter::getInstance()->log->debug("Job already queued for '{$urlString}'", 'queue');
             return;
         }
@@ -146,9 +146,9 @@ class GeneratorService extends Component
         }
     }
 
-    private function isInQueue(UrlModel $url): bool
+    private function isInQueue(CssRequest $cssRequest): bool
     {
-        $record = Critter::getInstance()->requestRecords->getRecordByUrl($url);
+        $record = Critter::getInstance()->requestRecords->getRecordByCssRequest($cssRequest);
 
         if ($record === null) {
             return false;

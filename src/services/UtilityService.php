@@ -182,7 +182,7 @@ class UtilityService extends Component
             // Find records that have API data (indicating a job was started) but are in error state
             // or have been pending for a long time
             $records = RequestRecord::find()
-                ->where(['in', 'status', [RequestRecord::STATUS_ERROR, RequestRecord::STATUS_GENERATING]])
+                ->where(['in', 'status', [RequestRecord::STATUS_ERROR, RequestRecord::STATUS_GENERATING, RequestRecord::STATUS_QUEUED]])
                 ->all();
 
             if (empty($records)) {

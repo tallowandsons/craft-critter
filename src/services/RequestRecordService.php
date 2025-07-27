@@ -20,7 +20,20 @@ class RequestRecordService extends Component
 
     public function getRecordByCssRequest(CssRequest $cssRequest): ?RequestRecord
     {
-        return $this->getRecordByUrl($cssRequest->getUrl());
+        $tag = $cssRequest->getTag();
+        $url = $cssRequest->getUrl();
+        $queryString = $url->getQueryString() ?: null; // Returns without ?, empty string becomes null
+
+        // find record by tag and query string, fallback to URL
+        $record = RequestRecord::find()
+            ->where(['tag' => $tag, 'siteId' => $url->siteId, 'queryString' => $queryString])
+            ->one();
+
+        if (!$record) {
+            $record = $this->getRecordByUrl($cssRequest->getUrl());
+        }
+
+        return $record;
     }
 
     public function getRecordByUrl(UrlModel $url): ?RequestRecord
