@@ -30,6 +30,10 @@ describe('RequestRecord QueryString Tests', function () {
             [
                 'enabled' => '1',
                 'param' => 'test'
+            ],
+            [
+                'enabled' => '1',
+                'param' => 'success'
             ]
         ];
     });
@@ -44,7 +48,7 @@ describe('RequestRecord QueryString Tests', function () {
             $record->save();
 
             expect($record->uri)->toBe('test/path');
-            expect($record->queryString)->toBe('foo=bar&baz=qux');
+            expect($record->queryString)->toBe('baz=qux&foo=bar'); // Normalized alphabetical order
         });
 
         it('handles URLs without query strings', function () {
@@ -68,6 +72,29 @@ describe('RequestRecord QueryString Tests', function () {
             expect($record->uri)->toBe('test/path');
             expect($record->queryString)->toBeNull();
         });
+
+        it('normalizes query parameter order for consistent storage', function () {
+            // Test that different parameter orders result in the same stored query string
+            $url1 = new UrlModel('test/path?success=true&foo=one', 1);
+            $url2 = new UrlModel('test/path?foo=one&success=true', 1);
+
+            // Both should produce the same normalized query string (sorted by key)
+            expect($url1->getQueryString())->toBe($url2->getQueryString());
+            expect($url1->getQueryString())->toBe('foo=one&success=true'); // alphabetical order
+
+            // Both should result in the same database record
+            $cssRequest1 = (new CssRequest())->setRequestUrl($url1);
+            $cssRequest2 = (new CssRequest())->setRequestUrl($url2);
+
+            $record1 = Critter::getInstance()->requestRecords->getOrCreateRecord($cssRequest1);
+            $record1->save();
+
+            $record2 = Critter::getInstance()->requestRecords->getOrCreateRecord($cssRequest2);
+
+            // Should find the existing record, not create a new one
+            expect($record2->id)->toBe($record1->id);
+            expect($record1->queryString)->toBe('foo=one&success=true');
+        });
     });
 
     describe('URL Reconstruction', function () {
@@ -75,13 +102,13 @@ describe('RequestRecord QueryString Tests', function () {
         it('reconstructs full URL correctly with query string', function () {
             $record = new RequestRecord();
             $record->uri = 'test/path';
-            $record->queryString = 'foo=bar&baz=qux';
+            $record->queryString = 'baz=qux&foo=bar'; // Stored in normalized order
             $record->siteId = 1;
 
             // Create UrlModel from record data using factory
             $urlModel = UrlFactory::createFromRecord($record);
 
-            expect($urlModel->getRelativeUrl())->toBe('/test/path?foo=bar&baz=qux');
+            expect($urlModel->getRelativeUrl())->toBe('/test/path?baz=qux&foo=bar'); // Reconstructed in normalized order
         });
 
         it('reconstructs URL correctly without query string', function () {
@@ -149,6 +176,25 @@ describe('RequestRecord QueryString Tests', function () {
             $foundRecord = Critter::getInstance()->requestRecords->getRecordByCssRequest($cssRequest2);
 
             expect($foundRecord->id)->toBe($record1->id);
+        });
+
+        it('finds existing records regardless of query parameter order', function () {
+            // Create two URLs with same parameters but different order
+            $url1 = new UrlModel('test/path?success=true&foo=one', 1);
+            $cssRequest1 = (new CssRequest())->setRequestUrl($url1);
+            $record1 = Critter::getInstance()->requestRecords->getOrCreateRecord($cssRequest1);
+            $record1->save();
+
+            $url2 = new UrlModel('test/path?foo=one&success=true', 1);
+            $cssRequest2 = (new CssRequest())->setRequestUrl($url2);
+            $foundRecord = Critter::getInstance()->requestRecords->getRecordByCssRequest($cssRequest2);
+
+            // Should find the same record since parameter order shouldn't matter
+            expect($foundRecord->id)->toBe($record1->id);
+
+            // Both should produce the same normalized query string
+            expect($url1->getQueryString())->toBe($url2->getQueryString());
+            expect($record1->queryString)->toBe('foo=one&success=true'); // Alphabetically sorted
         });
     });
 

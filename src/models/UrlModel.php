@@ -224,10 +224,19 @@ class UrlModel extends Model
 
     /**
      * Returns the query parameters as a query string (without leading ?).
+     * Parameters are sorted by key to ensure consistent ordering.
      */
     public function getQueryString()
     {
-        return UrlHelper::buildQuery($this->queryParams);
+        if (empty($this->queryParams)) {
+            return '';
+        }
+
+        // Sort parameters by key to normalize order
+        $sortedParams = $this->queryParams;
+        ksort($sortedParams);
+
+        return UrlHelper::buildQuery($sortedParams);
     }
 
     /**
