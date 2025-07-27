@@ -14,7 +14,6 @@ use mijewe\critter\models\CssModel;
 use mijewe\critter\models\CssRequest;
 use mijewe\critter\models\GeneratorResponse;
 use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {
@@ -390,24 +389,5 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'resultStatus' => $resultStatus,
             'css' => null
         ]);
-    }
-
-    /**
-     * Clear the record data to allow a fresh generation attempt
-     */
-    private function clearRecordData(UrlModel $urlModel): void
-    {
-        $record = Critter::getInstance()->requestRecords->getRecordByUrl($urlModel);
-        if ($record) {
-            // Clear the stored data (including resultId) and reset status
-            $record->data = null;
-            $record->status = RequestRecord::STATUS_TODO;
-            $record->save();
-
-            Critter::getInstance()->log->debug(
-                "Cleared record data for URL: {$urlModel->getAbsoluteUrl()}",
-                'generation'
-            );
-        }
     }
 }

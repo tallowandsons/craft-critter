@@ -9,6 +9,7 @@ use mijewe\critter\Critter;
 use mijewe\critter\generators\GeneratorInterface;
 use mijewe\critter\models\GeneratorResponse;
 use mijewe\critter\models\UrlModel;
+use mijewe\critter\records\RequestRecord;
 
 class BaseGenerator extends Model implements GeneratorInterface
 {
@@ -130,5 +131,24 @@ class BaseGenerator extends Model implements GeneratorInterface
     protected function getCriticalCss(UrlModel $url): GeneratorResponse
     {
         return (new GeneratorResponse())->setSuccess(true);
+    }
+
+    /**
+     * Clear the record data to allow a fresh generation attempt
+     */
+    protected function clearRecordData(UrlModel $urlModel): void
+    {
+        $record = Critter::getInstance()->requestRecords->getRecordByUrl($urlModel);
+        if ($record) {
+            // Clear the stored data (including resultId) and reset status
+            $record->data = null;
+            $record->status = RequestRecord::STATUS_TODO;
+            $record->save();
+
+            Critter::getInstance()->log->debug(
+                "Cleared record data for URL: {$urlModel->getAbsoluteUrl()}",
+                'generation'
+            );
+        }
     }
 }
