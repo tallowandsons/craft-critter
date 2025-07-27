@@ -284,7 +284,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
         ];
 
         // Only add test mode validation rules when developer mode is enabled
-        if (Critter::getInstance()->settings->developerMode) {
+        if (Critter::getInstance()->isDeveloperMode()) {
             $rules[] = [['testMode'], 'boolean'];
             $rules[] = [['testResultStatus'], 'string'];
             $rules[] = [['testResultStatus'], 'in', 'range' => [
@@ -357,7 +357,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
      */
     private function isTestMode(): bool
     {
-        return $this->testMode && Critter::getInstance()->settings->developerMode;
+        return $this->testMode && Critter::getInstance()->isDeveloperMode();
     }
 
     /**

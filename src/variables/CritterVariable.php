@@ -42,4 +42,9 @@ class CritterVariable
 
         throw new \InvalidArgumentException("Constant '{$constantName}' not found in {$fullNamespace} class");
     }
+
+    public function isDeveloperMode(): bool
+    {
+        return Critter::getInstance()->isDeveloperMode();
+    }
 }

@@ -20,6 +20,7 @@ class UrlModel extends Model
     private ?string $url = '';
     private ?int $siteId = null;
     private array $queryParams = [];
+    private ?ElementInterface $matchedElement = null;
 
     public function __construct(?string $url = null, ?int $siteId = null)
     {
@@ -103,10 +104,27 @@ class UrlModel extends Model
      */
     public function getMatchedElement(): ?ElementInterface
     {
+        // return matched element if already set
+        if ($this->matchedElement !== null) {
+            return $this->matchedElement;
+        }
+
+        // If we haven't looked up the element yet, do it now and cache the result
         $url = $this->getPath();
         $siteId = $this->siteId;
 
-        return Craft::$app->getElements()->getElementByUri($url, null, $siteId);
+        $this->matchedElement = Craft::$app->getElements()->getElementByUri($url, null, $siteId);
+
+        return $this->matchedElement;
+    }
+
+    /**
+     * Set the matched element manually (useful for testing)
+     */
+    public function setMatchedElement(?ElementInterface $element): self
+    {
+        $this->matchedElement = $element;
+        return $this;
     }
 
     /**

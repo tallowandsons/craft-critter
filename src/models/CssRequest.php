@@ -7,6 +7,7 @@ use craft\base\Model;
 use craft\elements\Entry;
 use mijewe\critter\Critter;
 use mijewe\critter\factories\UrlFactory;
+use mijewe\critter\models\Tag;
 
 /**
  * Storage Request model
@@ -98,7 +99,14 @@ class CssRequest extends Model
                 break;
             case Settings::MODE_ENTRY:
             default:
-                return $this->requestUrl->getAbsoluteUrl();
+                // Use entry ID in cache key instead of full URL to maintain cache across URI changes
+                $entry = $this->requestUrl->getMatchedElement();
+                if ($entry instanceof Entry) {
+                    return 'mode:entry|site:' . $this->requestUrl->getSiteId() . '|entry:' . $entry->id . '|query:' . $this->requestUrl->getQueryString();
+                } else {
+                    // Fallback for non-entry URLs
+                    return $this->requestUrl->getAbsoluteUrl();
+                }
         }
     }
 
@@ -114,7 +122,12 @@ class CssRequest extends Model
             default:
                 // For entry mode, we need the entry ID from the URL
                 $entry = $this->requestUrl->getMatchedElement();
-                return $entry ? 'entry:' . $entry->id : 'url:' . md5($this->requestUrl->getAbsoluteUrl());
+                if ($entry instanceof Entry) {
+                    return Tag::fromEntry($entry)->toString();
+                } else {
+                    // Fallback for non-entry URLs
+                    return 'url:' . md5($this->requestUrl->getAbsoluteUrl());
+                }
         }
     }
 

@@ -6,6 +6,7 @@ use mijewe\critter\Critter;
 use mijewe\critter\events\RegisterGeneratorsEvent;
 use mijewe\critter\generators\CriticalCssCliGenerator;
 use mijewe\critter\generators\CriticalCssDotComGenerator;
+use mijewe\critter\generators\DummyGenerator;
 use mijewe\critter\generators\GeneratorInterface;
 use mijewe\critter\generators\NoGenerator;
 use yii\base\Event;
@@ -103,6 +104,11 @@ class GeneratorHelper
             CriticalCssDotComGenerator::class,
             CriticalCssCliGenerator::class,
         ];
+
+        // if developer mode, register the dummy generator
+        if (Critter::getInstance()->isDeveloperMode()) {
+            $defaultGenerators[] = DummyGenerator::class;
+        }
 
         // Merge default generators with existing ones
         if (!isset(self::$_generators)) {

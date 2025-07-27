@@ -357,6 +357,19 @@ class Critter extends Plugin
     }
 
     /**
+     * returns whether the plugin is in developer mode
+     * This is used to determine if the dummy generator should be registered
+     * and if the developer mode settings should be shown in the CP.
+     */
+    public function isDeveloperMode(): bool
+    {
+        $craftDevMode = Craft::$app->getConfig()->getGeneral()->devMode;
+        $pluginDevMode = $this->getSettings()->developerMode;
+
+        return $craftDevMode && $pluginDevMode;
+    }
+
+    /**
      *  Generates a control panel URL for the plugin from a given path.
      */
     static function cpUrl(string $path): string

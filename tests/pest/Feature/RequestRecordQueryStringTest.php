@@ -134,6 +134,34 @@ describe('RequestRecord QueryString Tests', function () {
 
             expect($urlModel->getRelativeUrl())->toBe('/test/path');
         });
+
+        it('uses stored URI when record has no entry tag', function () {
+            $record = new RequestRecord();
+            $record->uri = 'old/stored/path';
+            $record->queryString = 'foo=bar';
+            $record->siteId = 1;
+            $record->tag = 'section:blog'; // Not an entry tag
+
+            $urlModel = UrlFactory::createFromRecord($record);
+
+            // Should use the stored URI since it's not an entry-specific record
+            expect($urlModel->getRawUrl())->toBe('old/stored/path');
+            expect($urlModel->getRelativeUrl())->toBe('/old/stored/path?foo=bar');
+        });
+
+        it('uses stored URI when entry tag references non-existent entry', function () {
+            $record = new RequestRecord();
+            $record->uri = 'fallback/path';
+            $record->queryString = 'foo=bar';
+            $record->siteId = 1;
+            $record->tag = 'entry:99999'; // Non-existent entry ID
+
+            $urlModel = UrlFactory::createFromRecord($record);
+
+            // Should fall back to stored URI when entry doesn't exist
+            expect($urlModel->getRawUrl())->toBe('fallback/path');
+            expect($urlModel->getRelativeUrl())->toBe('/fallback/path?foo=bar');
+        });
     });
 
     describe('Parameter Filtering', function () {
@@ -260,8 +288,6 @@ describe('RequestRecord QueryString Tests', function () {
         });
     });
 
-    describe('Database Queries', function () {});
-
     describe('Database Queries', function () {
 
         it('finds records by URI and query string combination', function () {
@@ -321,6 +347,103 @@ describe('RequestRecord QueryString Tests', function () {
             // Both should produce the same normalized query string
             expect($url1->getQueryString())->toBe($url2->getQueryString());
             expect($record1->queryString)->toBe('foo=one&success=true'); // Alphabetically sorted
+        });
+    });
+
+    describe('Entry URI Changes', function () {
+
+        it('handles entry URI changes gracefully in URL reconstruction', function () {
+            // Create a record with entry tag
+            $record = new RequestRecord();
+            $record->uri = 'old/entry/path'; // This would be the old URI
+            $record->queryString = 'foo=bar';
+            $record->siteId = 1;
+            $record->tag = 'entry:1'; // Assuming entry ID 1 exists
+
+            // The UrlFactory should try to get current URI from entry
+            // If entry doesn't exist, it falls back to stored URI
+            $urlModel = UrlFactory::createFromRecord($record);
+
+            // Should either use current entry URI or fall back to stored URI
+            expect($urlModel->getQueryString())->toBe('foo=bar');
+            expect($urlModel->getSiteId())->toBe(1);
+        });
+
+        it('stores entry tag when creating records for entry URLs', function () {
+            // This test would require actual entry data in a real environment
+            // For now, we'll test the basic tagging concept
+            $url = new UrlModel('test/path?foo=bar', 1);
+            $cssRequest = (new CssRequest())->setRequestUrl($url);
+
+            // Manually set a tag to simulate entry-specific records
+            $record = Critter::getInstance()->requestRecords->getOrCreateRecord($cssRequest);
+            $record->tag = 'entry:123'; // Simulate this being set by the system
+            $record->save();
+
+            expect($record->tag)->toBe('entry:123');
+            expect($record->uri)->toBe('test/path');
+            expect($record->queryString)->toBe('foo=bar');
+        });
+
+        it('handles malformed entry tags gracefully', function () {
+            // Test various malformed tag scenarios
+            $malformedTags = [
+                '',
+                'entry:',
+                'entry:abc',
+                'entry:-1',
+                'entry:0',
+                'section:123', // Not an entry tag
+                'invalid:tag',
+                null
+            ];
+
+            foreach ($malformedTags as $tag) {
+                $record = new RequestRecord();
+                $record->uri = 'fallback/path';
+                $record->queryString = 'foo=bar';
+                $record->siteId = 1;
+                $record->tag = $tag;
+
+                $urlModel = UrlFactory::createFromRecord($record);
+
+                // Should always fall back to stored URI for malformed/invalid tags
+                expect($urlModel->getRawUrl())->toBe('fallback/path');
+                expect($urlModel->getQueryString())->toBe('foo=bar');
+            }
+        });
+
+        it('updates record URI when found by tag but URI has changed', function () {
+            // Create a mock entry with ID 456
+            $entry = new \craft\elements\Entry();
+            $entry->id = 456;
+            $entry->siteId = 1;
+
+            // Create a URL with the new/current URI
+            $newUri = 'new/entry/path';
+            $url = new UrlModel($newUri . '?foo=bar', 1);
+
+            // Create a record with the old URI but matching entry tag
+            $record = new RequestRecord();
+            $record->uri = 'old/entry/path'; // Old URI that's out of date
+            $record->queryString = 'foo=bar';
+            $record->siteId = 1;
+            $record->tag = 'entry:456'; // Matches our mock entry
+            $record->save();
+
+            // When we call getRecordByEntry, it should find the record and update the URI
+            $service = Critter::getInstance()->requestRecords;
+            $foundRecord = $service->getRecordByEntry($entry, $url);
+
+            expect($foundRecord)->not->toBeNull();
+            expect($foundRecord->id)->toBe($record->id); // Same record
+            expect($foundRecord->uri)->toBe($newUri); // URI should be updated
+            expect($foundRecord->queryString)->toBe('foo=bar'); // Query string unchanged
+            expect($foundRecord->tag)->toBe('entry:456'); // Tag unchanged
+
+            // Verify the record was actually saved to the database
+            $reloadedRecord = RequestRecord::findOne($record->id);
+            expect($reloadedRecord->uri)->toBe($newUri);
         });
     });
 

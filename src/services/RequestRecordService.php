@@ -2,9 +2,12 @@
 
 namespace mijewe\critter\services;
 
+use craft\elements\Entry;
 use craft\helpers\Json;
 use DateTime;
+use mijewe\critter\Critter;
 use mijewe\critter\models\CssRequest;
+use mijewe\critter\models\Tag;
 use mijewe\critter\models\UrlModel;
 use mijewe\critter\records\RequestRecord;
 use yii\base\Component;
@@ -26,9 +29,54 @@ class RequestRecordService extends Component
         $queryString = $url->getQueryString() ?: null; // Returns without ?, empty string becomes null
         $siteId = $url->siteId;
 
-        return RequestRecord::find()
+        // First try to find by current URI and query string
+        $record = RequestRecord::find()
             ->where(['uri' => $uri, 'siteId' => $siteId, 'queryString' => $queryString])
             ->one();
+
+        // If not found and this URL matches an entry, try to find by entry tag
+        if (!$record) {
+
+            // log
+            Critter::debug("No record found for URL: {$url->getAbsoluteUrl()}", 'request-record');
+
+            $entry = $url->getMatchedElement();
+            if ($entry instanceof \craft\elements\Entry) {
+                $record = $this->getRecordByEntry($entry, $url);
+            }
+        }
+
+        return $record;
+    }
+
+    /**
+     * Find a record by entry and query string combination
+     * This handles cases where an entry's URI changed after the record was created
+     */
+    public function getRecordByEntry(Entry $entry, UrlModel $url): ?RequestRecord
+    {
+        $entryTag = Tag::fromEntry($entry)->toString();
+        $queryString = $url->getQueryString() ?: null;
+
+        $record = RequestRecord::find()
+            ->where(['tag' => $entryTag, 'siteId' => $entry->siteId, 'queryString' => $queryString])
+            ->one();
+
+        // If we found a record but the URI doesn't match the current entry's URI, update it
+
+        if ($record) {
+            Critter::debug("Found record for entry {$entry->id} with tag '{$entryTag}' and query '{$queryString}'", 'request-record');
+
+            if ($record->uri !== $url->getPath()) {
+
+                Critter::debug("Updating record URI for entry {$entry->id} from '{$record->uri}' to '{$url->getPath()}'", 'request-record');
+
+                $record->uri = $url->getPath();
+                $record->save();
+            }
+        }
+
+        return $record;
     }
 
     public function getOrCreateRecord(CssRequest $cssRequest): RequestRecord
