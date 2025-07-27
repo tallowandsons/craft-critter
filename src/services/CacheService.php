@@ -37,7 +37,11 @@ class CacheService extends Component
      */
     public function resolveCache(CssRequest $cssRequest): void
     {
-        $url = $cssRequest->getUrl();
+
+        // get the original URL from the request. This might be different from the URL used to generate the CSS.
+        // For example, if the URL is for a section, the request URL might be for a specific entry in that section.
+        // This is important for cache resolution, as we want to ensure the cache is resolved for the URL that was actually requested.
+        $url = $cssRequest->getRequestUrl();
         $mode = $cssRequest->getMode();
         $cacheType = get_class($this->cache);
 
@@ -45,7 +49,7 @@ class CacheService extends Component
 
         switch ($mode) {
             case Settings::MODE_ENTRY:
-                $this->resolveCacheForUrl($url);
+                $this->resolveCacheForEntry($url);
                 break;
             case Settings::MODE_SECTION:
                 $this->resolveCacheForSection($url);
@@ -58,7 +62,7 @@ class CacheService extends Component
     /**
      * resolve the cache for a single url
      */
-    private function resolveCacheForUrl(UrlModel $url): void
+    private function resolveCacheForEntry(UrlModel $url): void
     {
         $cacheType = get_class($this->cache);
         Critter::getInstance()->log->logCacheOperation('resolve-entry', $url->getAbsoluteUrl(), $cacheType);
@@ -83,14 +87,6 @@ class CacheService extends Component
 
         Critter::getInstance()->log->logCacheOperation("resolve-section ({$sectionHandle}, " . count($entries) . " entries)", $url->getAbsoluteUrl(), $cacheType);
 
-        $this->resolveCacheForEntries($entries);
-    }
-
-    /**
-     * resolve the cache for an array of entries
-     */
-    private function resolveCacheForEntries(array $entries): void
-    {
         $urls = array_map(fn($entry) => UrlFactory::createFromEntry($entry), $entries);
         $this->cache->resolveCache($urls);
     }

@@ -30,8 +30,10 @@ class UrlModel extends Model
         }
     }
 
-    public function getUrl(): string
+    public function getUrl(bool $includeQueryString = true, bool $allowBaseUrlOverride = true): string
     {
+
+        $queryParams = $includeQueryString ? $this->queryParams : null;
 
         $baseUrlOverride = App::parseEnv(Critter::getInstance()->settings->baseUrlOverride ?? null);
         if ($baseUrlOverride) {
@@ -39,12 +41,12 @@ class UrlModel extends Model
         }
 
         if ($this->url === Element::HOMEPAGE_URI) {
-            $url = UrlHelper::siteUrl('', $this->queryParams, null, $this->siteId);
+            $url = UrlHelper::siteUrl('', $queryParams, null, $this->siteId);
         }
 
-        $url = UrlHelper::siteUrl($this->url, $this->queryParams, null, $this->siteId);
+        $url = UrlHelper::siteUrl($this->url, $queryParams, null, $this->siteId);
 
-        if ($baseUrlOverride) {
+        if ($allowBaseUrlOverride && $baseUrlOverride) {
             $siteBaseUrl = rtrim(Craft::$app->sites->getSiteById($this->siteId)->baseUrl, '/');
             $url = str_replace($siteBaseUrl, $baseUrlOverride, $url);
         }
@@ -52,16 +54,16 @@ class UrlModel extends Model
         return $url;
     }
 
-    public function getRelativeUrl(): string
+    public function getRelativeUrl(bool $includeQueryString = true): string
     {
-        $url = $this->getUrl();
+        $url = $this->getUrl($includeQueryString);
         $url = UrlHelper::rootRelativeUrl($url);
         return $url;
     }
 
-    public function getAbsoluteUrl(): string
+    public function getAbsoluteUrl(bool $includeQueryString = true, bool $allowBaseUrlOverride = true): string
     {
-        return $this->getUrl();
+        return $this->getUrl($includeQueryString, $allowBaseUrlOverride);
     }
 
     public function getSafeUrl()
@@ -230,14 +232,6 @@ class UrlModel extends Model
     {
         $this->siteId = $siteId;
         return $this;
-    }
-
-    /**
-     * Gets the raw URL (path only, without query string)
-     */
-    public function getRawUrl(): string
-    {
-        return $this->url ?? '';
     }
 
     /**

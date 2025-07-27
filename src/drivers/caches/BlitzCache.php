@@ -4,10 +4,9 @@ namespace mijewe\critter\drivers\caches;
 
 use Craft;
 use mijewe\critter\Critter;
-use mijewe\critter\models\Settings;
 use mijewe\critter\models\UrlModel;
 use putyourlightson\blitz\Blitz;
-use putyourlightson\blitz\models\SiteUriModel;
+use putyourlightson\blitz\helpers\SiteUriHelper;
 
 /**
  * Blitz Cache model
@@ -87,51 +86,34 @@ class BlitzCache extends BaseCache implements CacheInterface
             $urlModels = [$urlModels];
         }
 
+        $urlPatterns = [];
+
+        foreach ($urlModels as $urlModel) {
+
+            // get URL without query string or base URL override
+            // this is to ensure we match the original URL that Blitz cached
+            $url = $urlModel->getAbsoluteUrl(false, false);
+
+            $urlPatterns[] = $url; // Exact URL: /about
+            $urlPatterns[] = $url . '?*'; // URL with any query string: /about?*
+        }
+
+        // log
+        $urlsString = implode(', ', $urlPatterns);
+        Critter::getInstance()->log->logCacheOperation('resolve-cache', "Resolving cache for URLs: {$urlsString}", get_class($this));
+
+        $siteUris = SiteUriHelper::getSiteUrisFromUrls($urlPatterns);
+
         switch ($this->cacheBehaviour) {
-            case self::CACHE_BEHAVIOUR_EXPIRE_URLS:
-                $this->expireUrls($urlModels);
-                break;
             case self::CACHE_BEHAVIOUR_CLEAR_URLS:
-                $this->clearUrls($urlModels);
+                Blitz::getInstance()->clearCache->clearUris($siteUris);
+                break;
+            case self::CACHE_BEHAVIOUR_EXPIRE_URLS:
+                Blitz::getInstance()->expireCache->expireUris($siteUris);
                 break;
             case self::CACHE_BEHAVIOUR_REFRESH_URLS:
-                $this->refreshUrls($urlModels);
+                Blitz::getInstance()->refreshCache->refreshSiteUris($siteUris);
                 break;
         }
-    }
-
-    private function expireUrls(array $urlModels): void
-    {
-        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
-        Blitz::getInstance()->expireCache->expireUris($blitzSiteUriModels);
-    }
-
-    private function clearUrls(array $urlModels): void
-    {
-        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
-        Blitz::getInstance()->clearCache->clearUris($blitzSiteUriModels);
-    }
-
-    private function refreshUrls(array $urlModels): void
-    {
-        $blitzSiteUriModels = $this->convertUrlToBlitzSiteUriModels($urlModels);
-        Blitz::getInstance()->refreshCache->refreshSiteUris($blitzSiteUriModels);
-    }
-
-    private function convertUrlToBlitzSiteUriModels(UrlModel|array $urlModels): array
-    {
-        if (is_array($urlModels)) {
-            return array_map([$this, 'convertUrlToBlitzSiteUriModel'], $urlModels);
-        }
-
-        return [$this->convertUrlToBlitzSiteUriModel($urlModels)];
-    }
-
-    private function convertUrlToBlitzSiteUriModel(UrlModel $urlModel): SiteUriModel
-    {
-        return new SiteUriModel([
-            'siteId' => $urlModel->siteId,
-            'uri' => $urlModel->url,
-        ]);
     }
 }

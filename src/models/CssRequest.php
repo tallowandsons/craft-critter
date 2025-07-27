@@ -25,6 +25,14 @@ class CssRequest extends Model
     }
 
     /**
+     * get the URL that was originally requested
+     */
+    public function getRequestUrl(): UrlModel
+    {
+        return $this->requestUrl;
+    }
+
+    /**
      * get the URL that will be used to generate the critical css
      */
     public function getUrl(): UrlModel

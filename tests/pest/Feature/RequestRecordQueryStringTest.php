@@ -145,7 +145,7 @@ describe('RequestRecord QueryString Tests', function () {
             $urlModel = UrlFactory::createFromRecord($record);
 
             // Should use the stored URI since it's not an entry-specific record
-            expect($urlModel->getRawUrl())->toBe('old/stored/path');
+            expect($urlModel->getPath())->toBe('old/stored/path');
             expect($urlModel->getRelativeUrl())->toBe('/old/stored/path?foo=bar');
         });
 
@@ -159,7 +159,7 @@ describe('RequestRecord QueryString Tests', function () {
             $urlModel = UrlFactory::createFromRecord($record);
 
             // Should fall back to stored URI when entry doesn't exist
-            expect($urlModel->getRawUrl())->toBe('fallback/path');
+            expect($urlModel->getPath())->toBe('fallback/path');
             expect($urlModel->getRelativeUrl())->toBe('/fallback/path?foo=bar');
         });
     });
@@ -408,7 +408,7 @@ describe('RequestRecord QueryString Tests', function () {
                 $urlModel = UrlFactory::createFromRecord($record);
 
                 // Should always fall back to stored URI for malformed/invalid tags
-                expect($urlModel->getRawUrl())->toBe('fallback/path');
+                expect($urlModel->getPath())->toBe('fallback/path');
                 expect($urlModel->getQueryString())->toBe('foo=bar');
             }
         });
