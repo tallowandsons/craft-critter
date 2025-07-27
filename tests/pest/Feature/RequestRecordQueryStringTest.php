@@ -136,6 +136,132 @@ describe('RequestRecord QueryString Tests', function () {
         });
     });
 
+    describe('Parameter Filtering', function () {
+
+        it('excludes disabled parameters from query string', function () {
+            // Configure settings with some disabled parameters
+            $settings = Critter::getInstance()->settings;
+            $settings->uniqueQueryParams = [
+                [
+                    'enabled' => '1',
+                    'param' => 'foo'
+                ],
+                [
+                    'enabled' => '0', // disabled
+                    'param' => 'disabled_param'
+                ],
+                [
+                    'enabled' => '1',
+                    'param' => 'baz'
+                ]
+            ];
+
+            $url = new UrlModel('test/path?foo=bar&disabled_param=should_not_appear&baz=qux', 1);
+
+            // Only enabled parameters should appear in the query string
+            expect($url->getQueryString())->toBe('baz=qux&foo=bar'); // alphabetically sorted, no disabled_param
+            expect($url->getQueryParams())->toHaveKey('foo');
+            expect($url->getQueryParams())->toHaveKey('baz');
+            expect($url->getQueryParams())->not->toHaveKey('disabled_param');
+        });
+
+        it('excludes parameters not in the allowed list', function () {
+            // Configure settings with specific allowed parameters
+            $settings = Critter::getInstance()->settings;
+            $settings->uniqueQueryParams = [
+                [
+                    'enabled' => '1',
+                    'param' => 'allowed_one'
+                ],
+                [
+                    'enabled' => '1',
+                    'param' => 'allowed_two'
+                ]
+            ];
+
+            $url = new UrlModel('test/path?allowed_one=yes&not_allowed=no&allowed_two=also_yes&another_bad=nope', 1);
+
+            // Only parameters in the allowed list should appear
+            expect($url->getQueryString())->toBe('allowed_one=yes&allowed_two=also_yes'); // alphabetically sorted
+            expect($url->getQueryParams())->toHaveKey('allowed_one');
+            expect($url->getQueryParams())->toHaveKey('allowed_two');
+            expect($url->getQueryParams())->not->toHaveKey('not_allowed');
+            expect($url->getQueryParams())->not->toHaveKey('another_bad');
+        });
+
+        it('includes all parameters when uniqueQueryParams is empty', function () {
+            // Configure settings with empty uniqueQueryParams
+            $settings = Critter::getInstance()->settings;
+            $settings->uniqueQueryParams = [];
+
+            $url = new UrlModel('test/path?anything=goes&everything=included', 1);
+
+            // All parameters should be included when no filtering is configured
+            expect($url->getQueryString())->toBe('anything=goes&everything=included'); // alphabetically sorted
+            expect($url->getQueryParams())->toHaveKey('anything');
+            expect($url->getQueryParams())->toHaveKey('everything');
+        });
+
+        it('handles mixed enabled/disabled parameters correctly', function () {
+            // Configure settings with mix of enabled and disabled
+            $settings = Critter::getInstance()->settings;
+            $settings->uniqueQueryParams = [
+                [
+                    'enabled' => '1',
+                    'param' => 'keep_me'
+                ],
+                [
+                    'enabled' => '0',
+                    'param' => 'remove_me'
+                ],
+                [
+                    'enabled' => '1',
+                    'param' => 'also_keep'
+                ],
+                [
+                    'enabled' => 'false', // string 'false' should be treated as disabled
+                    'param' => 'also_remove'
+                ]
+            ];
+
+            $url = new UrlModel('test/path?keep_me=yes&remove_me=no&also_keep=yes&also_remove=no&not_configured=maybe', 1);
+
+            // Only enabled and configured parameters should appear
+            expect($url->getQueryString())->toBe('also_keep=yes&keep_me=yes'); // alphabetically sorted
+            expect($url->getQueryParams())->toHaveKey('keep_me');
+            expect($url->getQueryParams())->toHaveKey('also_keep');
+            expect($url->getQueryParams())->not->toHaveKey('remove_me');
+            expect($url->getQueryParams())->not->toHaveKey('also_remove');
+            expect($url->getQueryParams())->not->toHaveKey('not_configured');
+        });
+
+        it('ensures filtered parameters are not stored in database', function () {
+            // Configure settings to only allow specific parameters
+            $settings = Critter::getInstance()->settings;
+            $settings->uniqueQueryParams = [
+                [
+                    'enabled' => '1',
+                    'param' => 'allowed'
+                ]
+            ];
+
+            // Create URL with both allowed and disallowed parameters
+            $url = new UrlModel('test/path?allowed=yes&forbidden=no&secret=hidden', 1);
+            $cssRequest = (new CssRequest())->setRequestUrl($url);
+
+            $record = Critter::getInstance()->requestRecords->getOrCreateRecord($cssRequest);
+            $record->save();
+
+            // Verify only allowed parameter is stored in database
+            expect($record->queryString)->toBe('allowed=yes');
+            expect($record->queryString)->not->toContain('forbidden');
+            expect($record->queryString)->not->toContain('secret');
+            expect($record->queryString)->not->toContain('hidden');
+        });
+    });
+
+    describe('Database Queries', function () {});
+
     describe('Database Queries', function () {
 
         it('finds records by URI and query string combination', function () {
