@@ -34,9 +34,16 @@ class StorageService extends Component
         // delete the cache entry if it exists and
         // return an empty CssModel
         if (!$response->isSuccess()) {
+
+            // debug log the cache miss
+            Critter::debug("cache-miss for URL '{$cssRequest->getUrl()->getAbsoluteUrl()}'", 'storage');
+
             $this->storage->delete($key);
             return new CssModel();
         }
+
+        // debug log the cache hit
+        Critter::debug("cache-hit for URL '{$cssRequest->getUrl()->getAbsoluteUrl()}'", 'storage');
 
         return $response->getData();
     }
