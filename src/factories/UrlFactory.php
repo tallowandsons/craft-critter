@@ -36,29 +36,20 @@ class UrlFactory
         return $urlModel;
     }
 
-    static function createFromUrl(string $url): UrlModel
+    static function createFromEntry(Entry $entry, int $siteId = null): UrlModel
     {
-        // strip base url
-        $url = UrlHelper::rootRelativeUrl($url);
+        $siteId = $siteId ?? $entry->siteId;
 
-        // strip query string
-        $url = UrlHelper::stripQueryString($url);
+        $absoluteUrl = UrlHelper::siteUrl($entry->getUrl(), null, null, $siteId);
 
-        // trim slashes
-        $url = trim($url, '/');
+        $relativeUrl = UrlHelper::rootRelativeUrl($absoluteUrl);
 
-        return new UrlModel($url);
-    }
-
-    static function createFromEntry(Entry $entry): UrlModel
-    {
-        $url = UrlHelper::siteUrl($entry->getUrl(), null, null, $entry->siteId);
-        return self::createFromUrl($url);
+        return new UrlModel($relativeUrl, $siteId);
     }
 
     /**
      * Create a UrlModel from a RequestRecord
-     * 
+     *
      * If the record has an entry tag, uses the entry's current URI instead of the stored URI
      * to handle cases where the entry's URI has changed since the record was created.
      *
@@ -68,7 +59,7 @@ class UrlFactory
     static function createFromRecord(RequestRecord $record): UrlModel
     {
         $uri = $record->uri; // Default to stored URI
-        
+
         // If this record is for a specific entry, get the current URI from the entry
         $tag = Tag::fromString($record->tag);
         if ($tag->isEntry()) {
@@ -80,7 +71,7 @@ class UrlFactory
                 $uri = ltrim($uri, '/');
             }
         }
-        
+
         $urlModel = new UrlModel($uri, $record->siteId);
 
         if ($record->queryString) {

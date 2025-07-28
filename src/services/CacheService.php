@@ -82,12 +82,12 @@ class CacheService extends Component
         }
 
         // get all urls for the section
-        $entries = Entry::find()->section($sectionHandle)->all();
+        $entries = Entry::find()->section($sectionHandle)->siteId($url->getSiteId())->all();
         $cacheType = get_class($this->cache);
 
         Critter::getInstance()->log->logCacheOperation("resolve-section ({$sectionHandle}, " . count($entries) . " entries)", $url->getAbsoluteUrl(), $cacheType);
 
-        $urls = array_map(fn($entry) => UrlFactory::createFromEntry($entry), $entries);
+        $urls = array_map(fn($entry) => UrlFactory::createFromEntry($entry, $url->getSiteId()), $entries);
         $this->cache->resolveCache($urls);
     }
 }
