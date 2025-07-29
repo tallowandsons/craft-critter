@@ -222,7 +222,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 'generation'
             );
 
-            throw new \Exception("Failed to get critical css from criticalcss.com API after {$this->maxAttempts} attempts");
+            throw new RetryableCssGenerationException("Failed to get critical css from criticalcss.com API after {$this->maxAttempts} attempts");
         } finally {
             // Always release the mutex lock when job is complete (success or failure)
             Craft::info(
