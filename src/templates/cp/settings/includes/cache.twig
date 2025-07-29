@@ -9,8 +9,14 @@
     options: cacheTypeOptions,
     value: settings.cacheType,
     toggle: true,
-    disabled: readOnly,
+    disabled: readOnly
 }) }}
+
+{% if not cacheTypeOptions or cacheTypeOptions|length == 1 %}
+    <p class="light">
+        <strong>Note:</strong> There are no compatible caching plugins enabled.<br>
+    </p>
+{% endif %}
 
 {% for cache in caches %}
     {% set cacheClassName = className(cache) %}

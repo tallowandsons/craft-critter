@@ -65,12 +65,30 @@ class CacheHelper
      */
     static function getCacheTypesAsSelectOptions(): array
     {
+        $cacheTypes = self::getCacheTypes();
+
+        // Return all available cache types
         return array_map(function ($cacheType) {
             return [
                 'label' => $cacheType::displayName(),
                 'value' => $cacheType,
             ];
-        }, self::getCacheTypes());
+        }, $cacheTypes);
+    }
+
+    /**
+     * Checks if there are any actual cache integrations available (excluding NoCache).
+     */
+    static function hasActualCacheIntegrations(): bool
+    {
+        $cacheTypes = self::getCacheTypes();
+
+        // Filter out NoCache to check if there are actual cache integrations
+        $actualCacheTypes = array_filter($cacheTypes, function ($cacheType) {
+            return $cacheType !== NoCache::class;
+        });
+
+        return !empty($actualCacheTypes);
     }
 
     /**
@@ -101,9 +119,14 @@ class CacheHelper
             NoCache::class,
         ];
 
-        // Only add BlitzCache if Blitz plugin is available
-        if (class_exists('putyourlightson\blitz\Blitz')) {
-            $defaultCaches[] = BlitzCache::class;
+        // Only add BlitzCache if Blitz plugin is installed
+        try {
+            $blitzInstalled = \Craft::$app && \Craft::$app->plugins && \Craft::$app->plugins->getPlugin('blitz') !== null;
+            if ($blitzInstalled) {
+                $defaultCaches[] = BlitzCache::class;
+            }
+        } catch (\Throwable $e) {
+            // Not in Craft context or Blitz not available
         }
 
         // Merge default caches with existing ones
