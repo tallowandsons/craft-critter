@@ -2,7 +2,9 @@
 
 namespace mijewe\critter\models;
 
+use Craft;
 use craft\base\Model;
+use mijewe\critter\drivers\caches\BlitzCache;
 use mijewe\critter\drivers\caches\NoCache;
 use mijewe\critter\generators\CriticalCssDotComGenerator;
 use mijewe\critter\storage\CraftCacheStorage;
@@ -44,7 +46,7 @@ class Settings extends Model
     public string $storageType = CraftCacheStorage::class;
 
     // which cache type to use
-    public ?string $cacheType = NoCache::class;
+    public ?string $cacheType = null;
 
     // the settings for the cache
     public array $cacheSettings = [];
@@ -85,4 +87,41 @@ class Settings extends Model
 
     // developer mode - enables advanced/experimental features (no UI, config file only)
     public bool $developerMode = false;
+
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+
+        // Set conditional defaults based on installed plugins
+        $this->setConditionalDefaults();
+    }
+
+    /**
+     * Set conditional default values based on available plugins
+     */
+    protected function setConditionalDefaults(): void
+    {
+        // Check if Blitz plugin is installed (only in Craft context)
+        $blitzIsInstalled = false;
+        try {
+            $blitzIsInstalled = \Craft::$app && \Craft::$app->plugins && \Craft::$app->plugins->getPlugin('blitz') !== null;
+        } catch (\Throwable $e) {
+            // Not in Craft context, use default fallback
+        }
+
+        // Set cache defaults based on Blitz availability
+        if ($blitzIsInstalled && $this->cacheType === null) {
+            $this->cacheType = BlitzCache::class;
+
+            // Set default cache behavior to refresh URLs if not already set
+            if (empty($this->cacheSettings['cacheBehaviour'])) {
+                $this->cacheSettings['cacheBehaviour'] = BlitzCache::CACHE_BEHAVIOUR_REFRESH_URLS;
+            }
+        } elseif (!$blitzIsInstalled && $this->cacheType === null) {
+            $this->cacheType = NoCache::class;
+        }
+    }
 }
