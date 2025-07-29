@@ -1,4 +1,4 @@
-# Critter for Craft CMS 🦔
+# Critter for Craft CMS 🐿️
 
 **Supercharge your site's performance** with automatic critical CSS generation. Critter intelligently inlines the CSS needed for above-the-fold content, delivering improved performance and exceptional user experiences.
 
@@ -22,7 +22,11 @@ Critter comes pre-configured with the **criticalcss.com** cloud-based generator.
 
 ℹ️ You can also switch to a different generator or implement your own custom generator if you have specific requirements.
 
-## 🦔 Why Choose Critter?
+### 3. Celebrate 🎉
+
+You've successfully set up Critter! Open a web page and keep your eye on the queue as Critter automatically generates and inlines the critical CSS for your entries.
+
+## Why Choose Critter?
 
 ### Minimal-Configuration Critical CSS
 Critter comes ready to use with the [criticalcss.com](https://criticalcss.com) API pre-configured. Simply add your API key and you're ready to generate critical CSS - no template changes or complicated configuration required.
