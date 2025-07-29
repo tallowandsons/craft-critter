@@ -11,6 +11,31 @@ use mijewe\critter\models\GeneratorResponse;
 use mijewe\critter\models\UrlModel;
 use Symfony\Component\Process\Process;
 
+/**
+ * Critical CSS CLI Generator
+ *
+ * Note: This generator is not registered by default for security reasons.
+ * It requires Node.js and @plone/critical-css-cli to be installed on the server,
+ * which can pose security risks if not configured properly.
+ *
+ * To enable this generator, add it to the generators list in your config/critter.php file:
+ *
+ * return [
+ *     'generators' => [
+ *         \mijewe\critter\generators\NoGenerator::class,
+ *         \mijewe\critter\generators\CriticalCssDotComGenerator::class,
+ *         \mijewe\critter\generators\CriticalCssCliGenerator::class, // Add this line
+ *     ],
+ *     'generatorType' => \mijewe\critter\generators\CriticalCssCliGenerator::class,
+ *     'generatorSettings' => [
+ *         'nodeExecutable' => '/usr/bin/node',
+ *         'packageExecutable' => 'node_modules/@plone/critical-css-cli',
+ *         'width' => 1300,
+ *         'height' => 900,
+ *         'timeout' => 60,
+ *     ],
+ * ];
+ */
 class CriticalCssCliGenerator extends BaseGenerator
 {
     public string $handle = 'critical-css-cli';
@@ -86,7 +111,7 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Critter::translate('@plone/critical-css-cli Generator');
+        return Critter::translate('@plone/critical-css-cli Generator (Advanced)');
     }
 
     /**

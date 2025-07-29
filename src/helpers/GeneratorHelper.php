@@ -98,24 +98,18 @@ class GeneratorHelper
      */
     private static function _registerGenerators(): void
     {
-        // Register default generators
-        $defaultGenerators = [
+        // Use custom generators list from settings, or default list if not specified
+        $generators = Critter::getInstance()->settings->generators ?? [
             NoGenerator::class,
-            CriticalCssDotComGenerator::class,
-            CriticalCssCliGenerator::class,
+            CriticalCssDotComGenerator::class
         ];
 
-        // if developer mode, register the dummy generator
-        if (Critter::getInstance()->isDeveloperMode()) {
-            $defaultGenerators[] = DummyGenerator::class;
-        }
-
-        // Merge default generators with existing ones
+        // Merge generators with existing ones
         if (!isset(self::$_generators)) {
             self::$_generators = [];
         }
 
-        foreach ($defaultGenerators as $generator) {
+        foreach ($generators as $generator) {
             self::registerGenerator($generator);
         }
         // Add whatever generator is currently selected to the list of generator types,

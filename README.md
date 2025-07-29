@@ -20,17 +20,12 @@ Over in **Critter → Settings → General → Generator**, select your preferre
 - No server dependencies
 - Pay-per-use pricing
 
-**💻 Local CLI (@plone/critical-css-cli)**
-- Self-hosted solution
-- No external dependencies
-- Open source and free to use
-
 ℹ️ You can also implement your own custom generator if you have specific requirements.
 
 ## 🦔 Why Choose Critter?
 
 ### Minimal-Configuration Critical CSS
-Automatically generate critical CSS using the [criticalcss.com](https://criticalcss.com) API or local CLI-based generation - no template changes or complicated configuration required.
+Automatically generate critical CSS using the [criticalcss.com](https://criticalcss.com) API - no template changes or complicated configuration required.
 
 ### Flexible Generation Modes
 Generate a unique critical CSS file for each individual Entry (Entry Mode) or a shared critical CSS file for all entries in a Section (Section Mode).
@@ -75,13 +70,12 @@ For advanced control, disable Auto Render and call the render method manually:
 
 ### Generator Setup
 
-Generators are responsible for creating the critical CSS. Critter comes with built-in support for two generators, and you can also implement your own.
+Generators are responsible for creating the critical CSS. Critter comes with built-in support for cloud-based generation, and you can also implement your own.
 
 - The [criticalcss.com](https://criticalcss.com) API, for cloud-based critical CSS generation.
-- The [@plone/critical-css-cli package](https://github.com/plone/critical-css-cli), for local critical CSS generation.
 - You can also implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
 
-Each of the generators can be configured in the plugin settings under Critter → Settings → General → Generator, with options for viewport dimensions, API keys, and more.
+The cloud-based generator can be configured in the plugin settings under Critter → Settings → General → Generator, with options for viewport dimensions, API keys, and more.
 
 ### Cache Configuration
 

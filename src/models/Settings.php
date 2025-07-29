@@ -36,6 +36,10 @@ class Settings extends Model
     // the settings for the generator
     public array $generatorSettings = [];
 
+    // which default generators should be registered (null = use default list)
+    // this allows developers to control which generators appear in the UI
+    public ?array $generators = null;
+
     // which storage type to use
     public string $storageType = CraftCacheStorage::class;
 

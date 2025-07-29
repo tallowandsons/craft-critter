@@ -34,6 +34,25 @@ return [
     // Settings for the generator
     // 'generatorSettings' => [],
 
+    // Which default generators should be registered (null = use default list)
+    // This controls which generators appear in the admin UI
+    // 'generators' => null,
+
+    // Examples:
+    // To include the CLI generator (advanced users only):
+    // 'generators' => [
+    //     \mijewe\critter\generators\NoGenerator::class,
+    //     \mijewe\critter\generators\CriticalCssDotComGenerator::class,
+    //     \mijewe\critter\generators\CriticalCssCliGenerator::class,
+    // ],
+
+    // To include the DummyGenerator for testing:
+    // 'generators' => [
+    //     \mijewe\critter\generators\NoGenerator::class,
+    //     \mijewe\critter\generators\CriticalCssDotComGenerator::class,
+    //     \mijewe\critter\generators\DummyGenerator::class,
+    // ],
+
     // Storage class to use for storing critical CSS
     // 'storageType' => CraftCacheStorage::class,
 
