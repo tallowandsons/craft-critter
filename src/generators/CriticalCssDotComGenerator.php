@@ -20,6 +20,16 @@ class CriticalCssDotComGenerator extends BaseGenerator
     public string $handle = 'criticalcssdotcom';
 
     /**
+     * Cache key for global job tracking
+     */
+    private const GLOBAL_JOB_CACHE_KEY = 'critter:global-generate-job';
+
+    /**
+     * Cache TTL for global job tracking (5 minutes)
+     */
+    private const GLOBAL_JOB_CACHE_TTL = 300;
+
+    /**
      * @var string API key for the criticalcss.com account
      */
     public ?string $apiKey = null;
@@ -92,145 +102,104 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 ));
         }
 
-        // Extract domain from URL for mutex locking
-        $domain = $urlModel->getDomain();
+        // the criticalcss.com API works like this:
+        // 1.   trigger a generate job by POSTing to the API.
+        //      This will return a job number, while the CSS is being
+        //      generated on the criticalcss.com servers.
+        // 2.   poll the API with the job number to check the status of the job.
+        //      this will return the CSS when the job is complete.
+        // 3.   if the job is not complete, wait a few seconds and try again.
 
-        // Use Craft's mutex system for domain-level locking for entire job lifecycle
-        // This ensures no new /generate requests until current job is complete
-        $mutex = Craft::$app->getMutex();
-        $lockName = Critter::getPluginHandle() . ':criticalcssdotcomgenerator:' . $domain;
-        $mutexTimeout = Critter::getInstance()->getSettings()->mutexTimeout ?? 30;
+        // if a generate job has been previously triggered, the API
+        // will have returned a resultId which is stored in the DB.
+        // this resultId can be used to check the status of the job
+        // from the API and get the css when the job is complete.
+        $resultId = $this->getResultId($urlModel);
 
-        if (!$mutex->acquire($lockName, $mutexTimeout)) {
-            // If we can't acquire the lock, another job is already running for this domain
-            Craft::info(
-                "Failed to acquire mutex lock for domain: $domain (timeout: {$mutexTimeout}s)",
-                Critter::getPluginHandle()
-            );
-
-            return (new GeneratorResponse())
-                ->setSuccess(false)
-                ->setException(new MutexLockException(
-                    Critter::translate('Another criticalcss.com job is already running for domain: ' . $domain . '. Please wait and try again.')
-                ));
+        // if there is no resultId then no generate job has been triggered,
+        // so trigger a new job via the API.
+        if (!$resultId) {
+            $resultId = $this->triggerGenerateJob($urlModel);
+            if (!$resultId) {
+                // If we can't trigger a job, it's likely because another job is active
+                // This should be retryable so the job can try again later
+                return (new GeneratorResponse())
+                    ->setSuccess(false)
+                    ->setException(new RetryableCssGenerationException(
+                        'Failed to trigger generate job with criticalcss.com API - another job may be active. Will retry.'
+                    ));
+            }
         }
 
-        Craft::info(
-            "Acquired mutex lock for domain: $domain",
-            Critter::getPluginHandle()
-        );
+        $attemptCount = 0;
 
-        try {
-            // the criticalcss.com API works like this:
-            // 1.   trigger a generate job by POSTing to the API.
-            //      This will return a job number, while the CSS is being
-            //      generated on the criticalcss.com servers.
-            // 2.   poll the API with the job number to check the status of the job.
-            //      this will return the CSS when the job is complete.
-            // 3.   if the job is not complete, wait a few seconds and try again.
+        while ($attemptCount < $this->maxAttempts) {
 
-            // if a generate job has been previously triggered, the API
-            // will have returned a resultId which is stored in the DB.
-            // this resultId can be used to check the status of the job
-            // from the API and get the css when the job is complete.
-            $resultId = $this->getResultId($urlModel);
-
-            // if there is no resultId then no generate job has been triggered,
-            // so trigger a new job via the API.
-            if (!$resultId) {
-                $response = $this->getApi()->generate($urlModel, $this->width, $this->height);
-
-                // Check if the API response contains an error
-                if ($response->hasError()) {
-                    $error = $response->getError();
-                    return (new GeneratorResponse())
-                        ->setSuccess(false)
-                        ->setException(new \Exception('Failed to generate critical CSS from criticalcss.com API: ' . $error->toString()));
-                }
-
-                $resultId = $response->getJobId();
-
-                if (!$resultId) {
-                    return (new GeneratorResponse())
-                        ->setSuccess(false)
-                        ->setException(new \Exception('Failed to generate critical css from criticalcss.com API: No job ID returned'));
-                }
-
-                // Create a CssRequest from the UrlModel for RequestRecordService
-                $cssRequest = (new CssRequest())->setRequestUrl($urlModel);
-                Critter::getInstance()->requestRecords->setData($cssRequest, ['resultId' => $resultId]);
+            // TEST MODE: Simulate different failure responses (only in developer mode)
+            if ($this->isTestMode()) {
+                $apiResponse = $this->simulateTestResponse();
+            } else {
+                // Normal operation: Poll the API for results using the resultId
+                $apiResponse = $this->getResultsById($resultId);
             }
 
-            $attemptCount = 0;
+            // Check if the API response contains an error
+            if ($apiResponse->hasError()) {
+                $error = $apiResponse->getError();
+                return (new GeneratorResponse())
+                    ->setSuccess(false)
+                    ->setException(new \Exception('Failed to get results from criticalcss.com API: ' . $error->toString()));
+            }
 
-            while ($attemptCount < $this->maxAttempts) {
+            if ($apiResponse->isDone()) {
 
-                // TEST MODE: Simulate different failure responses (only in developer mode)
-                if ($this->isTestMode()) {
-                    $apiResponse = $this->simulateTestResponse();
-                } else {
-                    // Normal operation: Poll the API for results using the resultId
-                    $apiResponse = $this->getResultsById($resultId);
-                }
+                // if the job is done, clear global job tracking
+                $this->clearGlobalGenerateJob();
 
-                // Check if the API response contains an error
-                if ($apiResponse->hasError()) {
-                    $error = $apiResponse->getError();
+                if ($apiResponse->hasCss()) {
+                    $cssStr = $apiResponse->getCss();
+
                     return (new GeneratorResponse())
-                        ->setSuccess(false)
-                        ->setException(new \Exception('Failed to get results from criticalcss.com API: ' . $error->toString()));
-                }
+                        ->setSuccess(true)
+                        ->setCss(new CssModel($cssStr));
+                } else {
+                    // if the job is done but no css was returned,
+                    // check if this is a retryable failure (like PENTHOUSE_TIMEOUT)
+                    $resultStatus = $apiResponse->getResultStatus();
 
-                if ($apiResponse->isDone()) {
-                    if ($apiResponse->hasCss()) {
-                        $cssStr = $apiResponse->getCss();
+                    if ($this->isRetryableFailure($resultStatus)) {
+                        // Clear the record data to allow a fresh attempt
+                        $this->clearRecordData($urlModel);
+
+                        Critter::getInstance()->log->info(
+                            "Retryable failure '{$resultStatus}' for URL: {$urlModel->getAbsoluteUrl()}. Record cleared for retry.",
+                            'generation'
+                        );
 
                         return (new GeneratorResponse())
-                            ->setSuccess(true)
-                            ->setCss(new CssModel($cssStr));
+                            ->setSuccess(false)
+                            ->setException(new RetryableCssGenerationException("Retryable failure from criticalcss.com: {$resultStatus}. Record cleared for retry."));
                     } else {
-                        // if the job is done but no css was returned,
-                        // check if this is a retryable failure (like PENTHOUSE_TIMEOUT)
-                        $resultStatus = $apiResponse->getResultStatus();
-
-                        if ($this->isRetryableFailure($resultStatus)) {
-                            // Clear the record data to allow a fresh attempt
-                            $this->clearRecordData($urlModel);
-
-                            Critter::getInstance()->log->info(
-                                "Retryable failure '{$resultStatus}' for URL: {$urlModel->getAbsoluteUrl()}. Record cleared for retry.",
-                                'generation'
-                            );
-
-                            return (new GeneratorResponse())
-                                ->setSuccess(false)
-                                ->setException(new RetryableCssGenerationException("Retryable failure from criticalcss.com: {$resultStatus}. Record cleared for retry."));
-                        } else {
-                            return (new GeneratorResponse())
-                                ->setSuccess(false)
-                                ->setException(new \Exception('No CSS returned from criticalcss.com API - ' . $resultStatus));
-                        }
+                        return (new GeneratorResponse())
+                            ->setSuccess(false)
+                            ->setException(new \Exception('No CSS returned from criticalcss.com API - ' . $resultStatus));
                     }
                 }
-
-                $attemptCount++;
-                sleep($this->attemptDelay);
             }
 
-            Critter::getInstance()->log->error(
-                "Failed to get critical CSS from criticalcss.com API after {$this->maxAttempts} attempts for URL: {$urlModel->getAbsoluteUrl()}",
-                'generation'
-            );
-
-            throw new RetryableCssGenerationException("Failed to get critical css from criticalcss.com API after {$this->maxAttempts} attempts");
-        } finally {
-            // Always release the mutex lock when job is complete (success or failure)
-            Craft::info(
-                "Releasing mutex lock for domain: $domain",
-                Critter::getPluginHandle()
-            );
-            $mutex->release($lockName);
+            $attemptCount++;
+            sleep($this->attemptDelay);
         }
+
+        Critter::getInstance()->log->error(
+            "Failed to get critical CSS from criticalcss.com API after {$this->maxAttempts} attempts for URL: {$urlModel->getAbsoluteUrl()}",
+            'generation'
+        );
+
+        // Clear global job tracking on timeout failure to allow new jobs
+        $this->clearGlobalGenerateJob();
+
+        throw new RetryableCssGenerationException("Failed to get critical css from criticalcss.com API after {$this->maxAttempts} attempts");
     }
 
     /**
@@ -330,6 +299,97 @@ class CriticalCssDotComGenerator extends BaseGenerator
     }
 
     /**
+     * Trigger a new generate job with the API, ensuring only one generate job at a time for API compliance
+     * @return string|null The resultId of the triggered job, or null if it failed
+     */
+    private function triggerGenerateJob(UrlModel $urlModel): ?string
+    {
+        // Check if there's already an active generate job system-wide
+        // This ensures compliance with API requirement and keeps implementation simple
+        if ($this->hasActiveGenerateJob()) {
+            Critter::getInstance()->log->info(
+                "Active generate job already exists. Skipping new generate request to comply with API requirements.",
+                'generation'
+            );
+
+            // Check if we can find an existing job for this specific URL
+            $existingResultId = $this->getResultId($urlModel);
+            if ($existingResultId) {
+                Critter::getInstance()->log->info(
+                    "Found existing resultId for URL: {$urlModel->getAbsoluteUrl()} - using existing job",
+                    'generation'
+                );
+                return $existingResultId;
+            }
+
+            return null;
+        }
+
+        Critter::getInstance()->log->info(
+            "Triggering new generate job for URL: {$urlModel->getAbsoluteUrl()}",
+            'generation'
+        );
+
+        // Create global job tracking record before making API call
+        $this->createGlobalGenerateJob($urlModel);
+
+        try {
+            // Make the API call to generate critical CSS
+            $response = $this->getApi()->generate($urlModel, $this->width, $this->height);
+
+            // Check if the API response contains an error
+            if ($response->hasError()) {
+                $error = $response->getError();
+
+                // Clear global job tracking on API error
+                $this->clearGlobalGenerateJob();
+
+                Critter::getInstance()->log->error(
+                    "Failed to generate critical CSS from criticalcss.com API: " . $error->toString(),
+                    'generation'
+                );
+                return null;
+            }
+
+            $resultId = $response->getJobId();
+
+            if (!$resultId) {
+                // Clear global job tracking if no job ID returned
+                $this->clearGlobalGenerateJob();
+
+                Critter::getInstance()->log->error(
+                    "Failed to generate critical css from criticalcss.com API: No job ID returned",
+                    'generation'
+                );
+                return null;
+            }
+
+            // Store the resultId in the database
+            $cssRequest = (new CssRequest())->setRequestUrl($urlModel);
+            Critter::getInstance()->requestRecords->setData($cssRequest, ['resultId' => $resultId]);
+
+            // Update global job tracking with the resultId
+            $this->updateGlobalGenerateJob($resultId);
+
+            Critter::getInstance()->log->info(
+                "Successfully triggered generate job with resultId: $resultId for URL: {$urlModel->getAbsoluteUrl()}",
+                'generation'
+            );
+
+            return $resultId;
+        } catch (\Exception $e) {
+            // Clear global job tracking on any exception
+            $this->clearGlobalGenerateJob();
+
+            Critter::getInstance()->log->error(
+                "Exception while triggering generate job: {$e->getMessage()}",
+                'generation'
+            );
+            return null;
+        }
+    }
+
+    /**
      * Get the API client instance
      */
     private function getApi(): CriticalCssDotComApi
@@ -397,5 +457,113 @@ class CriticalCssDotComGenerator extends BaseGenerator
             'resultStatus' => $resultStatus,
             'css' => null
         ]);
+    }
+
+    /**
+     * Check if there's an active generate job system-wide
+     * This ensures API compliance: "Do not request more than one /generate job at a time"
+     */
+    private function hasActiveGenerateJob(): bool
+    {
+        $cache = Craft::$app->getCache();
+
+        $jobData = $cache->get(self::GLOBAL_JOB_CACHE_KEY);
+        if (!$jobData) {
+            return false;
+        }
+
+        // Check if the job is still active (has resultId but job might not be complete)
+        $resultId = $jobData['resultId'] ?? null;
+        if (!$resultId) {
+            // Job initiated but no resultId yet - consider it active
+            return true;
+        }
+
+        // Check if the job is still running by polling the API
+        try {
+            $apiResponse = $this->getResultsById($resultId);
+
+            if ($apiResponse->hasError()) {
+                // Error checking status - assume job is complete and clear tracking
+                $this->clearGlobalGenerateJob();
+                return false;
+            }
+
+            if ($apiResponse->isDone()) {
+                // Job is complete - clear global tracking
+                $this->clearGlobalGenerateJob();
+                return false;
+            }
+
+            // Job is still running
+            return true;
+        } catch (\Exception $e) {
+            // Error checking API - assume job is complete to allow new jobs
+            Critter::getInstance()->log->warning(
+                "Error checking global job status: {$e->getMessage()}. Clearing global tracking.",
+                'generation'
+            );
+            $this->clearGlobalGenerateJob();
+            return false;
+        }
+    }
+
+    /**
+     * Create global job tracking record
+     */
+    private function createGlobalGenerateJob(UrlModel $triggerUrl): void
+    {
+        $cache = Craft::$app->getCache();
+
+        $jobData = [
+            'triggerUrl' => $triggerUrl->getAbsoluteUrl(),
+            'startTime' => date('Y-m-d H:i:s'),
+            'resultId' => null
+        ];
+
+        // Store in cache with 5 minute duration (plenty for API job completion)
+        $cache->set(self::GLOBAL_JOB_CACHE_KEY, $jobData, self::GLOBAL_JOB_CACHE_TTL);
+
+        Critter::getInstance()->log->debug(
+            "Created global generate job tracking for URL: {$triggerUrl->getAbsoluteUrl()}",
+            'generation'
+        );
+    }
+
+    /**
+     * Update global job tracking with resultId
+     */
+    private function updateGlobalGenerateJob(string $resultId): void
+    {
+        $cache = Craft::$app->getCache();
+
+        $jobData = $cache->get(self::GLOBAL_JOB_CACHE_KEY);
+        if ($jobData) {
+            $jobData['resultId'] = $resultId;
+            $jobData['resultTime'] = date('Y-m-d H:i:s');
+
+            // Update cache with same 5 minute TTL
+            $cache->set(self::GLOBAL_JOB_CACHE_KEY, $jobData, self::GLOBAL_JOB_CACHE_TTL);
+
+            Critter::getInstance()->log->debug(
+                "Updated global generate job tracking with resultId: {$resultId}",
+                'generation'
+            );
+        }
+    }
+
+    /**
+     * Clear global job tracking
+     */
+    private function clearGlobalGenerateJob(): void
+    {
+        $cache = Craft::$app->getCache();
+
+        $cache->delete(self::GLOBAL_JOB_CACHE_KEY);
+
+        Critter::getInstance()->log->debug(
+            "Cleared global generate job tracking",
+            'generation'
+        );
     }
 }
