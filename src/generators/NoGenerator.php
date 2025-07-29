@@ -29,6 +29,14 @@ class NoGenerator extends BaseGenerator
     /**
      * @inheritdoc
      */
+    public function isReadyForGeneration(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function getCriticalCss(UrlModel $urlModel): GeneratorResponse
     {
         // Always return a failed response with a helpful message

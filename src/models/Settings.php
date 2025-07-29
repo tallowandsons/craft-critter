@@ -4,7 +4,7 @@ namespace mijewe\critter\models;
 
 use craft\base\Model;
 use mijewe\critter\drivers\caches\NoCache;
-use mijewe\critter\generators\NoGenerator;
+use mijewe\critter\generators\CriticalCssDotComGenerator;
 use mijewe\critter\storage\CraftCacheStorage;
 
 /**
@@ -31,7 +31,7 @@ class Settings extends Model
     public array $styleTagAttributes = [];
 
     // which generator type to use
-    public string $generatorType = NoGenerator::class;
+    public string $generatorType = CriticalCssDotComGenerator::class;
 
     // the settings for the generator
     public array $generatorSettings = [];

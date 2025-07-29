@@ -47,6 +47,16 @@ class GeneratorService extends Component
             return;
         }
 
+        // Early abort: Don't start generation if generator is not ready
+        if (!$this->generator->isReadyForGeneration()) {
+            $generatorClass = get_class($this->generator);
+            Critter::getInstance()->log->warning(
+                "Skipping critical CSS generation - {$generatorClass} is not properly configured or ready for generation",
+                'generation'
+            );
+            return;
+        }
+
         $url = $cssRequest->getUrl()->getAbsoluteUrl();
         $generatorClass = get_class($this->generator);
         Critter::getInstance()->log->logGenerationStart($url, $generatorClass);
@@ -117,6 +127,16 @@ class GeneratorService extends Component
         if (NoGenerator::isActive()) {
             Critter::getInstance()->log->info(
                 'Skipping queue job creation - NoGenerator is active',
+                'queue'
+            );
+            return;
+        }
+
+        // Early abort: Don't queue jobs if generator is not ready
+        if (!$this->generator->isReadyForGeneration()) {
+            $generatorClass = get_class($this->generator);
+            Critter::getInstance()->log->warning(
+                "Skipping queue job creation - {$generatorClass} is not properly configured or ready for generation",
                 'queue'
             );
             return;

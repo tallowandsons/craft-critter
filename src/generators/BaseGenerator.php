@@ -61,6 +61,15 @@ class BaseGenerator extends Model implements GeneratorInterface
     }
 
     /**
+     * Check if the generator is properly configured and ready for generation
+     * Override this method in specific generators to add validation logic
+     */
+    public function isReadyForGeneration(): bool
+    {
+        return true;
+    }
+
+    /**
      * @inheritdoc
      */
     public function generate(UrlModel $url): GeneratorResponse

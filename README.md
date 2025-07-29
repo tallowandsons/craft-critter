@@ -11,21 +11,21 @@ You can install Critter by searching for “Critter” in the Craft Plugin Store
 composer require mijewe/craft-critter
 ```
 
-### 2. Choose Your Generator
+### 2. Configure Your Generator
 
-Over in **Critter → Settings → General → Generator**, select your preferred critical CSS generation method:
+Critter comes pre-configured with the **criticalcss.com** cloud-based generator. To get started, you'll need to configure your API key:
 
-**🌐 Cloud-Based (criticalcss.com)**
-- Professional API service
-- No server dependencies
-- Pay-per-use pricing
+1. Sign up for an account at [criticalcss.com](https://criticalcss.com)
+2. Get your API key from your account dashboard
+3. In Craft, go to **Critter → Settings → General → Generator**
+4. Enter your API key in the generator settings
 
-ℹ️ You can also implement your own custom generator if you have specific requirements.
+ℹ️ You can also switch to a different generator or implement your own custom generator if you have specific requirements.
 
 ## 🦔 Why Choose Critter?
 
 ### Minimal-Configuration Critical CSS
-Automatically generate critical CSS using the [criticalcss.com](https://criticalcss.com) API - no template changes or complicated configuration required.
+Critter comes ready to use with the [criticalcss.com](https://criticalcss.com) API pre-configured. Simply add your API key and you're ready to generate critical CSS - no template changes or complicated configuration required.
 
 ### Flexible Generation Modes
 Generate a unique critical CSS file for each individual Entry (Entry Mode) or a shared critical CSS file for all entries in a Section (Section Mode).
@@ -70,12 +70,11 @@ For advanced control, disable Auto Render and call the render method manually:
 
 ### Generator Setup
 
-Generators are responsible for creating the critical CSS. Critter comes with built-in support for cloud-based generation, and you can also implement your own.
+Critter comes pre-configured with the [criticalcss.com](https://criticalcss.com) API for cloud-based critical CSS generation. This professional service requires no server dependencies and operates on a pay-per-use model.
 
-- The [criticalcss.com](https://criticalcss.com) API, for cloud-based critical CSS generation.
-- You can also implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
+To get started, simply configure your API key in the plugin settings under **Critter → Settings → General → Generator**. You can also adjust options for viewport dimensions and other generation parameters.
 
-The cloud-based generator can be configured in the plugin settings under Critter → Settings → General → Generator, with options for viewport dimensions, API keys, and more.
+If you have specific requirements, you can implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
 
 ### Cache Configuration
 

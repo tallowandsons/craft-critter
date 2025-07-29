@@ -100,7 +100,6 @@ class GeneratorHelper
     {
         // Use custom generators list from settings, or default list if not specified
         $generators = Critter::getInstance()->settings->generators ?? [
-            NoGenerator::class,
             CriticalCssDotComGenerator::class
         ];
 

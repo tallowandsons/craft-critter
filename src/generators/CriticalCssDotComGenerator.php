@@ -361,6 +361,14 @@ class CriticalCssDotComGenerator extends BaseGenerator
     }
 
     /**
+     * Check if the generator is properly configured and ready for generation
+     */
+    public function isReadyForGeneration(): bool
+    {
+        return !empty($this->getParsedApiKey());
+    }
+
+    /**
      * Check if a result status indicates a retryable failure
      */
     private function isRetryableFailure(?string $resultStatus): bool

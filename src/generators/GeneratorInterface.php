@@ -16,4 +16,9 @@ interface GeneratorInterface
      * Get the HTML for the generator CMS settings
      */
     public function getSettingsHtml(): ?string;
+
+    /**
+     * Check if the generator is properly configured and ready for generation
+     */
+    public function isReadyForGeneration(): bool;
 }

@@ -18,6 +18,7 @@
 
 // use mijewe\critter\models\Settings;
 // use mijewe\critter\drivers\caches\NoCache;
+// use mijewe\critter\generators\CriticalCssDotComGenerator;
 // use mijewe\critter\generators\NoGenerator;
 // use mijewe\critter\storage\CraftCacheStorage;
 
@@ -29,7 +30,7 @@ return [
     // 'styleTagAttributes' => [],
 
     // Generator class to use for generating critical CSS
-    // 'generatorType' => NoGenerator::class,
+    // 'generatorType' => CriticalCssDotComGenerator::class, // Default
 
     // Settings for the generator
     // 'generatorSettings' => [],
