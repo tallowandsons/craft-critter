@@ -1,9 +1,19 @@
 {
     "name": "tallow-and-sons/craft-critter",
+    "description": "Automated critical css for Craft CMS",
     "type": "craft-plugin",
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Tallow & Sons",
+            "homepage": "https://github.com/tallowandsons"
+        }
+    ],
     "support": {
-        "email": "dev@honcho.agency"
+        "email": "michael@honcho.agency",
+        "issues": "https://github.com/tallowandsons/craft-critter/issues?state=open",
+        "source": "https://github.com/tallowandsons/craft-critter",
+        "docs": "https://github.com/tallowandsons/craft-critter/blob/master/README.md"
     },
     "require": {
         "php": ">=8.2",
@@ -21,7 +31,8 @@
     "extra": {
         "handle": "critter",
         "name": "Critter",
-        "developer": "tallow-and-sons",
+        "developer": "Tallow & Sons",
+        "developerUrl": "https://github.com/tallowandsons",
         "documentationUrl": "",
         "class": "tallowandsons\\critter\\Critter"
     },
