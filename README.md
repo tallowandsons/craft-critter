@@ -1,3 +1,5 @@
+![Banner](./docs/img/banner.png)
+
 # Critter for Craft CMS 🐿️
 
 **Supercharge your site's performance** with automatic critical CSS generation. Critter intelligently inlines the CSS needed for above-the-fold content, delivering improved performance and exceptional user experiences.
