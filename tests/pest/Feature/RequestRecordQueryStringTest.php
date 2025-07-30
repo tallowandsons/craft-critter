@@ -1,10 +1,10 @@
 <?php
 
-use mijewe\critter\Critter;
-use mijewe\critter\factories\UrlFactory;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 
 /**
  * Tests for the new queryString column functionality in RequestRecord

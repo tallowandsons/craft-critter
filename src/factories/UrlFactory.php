@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\critter\factories;
+namespace tallowandsons\critter\factories;
 
 use Craft;
 use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
-use mijewe\critter\helpers\UrlHelper as CritterUrlHelper;
-use mijewe\critter\models\Tag;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\helpers\UrlHelper as CritterUrlHelper;
+use tallowandsons\critter\models\Tag;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 
 class UrlFactory
 {

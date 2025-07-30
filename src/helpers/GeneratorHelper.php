@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\critter\helpers;
+namespace tallowandsons\critter\helpers;
 
-use mijewe\critter\Critter;
-use mijewe\critter\events\RegisterGeneratorsEvent;
-use mijewe\critter\generators\CriticalCssCliGenerator;
-use mijewe\critter\generators\CriticalCssDotComGenerator;
-use mijewe\critter\generators\DummyGenerator;
-use mijewe\critter\generators\GeneratorInterface;
-use mijewe\critter\generators\NoGenerator;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\events\RegisterGeneratorsEvent;
+use tallowandsons\critter\generators\CriticalCssCliGenerator;
+use tallowandsons\critter\generators\CriticalCssDotComGenerator;
+use tallowandsons\critter\generators\DummyGenerator;
+use tallowandsons\critter\generators\GeneratorInterface;
+use tallowandsons\critter\generators\NoGenerator;
 use yii\base\Event;
 
 class GeneratorHelper

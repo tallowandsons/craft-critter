@@ -1,7 +1,7 @@
 <?php
 
-use mijewe\critter\factories\UrlFactory;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\models\UrlModel;
 use craft\elements\Entry;
 
 // These tests assume Craft's dependency injection and mocking is available

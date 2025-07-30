@@ -1,7 +1,7 @@
 <?php
 
-use mijewe\critter\drivers\caches\BlitzCache;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\drivers\caches\BlitzCache;
+use tallowandsons\critter\models\UrlModel;
 
 /**
  * Unit tests for BlitzCache class

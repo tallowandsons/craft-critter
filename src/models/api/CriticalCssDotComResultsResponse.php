@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\models\api;
+namespace tallowandsons\critter\models\api;
 
 use Craft;
-use mijewe\critter\models\BaseResponse;
-use mijewe\critter\models\ApiError;
+use tallowandsons\critter\models\BaseResponse;
+use tallowandsons\critter\models\ApiError;
 
 /**
  * Critical Css Dot Com Results Response model

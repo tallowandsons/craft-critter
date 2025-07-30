@@ -1,6 +1,6 @@
 <?php
 
-use mijewe\critter\models\Tag;
+use tallowandsons\critter\models\Tag;
 
 describe('Tag Model Tests', function () {
 

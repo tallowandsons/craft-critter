@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\exceptions;
+namespace tallowandsons\critter\exceptions;
 
 use yii\base\Exception;
 

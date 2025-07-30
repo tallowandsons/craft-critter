@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\generators;
+namespace tallowandsons\critter\generators;
 
-use mijewe\critter\models\CssModel;
-use mijewe\critter\models\GeneratorResponse;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\models\CssModel;
+use tallowandsons\critter\models\GeneratorResponse;
+use tallowandsons\critter\models\UrlModel;
 
 class DummyGenerator extends BaseGenerator
 {

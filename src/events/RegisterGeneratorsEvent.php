@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\events;
+namespace tallowandsons\critter\events;
 
 use yii\base\Event;
 

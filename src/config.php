@@ -16,11 +16,11 @@
  * @see models\Settings.php for all available options and documentation.
  */
 
-// use mijewe\critter\models\Settings;
-// use mijewe\critter\drivers\caches\NoCache;
-// use mijewe\critter\generators\CriticalCssDotComGenerator;
-// use mijewe\critter\generators\NoGenerator;
-// use mijewe\critter\storage\CraftCacheStorage;
+// use tallowandsons\critter\models\Settings;
+// use tallowandsons\critter\drivers\caches\NoCache;
+// use tallowandsons\critter\generators\CriticalCssDotComGenerator;
+// use tallowandsons\critter\generators\NoGenerator;
+// use tallowandsons\critter\storage\CraftCacheStorage;
 
 return [
     // Enable or disable automatic rendering of critical CSS
@@ -42,16 +42,16 @@ return [
     // Examples:
     // To include the CLI generator (advanced users only):
     // 'generators' => [
-    //     \mijewe\critter\generators\NoGenerator::class,
-    //     \mijewe\critter\generators\CriticalCssDotComGenerator::class,
-    //     \mijewe\critter\generators\CriticalCssCliGenerator::class,
+    //     \tallowandsons\critter\generators\NoGenerator::class,
+    //     \tallowandsons\critter\generators\CriticalCssDotComGenerator::class,
+    //     \tallowandsons\critter\generators\CriticalCssCliGenerator::class,
     // ],
 
     // To include the DummyGenerator for testing:
     // 'generators' => [
-    //     \mijewe\critter\generators\NoGenerator::class,
-    //     \mijewe\critter\generators\CriticalCssDotComGenerator::class,
-    //     \mijewe\critter\generators\DummyGenerator::class,
+    //     \tallowandsons\critter\generators\NoGenerator::class,
+    //     \tallowandsons\critter\generators\CriticalCssDotComGenerator::class,
+    //     \tallowandsons\critter\generators\DummyGenerator::class,
     // ],
 
     // Storage class to use for storing critical CSS

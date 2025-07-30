@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\critter\generators;
+namespace tallowandsons\critter\generators;
 
 use Craft;
-use mijewe\critter\Critter;
-use mijewe\critter\models\GeneratorResponse;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\GeneratorResponse;
+use tallowandsons\critter\models\UrlModel;
 
 /**
  * No Generator - A safe default that doesn't generate any critical CSS

@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\utilities;
+namespace tallowandsons\critter\utilities;
 
 use Craft;
 use craft\base\Utility;
@@ -25,7 +25,7 @@ class CritterUtility extends Utility
      */
     public static function icon(): ?string
     {
-        $iconPath = Craft::getAlias('@mijewe/critter/icon-mask.svg');
+        $iconPath = Craft::getAlias('@tallowandsons/critter/icon-mask.svg');
 
         if (!is_string($iconPath)) {
             return null;

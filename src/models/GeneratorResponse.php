@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 /**
  * Generator Response model

@@ -1,7 +1,7 @@
 <?php
 
-use mijewe\critter\console\controllers\CssController;
-use mijewe\critter\Critter;
+use tallowandsons\critter\console\controllers\CssController;
+use tallowandsons\critter\Critter;
 use yii\console\ExitCode;
 
 describe('CSSController actionExpire Tests', function () {
@@ -91,7 +91,7 @@ describe('CSSController actionExpire Tests', function () {
 
             // Mock the utility service to verify it gets called
             $utilityService = $this->plugin->utilityService;
-            expect($utilityService)->toBeInstanceOf(\mijewe\critter\services\UtilityService::class);
+            expect($utilityService)->toBeInstanceOf(\tallowandsons\critter\services\UtilityService::class);
 
             $controller->all = true;
             $controller->entry = null;
@@ -134,7 +134,7 @@ describe('CSSController actionExpire Tests', function () {
             $controller = $this->controller;
 
             $utilityService = $this->plugin->utilityService;
-            expect($utilityService)->toBeInstanceOf(\mijewe\critter\services\UtilityService::class);
+            expect($utilityService)->toBeInstanceOf(\tallowandsons\critter\services\UtilityService::class);
 
             $controller->all = false;
             $controller->entry = 456;
@@ -177,7 +177,7 @@ describe('CSSController actionExpire Tests', function () {
             $controller = $this->controller;
 
             $utilityService = $this->plugin->utilityService;
-            expect($utilityService)->toBeInstanceOf(\mijewe\critter\services\UtilityService::class);
+            expect($utilityService)->toBeInstanceOf(\tallowandsons\critter\services\UtilityService::class);
 
             $controller->all = false;
             $controller->entry = null;
@@ -273,7 +273,7 @@ describe('CSSController actionExpire Tests', function () {
             $plugin = Critter::getInstance();
             $utilityService = $plugin->utilityService;
 
-            expect($utilityService)->toBeInstanceOf(\mijewe\critter\services\UtilityService::class);
+            expect($utilityService)->toBeInstanceOf(\tallowandsons\critter\services\UtilityService::class);
             expect(method_exists($utilityService, 'expireAll'))->toBeTrue();
             expect(method_exists($utilityService, 'expireEntry'))->toBeTrue();
             expect(method_exists($utilityService, 'expireSection'))->toBeTrue();

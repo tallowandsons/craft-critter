@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\migrations;
+namespace tallowandsons\critter\migrations;
 
 use Craft;
 use craft\db\Migration;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\records\RequestRecord;
 
 /**
  * m250721_000000_add_tag_column migration

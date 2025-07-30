@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\critter\controllers;
+namespace tallowandsons\critter\controllers;
 
 use Craft;
 use craft\helpers\Cp;
 use craft\web\Controller;
-use mijewe\critter\Critter;
-use mijewe\critter\drivers\caches\BlitzCache;
-use mijewe\critter\helpers\GeneratorHelper;
-use mijewe\critter\helpers\SettingsHelper;
-use mijewe\critter\helpers\CacheHelper;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\drivers\caches\BlitzCache;
+use tallowandsons\critter\helpers\GeneratorHelper;
+use tallowandsons\critter\helpers\SettingsHelper;
+use tallowandsons\critter\helpers\CacheHelper;
 use yii\web\Response;
 
 /**

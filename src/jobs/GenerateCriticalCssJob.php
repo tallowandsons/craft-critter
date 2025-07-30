@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\critter\jobs;
+namespace tallowandsons\critter\jobs;
 
 use Craft;
 use craft\queue\BaseJob;
-use mijewe\critter\Critter;
-use mijewe\critter\exceptions\MutexLockException;
-use mijewe\critter\exceptions\RetryableCssGenerationException;
-use mijewe\critter\generators\NoGenerator;
-use mijewe\critter\models\CssRequest;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\exceptions\MutexLockException;
+use tallowandsons\critter\exceptions\RetryableCssGenerationException;
+use tallowandsons\critter\generators\NoGenerator;
+use tallowandsons\critter\models\CssRequest;
 use yii\queue\RetryableJobInterface;
 
 /**

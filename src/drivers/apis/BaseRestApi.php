@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\critter\drivers\apis;
+namespace tallowandsons\critter\drivers\apis;
 
 use Craft;
 use craft\base\Component;
 use craft\helpers\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-use mijewe\critter\exceptions\ApiException;
-use mijewe\critter\models\ApiError;
-use mijewe\critter\models\ApiResponse;
+use tallowandsons\critter\exceptions\ApiException;
+use tallowandsons\critter\models\ApiError;
+use tallowandsons\critter\models\ApiResponse;
 
 class BaseRestApi extends Component
 {

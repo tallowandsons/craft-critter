@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\drivers\caches;
+namespace tallowandsons\critter\drivers\caches;
 
 use Craft;
-use mijewe\critter\Critter;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\UrlModel;
 use putyourlightson\blitz\Blitz;
 use putyourlightson\blitz\helpers\SiteUriHelper;
 

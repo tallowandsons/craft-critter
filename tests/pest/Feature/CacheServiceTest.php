@@ -1,11 +1,11 @@
 <?php
 
-use mijewe\critter\Critter;
-use mijewe\critter\drivers\caches\CacheInterface;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\Settings;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\services\CacheService;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\drivers\caches\CacheInterface;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\Settings;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\services\CacheService;
 
 describe('CacheService Feature Tests', function () {
 

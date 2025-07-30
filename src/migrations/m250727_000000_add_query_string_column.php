@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\critter\migrations;
+namespace tallowandsons\critter\migrations;
 
 use craft\db\Migration;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\records\RequestRecord;
 
 /**
  * m250727_000000_add_query_string_column migration for Critter plugin

@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\drivers\apis;
+namespace tallowandsons\critter\drivers\apis;
 
-use mijewe\critter\models\api\CriticalCssDotComGenerateResponse;
-use mijewe\critter\models\api\CriticalCssDotComResultsResponse;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\models\api\CriticalCssDotComGenerateResponse;
+use tallowandsons\critter\models\api\CriticalCssDotComResultsResponse;
+use tallowandsons\critter\models\UrlModel;
 
 class CriticalCssDotComApi extends BaseRestApi
 {

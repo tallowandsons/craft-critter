@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Element;
@@ -10,7 +10,7 @@ use craft\elements\Entry;
 use craft\helpers\App;
 use craft\helpers\UrlHelper;
 use craft\models\Section;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 
 /**
  * Url Model model

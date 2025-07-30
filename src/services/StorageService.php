@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use craft\helpers\ArrayHelper;
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssModel;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\storage\StorageInterface;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssModel;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\storage\StorageInterface;
 use yii\base\Component;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\web\assets\cp;
+namespace tallowandsons\critter\web\assets\cp;
 
 use Craft;
 use craft\web\AssetBundle;

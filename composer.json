@@ -1,5 +1,5 @@
 {
-    "name": "mijewe/craft-critter",
+    "name": "tallow-and-sons/craft-critter",
     "type": "craft-plugin",
     "license": "proprietary",
     "support": {
@@ -15,15 +15,15 @@
     },
     "autoload": {
         "psr-4": {
-            "mijewe\\critter\\": "src/"
+            "tallowandsons\\critter\\": "src/"
         }
     },
     "extra": {
         "handle": "critter",
         "name": "Critter",
-        "developer": "mijewe",
+        "developer": "tallow-and-sons",
         "documentationUrl": "",
-        "class": "mijewe\\critter\\Critter"
+        "class": "tallowandsons\\critter\\Critter"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",

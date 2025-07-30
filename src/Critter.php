@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter;
+namespace tallowandsons\critter;
 
 use Craft;
 use craft\base\Model;
@@ -20,21 +20,21 @@ use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
-use mijewe\critter\helpers\GeneratorHelper;
-use mijewe\critter\models\Settings;
-use mijewe\critter\services\CacheService;
-use mijewe\critter\services\ConfigService;
-use mijewe\critter\services\CssService;
-use mijewe\critter\services\ExpirationService;
-use mijewe\critter\services\GeneratorService;
-use mijewe\critter\services\LogService;
-use mijewe\critter\services\RequestRecordService;
-use mijewe\critter\services\SettingsService;
-use mijewe\critter\services\StorageService;
-use mijewe\critter\services\UtilityService;
-use mijewe\critter\utilities\CritterUtility;
-use mijewe\critter\variables\CritterVariable;
-use mijewe\critter\web\assets\cp\CpAsset;
+use tallowandsons\critter\helpers\GeneratorHelper;
+use tallowandsons\critter\models\Settings;
+use tallowandsons\critter\services\CacheService;
+use tallowandsons\critter\services\ConfigService;
+use tallowandsons\critter\services\CssService;
+use tallowandsons\critter\services\ExpirationService;
+use tallowandsons\critter\services\GeneratorService;
+use tallowandsons\critter\services\LogService;
+use tallowandsons\critter\services\RequestRecordService;
+use tallowandsons\critter\services\SettingsService;
+use tallowandsons\critter\services\StorageService;
+use tallowandsons\critter\services\UtilityService;
+use tallowandsons\critter\utilities\CritterUtility;
+use tallowandsons\critter\variables\CritterVariable;
+use tallowandsons\critter\web\assets\cp\CpAsset;
 use yii\base\Event;
 use yii\base\View as BaseView;
 
@@ -43,8 +43,8 @@ use yii\base\View as BaseView;
  *
  * @method static Critter getInstance()
  * @method Settings getSettings()
- * @author mijewe <dev@honcho.agency>
- * @copyright mijewe
+ * @author tallow-and-sons <dev@honcho.agency>
+ * @copyright tallow-and-sons
  * @license https://craftcms.github.io/license/ Craft License
  * @property-read StorageService $storage
  * @property-read GeneratorService $generator

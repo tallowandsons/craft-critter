@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\critter\variables;
+namespace tallowandsons\critter\variables;
 
 use Craft;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 
 class CritterVariable
 {
@@ -28,7 +28,7 @@ class CritterVariable
      */
     public function const(string $constantName, string $namespace = 'Critter'): string
     {
-        $fullNamespace = 'mijewe\\critter\\' . $namespace;
+        $fullNamespace = 'tallowandsons\\critter\\' . $namespace;
         $constantFullName = $fullNamespace . '::' . $constantName;
 
         if (defined($constantFullName)) {

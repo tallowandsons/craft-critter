@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Model;
 use craft\elements\Entry;
-use mijewe\critter\Critter;
-use mijewe\critter\factories\UrlFactory;
-use mijewe\critter\models\Tag;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\models\Tag;
 
 /**
  * Storage Request model

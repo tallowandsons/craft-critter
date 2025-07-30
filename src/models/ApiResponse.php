@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Model;

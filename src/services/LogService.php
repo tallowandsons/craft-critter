@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\base\Component;
 use craft\log\MonologTarget;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 use Monolog\Formatter\LineFormatter;
 use Psr\Log\LogLevel;
 use yii\log\Dispatcher;

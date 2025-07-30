@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\critter\migrations;
+namespace tallowandsons\critter\migrations;
 
 use Craft;
 use craft\db\Migration;
 use craft\records\Site;
-use mijewe\critter\records\RequestRecord;
-use mijewe\critter\records\SectionConfigRecord;
+use tallowandsons\critter\records\RequestRecord;
+use tallowandsons\critter\records\SectionConfigRecord;
 
 /**
  * Install migration for Critter plugin

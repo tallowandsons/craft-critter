@@ -1,8 +1,8 @@
 <?php
 
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\UrlModel;
 
 describe('Cache Key Debug Tests', function () {
 

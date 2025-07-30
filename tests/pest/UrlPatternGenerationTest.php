@@ -1,6 +1,6 @@
 <?php
 
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\models\UrlModel;
 
 /**
  * Integration tests for URL pattern generation

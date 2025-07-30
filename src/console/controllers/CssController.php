@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\critter\console\controllers;
+namespace tallowandsons\critter\console\controllers;
 
 use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 use yii\console\ExitCode;
 
 /**

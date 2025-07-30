@@ -1,8 +1,8 @@
 <?php
 
-namespace mijewe\critter\drivers\caches;
+namespace tallowandsons\critter\drivers\caches;
 
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\models\UrlModel;
 
 interface CacheInterface
 {

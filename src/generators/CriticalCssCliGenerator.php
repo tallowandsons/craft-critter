@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\critter\generators;
+namespace tallowandsons\critter\generators;
 
 use Craft;
 use craft\helpers\App;
 use craft\helpers\Console;
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssModel;
-use mijewe\critter\models\GeneratorResponse;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssModel;
+use tallowandsons\critter\models\GeneratorResponse;
+use tallowandsons\critter\models\UrlModel;
 use Symfony\Component\Process\Process;
 
 /**
@@ -22,11 +22,11 @@ use Symfony\Component\Process\Process;
  *
  * return [
  *     'generators' => [
- *         \mijewe\critter\generators\NoGenerator::class,
- *         \mijewe\critter\generators\CriticalCssDotComGenerator::class,
- *         \mijewe\critter\generators\CriticalCssCliGenerator::class, // Add this line
+ *         \tallowandsons\critter\generators\NoGenerator::class,
+ *         \tallowandsons\critter\generators\CriticalCssDotComGenerator::class,
+ *         \tallowandsons\critter\generators\CriticalCssCliGenerator::class, // Add this line
  *     ],
- *     'generatorType' => \mijewe\critter\generators\CriticalCssCliGenerator::class,
+ *     'generatorType' => \tallowandsons\critter\generators\CriticalCssCliGenerator::class,
  *     'generatorSettings' => [
  *         'nodeExecutable' => '/usr/bin/node',
  *         'packageExecutable' => 'node_modules/@plone/critical-css-cli',

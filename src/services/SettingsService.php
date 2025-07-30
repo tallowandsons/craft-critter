@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\models\Section_SiteSettings;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 use yii\base\Component;
 
 /**

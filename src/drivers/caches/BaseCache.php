@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\critter\drivers\caches;
+namespace tallowandsons\critter\drivers\caches;
 
 use Craft;
 use craft\base\Model;
 use craft\web\twig\TemplateLoaderException;
-use mijewe\critter\Critter;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\UrlModel;
 
 class BaseCache extends Model implements CacheInterface
 {

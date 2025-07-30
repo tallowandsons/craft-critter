@@ -1,16 +1,16 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
-use mijewe\critter\Critter;
-use mijewe\critter\generators\GeneratorInterface;
-use mijewe\critter\generators\NoGenerator;
-use mijewe\critter\helpers\GeneratorHelper;
-use mijewe\critter\jobs\GenerateCriticalCssJob;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\generators\GeneratorInterface;
+use tallowandsons\critter\generators\NoGenerator;
+use tallowandsons\critter\helpers\GeneratorHelper;
+use tallowandsons\critter\jobs\GenerateCriticalCssJob;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 use yii\base\Component;
 
 /**

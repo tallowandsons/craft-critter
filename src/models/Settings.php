@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Model;
-use mijewe\critter\drivers\caches\BlitzCache;
-use mijewe\critter\drivers\caches\NoCache;
-use mijewe\critter\generators\CriticalCssDotComGenerator;
-use mijewe\critter\storage\CraftCacheStorage;
+use tallowandsons\critter\drivers\caches\BlitzCache;
+use tallowandsons\critter\drivers\caches\NoCache;
+use tallowandsons\critter\generators\CriticalCssDotComGenerator;
+use tallowandsons\critter\storage\CraftCacheStorage;
 
 /**
  * Critter settings

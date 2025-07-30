@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\elements\Entry;
-use mijewe\critter\Critter;
-use mijewe\critter\jobs\ExpireAllJob;
-use mijewe\critter\jobs\RegenerateExpiredJob;
-use mijewe\critter\models\UtilityActionResponse;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\jobs\ExpireAllJob;
+use tallowandsons\critter\jobs\RegenerateExpiredJob;
+use tallowandsons\critter\models\UtilityActionResponse;
+use tallowandsons\critter\records\RequestRecord;
 use yii\base\Component;
 use DateTime;
 

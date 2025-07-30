@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\exceptions;
+namespace tallowandsons\critter\exceptions;
 
 /**
  * Exception thrown when a mutex lock cannot be acquired

@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\critter\generators;
+namespace tallowandsons\critter\generators;
 
 use Craft;
 use craft\base\Model;
 use craft\web\twig\TemplateLoaderException;
-use mijewe\critter\Critter;
-use mijewe\critter\generators\GeneratorInterface;
-use mijewe\critter\models\GeneratorResponse;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\generators\GeneratorInterface;
+use tallowandsons\critter\models\GeneratorResponse;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 
 class BaseGenerator extends Model implements GeneratorInterface
 {

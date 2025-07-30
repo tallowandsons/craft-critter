@@ -1,15 +1,15 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use craft\elements\Entry;
 use craft\helpers\Json;
 use DateTime;
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\Tag;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\Tag;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 use yii\base\Component;
 
 /**

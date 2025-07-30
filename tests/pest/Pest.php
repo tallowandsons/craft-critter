@@ -26,12 +26,12 @@ uses(
 |
 */
 
-function critterPlugin(): \mijewe\critter\Critter
+function critterPlugin(): \tallowandsons\critter\Critter
 {
-    return \mijewe\critter\Critter::getInstance();
+    return \tallowandsons\critter\Critter::getInstance();
 }
 
-function getCritterSettings(): \mijewe\critter\models\Settings
+function getCritterSettings(): \tallowandsons\critter\models\Settings
 {
     return critterPlugin()->getSettings();
 }
@@ -47,7 +47,7 @@ function getCritterSettings(): \mijewe\critter\models\Settings
 
 beforeAll(function () {
     // Verify the plugin is installed and available
-    $plugin = \mijewe\critter\Critter::getInstance();
+    $plugin = \tallowandsons\critter\Critter::getInstance();
     if (!$plugin || !$plugin->isInstalled) {
         throw new Exception('Critter plugin is not installed or available for testing');
     }

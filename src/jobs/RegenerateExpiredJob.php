@@ -1,14 +1,14 @@
 <?php
 
-namespace mijewe\critter\jobs;
+namespace tallowandsons\critter\jobs;
 
 use Craft;
 use craft\queue\BaseJob;
 use DateTime;
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\UrlModel;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\records\RequestRecord;
 
 /**
  * Regenerate Expired Job queue job

@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\critter\helpers;
+namespace tallowandsons\critter\helpers;
 
 use craft\web\Request;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 
 class UrlHelper
 {

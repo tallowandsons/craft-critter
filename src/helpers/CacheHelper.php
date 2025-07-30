@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\critter\helpers;
+namespace tallowandsons\critter\helpers;
 
-use mijewe\critter\Critter;
-use mijewe\critter\drivers\caches\BlitzCache;
-use mijewe\critter\drivers\caches\CacheInterface;
-use mijewe\critter\drivers\caches\NoCache;
-use mijewe\critter\events\RegisterCachesEvent;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\drivers\caches\BlitzCache;
+use tallowandsons\critter\drivers\caches\CacheInterface;
+use tallowandsons\critter\drivers\caches\NoCache;
+use tallowandsons\critter\events\RegisterCachesEvent;
 use yii\base\Event;
 
 class CacheHelper

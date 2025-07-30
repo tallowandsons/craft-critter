@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\storage;
+namespace tallowandsons\critter\storage;
 
 use craft\base\Model;
-use mijewe\critter\models\CssModel;
-use mijewe\critter\models\StorageResponse;
+use tallowandsons\critter\models\CssModel;
+use tallowandsons\critter\models\StorageResponse;
 
 class BaseStorage extends Model implements StorageInterface
 {

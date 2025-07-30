@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\critter\models;
+namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Model;
 use craft\elements\Entry;
 use craft\helpers\Json;
-use mijewe\critter\records\SectionConfigRecord;
+use tallowandsons\critter\records\SectionConfigRecord;
 
 /**
  * Section Config model

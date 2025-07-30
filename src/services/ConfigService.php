@@ -1,11 +1,11 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\helpers\Json;
-use mijewe\critter\models\SectionConfig;
-use mijewe\critter\records\SectionConfigRecord;
+use tallowandsons\critter\models\SectionConfig;
+use tallowandsons\critter\records\SectionConfigRecord;
 use yii\base\Component;
 
 /**

@@ -1,10 +1,10 @@
 <?php
 
-namespace mijewe\critter\controllers;
+namespace tallowandsons\critter\controllers;
 
 use Craft;
 use craft\web\Controller;
-use mijewe\critter\Critter;
+use tallowandsons\critter\Critter;
 use yii\web\Response;
 
 /**

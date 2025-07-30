@@ -1,9 +1,9 @@
 <?php
 
-namespace mijewe\critter\helpers;
+namespace tallowandsons\critter\helpers;
 
-use mijewe\critter\Critter;
-use mijewe\critter\models\Settings;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\Settings;
 
 class SettingsHelper
 {

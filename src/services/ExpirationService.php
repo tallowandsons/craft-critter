@@ -1,13 +1,13 @@
 <?php
 
-namespace mijewe\critter\services;
+namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\elements\Entry;
-use mijewe\critter\Critter;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\Settings;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\Settings;
+use tallowandsons\critter\models\UrlModel;
 use yii\base\Component;
 
 /**

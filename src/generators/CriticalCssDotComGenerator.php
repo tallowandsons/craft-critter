@@ -1,19 +1,19 @@
 <?php
 
-namespace mijewe\critter\generators;
+namespace tallowandsons\critter\generators;
 
 use Craft;
 use craft\helpers\App;
 use craft\helpers\Json;
-use mijewe\critter\Critter;
-use mijewe\critter\drivers\apis\CriticalCssDotComApi;
-use mijewe\critter\exceptions\MutexLockException;
-use mijewe\critter\exceptions\RetryableCssGenerationException;
-use mijewe\critter\models\api\CriticalCssDotComResultsResponse;
-use mijewe\critter\models\CssModel;
-use mijewe\critter\models\CssRequest;
-use mijewe\critter\models\GeneratorResponse;
-use mijewe\critter\models\UrlModel;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\drivers\apis\CriticalCssDotComApi;
+use tallowandsons\critter\exceptions\MutexLockException;
+use tallowandsons\critter\exceptions\RetryableCssGenerationException;
+use tallowandsons\critter\models\api\CriticalCssDotComResultsResponse;
+use tallowandsons\critter\models\CssModel;
+use tallowandsons\critter\models\CssRequest;
+use tallowandsons\critter\models\GeneratorResponse;
+use tallowandsons\critter\models\UrlModel;
 
 class CriticalCssDotComGenerator extends BaseGenerator
 {

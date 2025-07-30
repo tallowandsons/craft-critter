@@ -8,7 +8,7 @@
 
 You can install Critter by searching for “Critter” in the Craft Plugin Store, or install manually using composer.
 ```bash
-composer require mijewe/craft-critter
+composer require tallow-and-sons/craft-critter
 ```
 
 ### 2. Configure Your Generator
@@ -52,7 +52,7 @@ This plugin requires Craft CMS 5.5.0 or later, and PHP 8.2 or later.
 To install the plugin, search for “Critter” in the Craft Plugin Store, or install manually using composer.
 
 ```bash
-composer require mijewe/craft-critter
+composer require tallow-and-sons/craft-critter
 ```
 
 ## ⚙️ Configuration
@@ -165,4 +165,4 @@ This plugin requires a commercial license purchasable through the Craft Plugin S
 
 ## Credits
 
-Created by [Michael Westwood](https://github.com/mijewe)
+Built by [Tallow &amp; Sons](https://github.com/tallow-and-sons) for the discerning developer in quiet pursuit of haste.

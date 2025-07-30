@@ -1,12 +1,12 @@
 <?php
 
-namespace mijewe\critter\jobs;
+namespace tallowandsons\critter\jobs;
 
 use Craft;
 use craft\queue\BaseJob;
 use DateTime;
-use mijewe\critter\Critter;
-use mijewe\critter\records\RequestRecord;
+use tallowandsons\critter\Critter;
+use tallowandsons\critter\records\RequestRecord;
 
 /**
  * Expire All Job queue job

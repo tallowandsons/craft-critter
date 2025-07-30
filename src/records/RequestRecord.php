@@ -1,6 +1,6 @@
 <?php
 
-namespace mijewe\critter\records;
+namespace tallowandsons\critter\records;
 
 use Craft;
 use craft\db\ActiveRecord;
