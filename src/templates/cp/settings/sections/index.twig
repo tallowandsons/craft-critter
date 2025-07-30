@@ -35,9 +35,6 @@
 
     {% for section in sections %}
         <div class="field">
-            {# <div class="heading">
-                <h2>{{ section.name }}</h2>
-            </div> #}
 
             {% set settingsMode = settings.sectionSettings[section.handle].mode ?? null %}
             {% set configMode = config.sectionSettings[section.handle].mode ?? null %}

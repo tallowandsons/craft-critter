@@ -31,8 +31,7 @@
 
     <h2>{{ "Sections"|t('app') }}</h2>
 
-    <p>Sections that are in <em>section</em> mode will generate one critical CSS file for all entries within that section. Here you can choose the entry that will be used to generate the critical CSS for each section.</p>
-    <p>Singles and sections in <em>Entry</em> mode will generate a critical CSS file for each entry individually.</p>
+    <p>For sections in <em>section</em> mode, choose an entry below that best represents the typical layout and content for that section.</p>
 
     {% if config.sectionSettings is defined %}
         <p class="warning has-icon">
@@ -46,39 +45,41 @@
     {% for section in sections %}
 
         {% set sectionConfig = sectionsConfig[section.id][cpSite.id] ?? null %}
-
         {% set isSingle = section.type == 'single' %}
+
         {% if not isSingle %}
-
             {% set mode = settings.sectionSettings[section.handle].mode ?? settings.defaultMode %}
+            {% if mode == 'section' %}
+                <div class="field">
 
-            <div class="field">
-                <div class="heading">
-                    <h2>{{ section.name }}</h2>
+                    {# <div class="heading">
+                        <h2>{{ section.name }}</h2>
+                    </div> #}
+
+                    {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
+                    {% set canEdit = currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+                    {% set isDisabled = not canEdit or mode != 'section' %}
+
+                    {{ forms.elementSelectField({
+                        label: "'" ~ section.name ~ "' Representative Entry"|t(pluginHandle),
+                        instructions: 'Select an entry that represents the typical content and layout for this section.'|t(pluginHandle),
+                        id: 'section-entry-' ~ section.handle,
+                        name: 'config[sections][' ~ section.id ~ '][' ~ cpSite.id ~ '][entryId]',
+                        elementType: 'craft\\elements\\Entry',
+                        criteria: {
+                            sectionId: section.id,
+                            siteId: cpSite.id,
+                            status: null
+                        },
+                        limit: 1,
+                        showSiteMenu: false,
+                        elements: elements,
+                        disabled: isDisabled,
+                        warning: mode != 'section' ? 'This section is in "' ~ mode ~ '" mode. Representative entries are only used in "section" mode.' : null
+                    }) }}
+
                 </div>
-
-                {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
-                {% set canEdit = currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
-
-                {{ forms.elementSelect({
-                    id: 'section-entry-' ~ section.handle,
-                    name: 'config[sections][' ~ section.id ~ '][' ~ cpSite.id ~ '][entryId]',
-                    elementType: 'craft\\elements\\Entry',
-                    limit: 1,
-                    showSiteMenu: false,
-                    elements: elements,
-                    disabled: not canEdit
-                }) }}
-
-                {% if mode != 'section' %}
-                    <p class="warning has-icon">
-                        <span class="icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Tip: </span>
-                        <span>This won't have an effect because the <em>{{ section.name }}</em> section is in <em>{{ mode }}</em> mode.</span>
-                    </p>
-                {% endif %}
-
-            </div>
+            {% endif %}
         {% endif %}
     {% endfor %}
 
