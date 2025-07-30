@@ -66,8 +66,9 @@ class UrlFactory
             $entry = $tag->getEntry($record->siteId);
             if ($entry) {
                 // Use the entry's current URI instead of stored URI
-                $uri = $entry->getUri() ?: '';
-                // Remove leading slash if present to match stored format
+                $uri = $entry->getUrl() ?: '';
+                // Remove leading slash and site base URL to get just the URI part
+                $uri = UrlHelper::rootRelativeUrl($uri);
                 $uri = ltrim($uri, '/');
             }
         }

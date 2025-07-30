@@ -128,6 +128,80 @@ class UtilityController extends Controller
     }
 
     /**
+     * Regenerate Critical CSS records for a specific entry.
+     * /action/critter/utility/regenerate-entry
+     */
+    public function actionRegenerateEntry(): Response
+    {
+        $this->requirePostRequest();
+
+        $entryIds = $this->request->getBodyParam('entryIds', []);
+
+        if (empty($entryIds)) {
+            Craft::$app->getSession()->setError(Critter::translate('No entry selected.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        // Take the first entry ID if multiple are selected
+        $entryId = (int) $entryIds[0];
+
+        $response = Critter::getInstance()->utilityService->regenerateEntry($entryId);
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Regenerate Critical CSS records for a specific section.
+     * /action/critter/utility/regenerate-section
+     */
+    public function actionRegenerateSection(): Response
+    {
+        $this->requirePostRequest();
+
+        $sectionHandle = $this->request->getBodyParam('sectionHandle');
+
+        if (!$sectionHandle) {
+            Craft::$app->getSession()->setError(Critter::translate('No section selected.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        $response = Critter::getInstance()->utilityService->regenerateSection($sectionHandle);
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Regenerate all Critical CSS records.
+     * /action/critter/utility/regenerate-all
+     */
+    public function actionRegenerateAll(): Response
+    {
+        $this->requirePostRequest();
+
+        $response = Critter::getInstance()->utilityService->regenerateAll();
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
      * Clear the Critter cache.
      * This will clear all cached CSS and related data.
      * /action/critter/utility/clear-cache

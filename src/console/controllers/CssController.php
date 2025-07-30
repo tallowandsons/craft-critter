@@ -39,6 +39,11 @@ class CssController extends Controller
                 $options[] = 'entry';
                 $options[] = 'section';
                 break;
+            case 'regenerate':
+                $options[] = 'all';
+                $options[] = 'entry';
+                $options[] = 'section';
+                break;
             case 'index':
                 // $options[] = '...';
                 break;
@@ -119,6 +124,89 @@ class CssController extends Controller
         $this->printInfo("Expiring CSS records for section handle: {$sectionHandle}...");
 
         $response = Critter::getInstance()->utilityService->expireSection($sectionHandle);
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Regenerate Critical CSS records (expires and then regenerates)
+     * php craft critter/css/regenerate --all
+     * php craft critter/css/regenerate --entry=123
+     * php craft critter/css/regenerate --section=news
+     */
+    public function actionRegenerate()
+    {
+        $optionsCount = ($this->all ? 1 : 0) + ($this->entry ? 1 : 0) + ($this->section ? 1 : 0);
+
+        if ($optionsCount === 0) {
+            $this->printError("Error: You must specify either --all, --entry, or --section option.");
+            $this->printInfo("Usage: php craft critter/css/regenerate --all");
+            $this->printInfo("   or: php craft critter/css/regenerate --entry=123");
+            $this->printInfo("   or: php craft critter/css/regenerate --section=news");
+            return ExitCode::USAGE;
+        }
+
+        if ($optionsCount > 1) {
+            $this->printError("Error: You can only specify one of --all, --entry, or --section options.");
+            return ExitCode::USAGE;
+        }
+
+        if ($this->all) {
+            return $this->regenerateAll();
+        }
+
+        if ($this->entry) {
+            return $this->regenerateEntry($this->entry);
+        }
+
+        if ($this->section) {
+            return $this->regenerateSection($this->section);
+        }
+
+        return ExitCode::USAGE;
+    }
+
+    private function regenerateAll(): int
+    {
+        $this->printInfo("Regenerating all CSS records...");
+
+        $response = Critter::getInstance()->utilityService->regenerateAll();
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    private function regenerateEntry(int $entryId): int
+    {
+        $this->printInfo("Regenerating CSS records for entry ID: {$entryId}...");
+
+        $response = Critter::getInstance()->utilityService->regenerateEntry($entryId);
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    private function regenerateSection(string $sectionHandle): int
+    {
+        $this->printInfo("Regenerating CSS records for section handle: {$sectionHandle}...");
+
+        $response = Critter::getInstance()->utilityService->regenerateSection($sectionHandle);
 
         if ($response->isSuccess()) {
             $this->printSuccess($response->getMessage());

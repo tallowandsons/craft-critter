@@ -38,7 +38,8 @@
         elementType: 'craft\\elements\\Entry',
         selectionLabel: "Choose an entry"|t('critter'),
         limit: 1,
-        required: true
+        required: true,
+        sources: '*'
     }) }}
 
     <input type="submit" class="btn submit" value="{{ "Expire entry CSS"|t('critter') }}">
@@ -81,6 +82,70 @@
     {{ csrfInput() }}
 
     <input type="submit" class="btn submit" value="{{ "Regenerate expired"|t('critter') }}">
+</form>
+
+<hr>
+
+<h2>Regenerate all critical CSS</h2>
+
+<p>Regenerate all critical CSS records, regardless of their expiration status. This will queue regeneration of every CSS record.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/regenerate-all') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    <input type="submit" class="btn submit" value="{{ "Regenerate all"|t('critter') }}">
+</form>
+
+<hr>
+
+<h2>Regenerate CSS for specific entry</h2>
+
+<p>Regenerate critical CSS records for a specific entry, regardless of expiration status.<br>Select an entry to regenerate all associated CSS records.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/regenerate-entry') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {{ forms.elementSelectField({
+        label: "Entry"|t('critter'),
+        id: 'regenerateEntryIds',
+        name: 'entryIds',
+        elementType: 'craft\\elements\\Entry',
+        selectionLabel: "Choose an entry"|t('critter'),
+        limit: 1,
+        required: true,
+        sources: '*'
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Regenerate entry CSS"|t('critter') }}">
+</form>
+
+<hr>
+
+<h2>Regenerate CSS for specific section</h2>
+
+<p>Regenerate critical CSS records for a specific section, regardless of expiration status.<br>Select a section to regenerate all associated CSS records.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/regenerate-section') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {{ forms.selectField({
+        label: "Section"|t('critter'),
+        id: 'regenerateSectionHandle',
+        name: 'sectionHandle',
+        options: craft.app.entries.allSections|filter(section => section.type != 'single')|map(section => {
+            value: section.handle,
+            label: section.name
+        }),
+        required: true
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Regenerate section CSS"|t('critter') }}">
 </form>
 
 <hr>
