@@ -88,6 +88,10 @@ class Settings extends Model
     // developer mode - enables advanced/experimental features (no UI, config file only)
     public bool $developerMode = false;
 
+    // fallback CSS file path - file to read CSS from when no critical CSS is cached
+    // should be an absolute path to a CSS file on the server
+    public ?string $fallbackCssFilePath = null;
+
     /**
      * @inheritdoc
      */

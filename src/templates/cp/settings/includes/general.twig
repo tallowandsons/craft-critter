@@ -101,6 +101,20 @@
     code: true
 }) }}
 
+{{ forms.autosuggestField({
+    label: "Fallback CSS File Path"|t(pluginHandle),
+    instructions: "Path to a CSS file to use as fallback when no critical CSS is cached. Should be an absolute server path to a CSS file. Environment variables are supported."|t(pluginHandle),
+    warning: config.fallbackCssFilePath is defined ? configWarning('fallbackCssFilePath') : null,
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'settings[fallbackCssFilePath]',
+    value: settings.fallbackCssFilePath ?? null,
+    required: false,
+    disabled: readOnly,
+    code: true,
+    placeholder: "/path/to/fallback.css or $WEBROOT_PATH/css/critical-fallback.css"|t(pluginHandle)
+}) }}
+
 {{ forms.selectField({
     label: "Default Mode"|t(pluginHandle),
     instructions: "The default mode to use when generating critical CSS.\n<strong>Entry mode</strong>: Critical CSS is generated for each unique URL.\n<strong>Section mode</strong>: Critical CSS is generated once for the entire section."|t(pluginHandle),

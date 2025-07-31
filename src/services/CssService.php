@@ -3,6 +3,7 @@
 namespace tallowandsons\critter\services;
 
 use Craft;
+use craft\helpers\App;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
 use tallowandsons\critter\models\CssModel;
@@ -76,7 +77,7 @@ class CssService extends Component
             Critter::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
         }
 
-        return (new CssModel($this->fallbackCss))->getCss();
+        return (new CssModel($this->getFallbackCss()))->getCss();
     }
 
     /**
@@ -142,5 +143,36 @@ class CssService extends Component
 
         $now = new \DateTime();
         return $record->expiryDate < $now;
+    }
+
+    /**
+     * Get fallback CSS content - either from file or default fallback
+     */
+    private function getFallbackCss(): string
+    {
+        $settings = Critter::getInstance()->getSettings();
+
+        // Check if fallback CSS file path is configured
+        if ($settings->fallbackCssFilePath) {
+            $filePath = App::parseEnv($settings->fallbackCssFilePath);
+
+            // Validate the file exists and is readable
+            if ($filePath && file_exists($filePath) && is_readable($filePath)) {
+                try {
+                    $css = file_get_contents($filePath);
+                    if ($css !== false) {
+                        Critter::getInstance()->log->debug("Loaded fallback CSS from file: {$filePath}", 'css');
+                        return $css;
+                    }
+                } catch (\Throwable $e) {
+                    Critter::getInstance()->log->error("Failed to read fallback CSS file '{$filePath}': " . $e->getMessage(), 'css');
+                }
+            } else {
+                Critter::getInstance()->log->warning("Fallback CSS file not found or not readable: {$filePath}", 'css');
+            }
+        }
+
+        // Fall back to the default empty fallback CSS
+        return $this->fallbackCss;
     }
 }
