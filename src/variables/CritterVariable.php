@@ -4,6 +4,7 @@ namespace tallowandsons\critter\variables;
 
 use Craft;
 use tallowandsons\critter\Critter;
+use tallowandsons\critter\models\Settings;
 
 class CritterVariable
 {
@@ -46,5 +47,10 @@ class CritterVariable
     public function isDeveloperMode(): bool
     {
         return Critter::getInstance()->isDeveloperMode();
+    }
+
+    public function settings(): Settings
+    {
+        return Critter::getInstance()->getSettings();
     }
 }

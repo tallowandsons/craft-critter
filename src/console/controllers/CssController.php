@@ -44,6 +44,9 @@ class CssController extends Controller
                 $options[] = 'entry';
                 $options[] = 'section';
                 break;
+            case 'generate-fallback':
+                $options[] = 'entry';
+                break;
             case 'index':
                 // $options[] = '...';
                 break;
@@ -270,6 +273,50 @@ class CssController extends Controller
         } else {
             $this->printError($response->getMessage());
             return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Generate fallback CSS from an entry
+     * php craft critter/css/generate-fallback --entry=123
+     */
+    public function actionGenerateFallback()
+    {
+        if (!$this->entry) {
+            $this->printError("Error: You must specify an entry ID using --entry option.");
+            $this->printInfo("Usage: php craft critter/css/generate-fallback --entry=123");
+            return ExitCode::USAGE;
+        }
+
+        $this->printInfo("Generating fallback CSS from entry ID: {$this->entry}...");
+
+        $response = Critter::getInstance()->utilityService->generateFallbackCss($this->entry);
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
+        }
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Clear generated fallback CSS
+     * php craft critter/css/clear-fallback
+     */
+    public function actionClearFallback()
+    {
+        $this->printInfo("Clearing generated fallback CSS...");
+
+        $response = Critter::getInstance()->utilityService->clearGeneratedFallbackCss();
+
+        if ($response->isSuccess()) {
+            $this->printSuccess($response->getMessage());
+        } else {
+            $this->printError($response->getMessage());
         }
 
         return ExitCode::OK;

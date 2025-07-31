@@ -220,4 +220,51 @@ class UtilityController extends Controller
 
         return $this->redirectToPostedUrl();
     }
+
+    /**
+     * Generate fallback CSS from an entry.
+     * /action/critter/utility/generate-fallback-css
+     */
+    public function actionGenerateFallbackCss(): Response
+    {
+        $this->requirePostRequest();
+
+        $entryIds = $this->request->getBodyParam('entryIds', []);
+
+        if (empty($entryIds)) {
+            Craft::$app->getSession()->setError(Critter::translate('No entry selected.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        $entryId = is_array($entryIds) ? (int) $entryIds[0] : (int) $entryIds;
+
+        $response = Critter::getInstance()->utilityService->generateFallbackCss($entryId);
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Clear generated fallback CSS.
+     * /action/critter/utility/clear-generated-fallback-css
+     */
+    public function actionClearGeneratedFallbackCss(): Response
+    {
+        $this->requirePostRequest();
+
+        $response = Critter::getInstance()->utilityService->clearGeneratedFallbackCss();
+
+        if ($response->isSuccess()) {
+            Craft::$app->getSession()->setNotice($response->getMessage());
+        } else {
+            Craft::$app->getSession()->setError($response->getMessage());
+        }
+
+        return $this->redirectToPostedUrl();
+    }
 }

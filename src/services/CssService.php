@@ -146,14 +146,37 @@ class CssService extends Component
     }
 
     /**
-     * Get fallback CSS content - either from file or default fallback
+     * Get fallback CSS content - either from generated file, configured file, or default fallback
+     * Stamps the CSS with a comment indicating it's fallback CSS
      */
     private function getFallbackCss(): string
     {
         $settings = Critter::getInstance()->getSettings();
+        $css = '';
+        $source = 'default';
 
-        // Check if fallback CSS file path is configured
-        if ($settings->fallbackCssFilePath) {
+        // Check if using generated fallback CSS first
+        if ($settings->useGeneratedFallbackCss) {
+            $storagePath = Craft::$app->getPath()->getStoragePath();
+            $fallbackFile = $storagePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
+
+            if (file_exists($fallbackFile) && is_readable($fallbackFile)) {
+                try {
+                    $css = file_get_contents($fallbackFile);
+                    if ($css !== false) {
+                        $source = 'generated';
+                        Critter::getInstance()->log->debug("Loaded generated fallback CSS from storage: {$fallbackFile}", 'css');
+                    }
+                } catch (\Throwable $e) {
+                    Critter::getInstance()->log->error("Failed to read generated fallback CSS file '{$fallbackFile}': " . $e->getMessage(), 'css');
+                }
+            } else {
+                Critter::getInstance()->log->warning("Generated fallback CSS file not found: {$fallbackFile}", 'css');
+            }
+        }
+
+        // Check if fallback CSS file path is configured (if no generated CSS loaded)
+        if (!$css && $settings->fallbackCssFilePath) {
             $filePath = App::parseEnv($settings->fallbackCssFilePath);
 
             // Validate the file exists and is readable
@@ -161,8 +184,8 @@ class CssService extends Component
                 try {
                     $css = file_get_contents($filePath);
                     if ($css !== false) {
+                        $source = 'file';
                         Critter::getInstance()->log->debug("Loaded fallback CSS from file: {$filePath}", 'css');
-                        return $css;
                     }
                 } catch (\Throwable $e) {
                     Critter::getInstance()->log->error("Failed to read fallback CSS file '{$filePath}': " . $e->getMessage(), 'css');
@@ -173,6 +196,22 @@ class CssService extends Component
         }
 
         // Fall back to the default empty fallback CSS
-        return $this->fallbackCss;
+        if (!$css) {
+            $css = $this->fallbackCss;
+        }
+
+        // Stamp the CSS with a fallback indicator comment
+        return $this->stampFallbackCss($css, $source);
+    }
+
+    /**
+     * Add a comment stamp to CSS indicating it's fallback CSS
+     */
+    private function stampFallbackCss(string $css, string $source): string
+    {
+        $timestamp = date('Y-m-d H:i:s');
+        $stamp = "/* CRITTER FALLBACK CSS - Source: {$source} - Generated: {$timestamp} */\n";
+
+        return $stamp . $css;
     }
 }

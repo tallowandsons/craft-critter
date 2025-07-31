@@ -150,6 +150,49 @@
 
 <hr>
 
+<h2>Generate fallback CSS</h2>
+
+<p>Generate critical CSS from a specific entry and save it as fallback CSS. This CSS will be used when no critical CSS is cached for a request.<br>Select an entry that represents your site's typical layout and styling.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/generate-fallback-css') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {{ forms.elementSelectField({
+        label: "Entry"|t('critter'),
+        id: 'fallbackEntryIds',
+        name: 'entryIds',
+        elementType: 'craft\\elements\\Entry',
+        selectionLabel: "Choose an entry"|t('critter'),
+        criteria: {
+            status: null
+        },
+        limit: 1,
+        required: true,
+        sources: '*'
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Generate fallback CSS"|t('critter') }}">
+</form>
+
+{% set settings = craft.critter.settings %}
+{% if settings.useGeneratedFallbackCss %}
+    <h3>Clear generated fallback CSS</h3>
+
+    <p>Remove the generated fallback CSS and revert to using the configured file path (if any).</p>
+
+    <form class="utility" method="post" accept-charset="UTF-8">
+        {{ actionInput('critter/utility/clear-generated-fallback-css') }}
+        {{ redirectInput('utilities/critter') }}
+        {{ csrfInput() }}
+
+        <input type="submit" class="btn submit" value="{{ "Clear generated fallback CSS"|t('critter') }}">
+    </form>
+{% endif %}
+
+<hr>
+
 <h2>Clear stuck CSS records</h2>
 
 <p>Clear CSS generation records that are stuck due to API timeouts or failures.<br>This allows failed jobs to be retried from scratch.</p>
