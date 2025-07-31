@@ -179,8 +179,8 @@ class CssService extends Component
         if (!$css && $settings->fallbackCssFilePath) {
             $filePath = App::parseEnv($settings->fallbackCssFilePath);
 
-            // Validate the file exists and is readable
-            if ($filePath && file_exists($filePath) && is_readable($filePath)) {
+            // Security validations
+            if ($this->isValidFallbackCssPath($filePath)) {
                 try {
                     $css = file_get_contents($filePath);
                     if ($css !== false) {
@@ -191,7 +191,7 @@ class CssService extends Component
                     Critter::getInstance()->log->error("Failed to read fallback CSS file '{$filePath}': " . $e->getMessage(), 'css');
                 }
             } else {
-                Critter::getInstance()->log->warning("Fallback CSS file not found or not readable: {$filePath}", 'css');
+                Critter::getInstance()->log->warning("Fallback CSS file path failed security validation: {$filePath}", 'css');
             }
         }
 
@@ -213,5 +213,70 @@ class CssService extends Component
         $stamp = "/* CRITTER FALLBACK CSS - Source: {$source} - Generated: {$timestamp} */\n";
 
         return $stamp . $css;
+    }
+
+    /**
+     * Validate that a fallback CSS file path is secure and appropriate
+     */
+    private function isValidFallbackCssPath(?string $filePath): bool
+    {
+        if (!$filePath) {
+            return false;
+        }
+
+        // Check if file exists and is readable
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+            return false;
+        }
+
+        // Resolve the real path to prevent path traversal attacks
+        $realPath = realpath($filePath);
+        if ($realPath === false) {
+            return false;
+        }
+
+        // Get allowed base paths
+        $allowedPaths = $this->getAllowedFallbackCssPaths();
+
+        // Check if the real path starts with any of the allowed paths
+        $isAllowed = false;
+        foreach ($allowedPaths as $allowedPath) {
+            $allowedRealPath = realpath($allowedPath);
+            if ($allowedRealPath && strpos($realPath, $allowedRealPath) === 0) {
+                $isAllowed = true;
+                break;
+            }
+        }
+
+        if (!$isAllowed) {
+            Critter::getInstance()->log->warning("Fallback CSS file outside allowed paths: {$realPath}", 'css');
+            return false;
+        }
+
+        // Check file extension
+        $extension = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+        if ($extension !== 'css') {
+            Critter::getInstance()->log->warning("Fallback CSS file must have .css extension: {$realPath}", 'css');
+            return false;
+        }
+
+        // Check file size (prevent reading huge files)
+        $maxSize = 1024 * 1024; // 1MB limit
+        if (filesize($realPath) > $maxSize) {
+            Critter::getInstance()->log->warning("Fallback CSS file too large (max 1MB): {$realPath}", 'css');
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get allowed base paths for fallback CSS files
+     */
+    private function getAllowedFallbackCssPaths(): array
+    {
+        return [
+            Craft::$app->getPath()->getStoragePath(),
+        ];
     }
 }

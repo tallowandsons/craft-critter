@@ -101,12 +101,6 @@
     code: true
 }) }}
 
-<hr>
-
-<h3>{{ "Fallback CSS"|t(pluginHandle) }}</h3>
-
-<p>{{ "Configure CSS to display when no critical CSS is cached for a request. You can either generate fallback CSS from an entry using the Utilities, or specify a custom CSS file path."|t(pluginHandle) }}</p>
-
 {% if settings.useGeneratedFallbackCss and settings.fallbackCssEntryId %}
     {% set fallbackEntry = craft.entries.id(settings.fallbackCssEntryId).one() %}
     <div class="field">
@@ -127,16 +121,16 @@
 
 {{ forms.autosuggestField({
     label: "Fallback CSS File Path"|t(pluginHandle),
-    instructions: "Path to a CSS file to use as fallback when no critical CSS is cached. Only used if generated fallback CSS is not enabled. Should be an absolute server path to a CSS file. Environment variables are supported."|t(pluginHandle),
+    instructions: "Path to a CSS file to use as fallback when no critical CSS is cached. This will be used as a secondary fallback if generated fallback CSS is enabled but not available. For security, only .css files within the storage directory are allowed. Files are limited to 1MB in size. Environment variables are supported."|t(pluginHandle),
     warning: config.fallbackCssFilePath is defined ? configWarning('fallbackCssFilePath') : null,
     suggestEnvVars: true,
     suggestAliases: true,
     name: 'settings[fallbackCssFilePath]',
     value: settings.fallbackCssFilePath ?? null,
     required: false,
-    disabled: readOnly or settings.useGeneratedFallbackCss,
+    disabled: readOnly,
     code: true,
-    placeholder: "/path/to/fallback.css or $WEBROOT_PATH/css/critical-fallback.css"|t(pluginHandle)
+    placeholder: "@storage/fallback.css"|t(pluginHandle)
 }) }}
 
 {{ forms.selectField({
