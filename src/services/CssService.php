@@ -157,15 +157,15 @@ class CssService extends Component
 
         // Check if using generated fallback CSS first
         if ($settings->useGeneratedFallbackCss) {
-            $storagePath = Craft::$app->getPath()->getStoragePath();
-            $fallbackFile = $storagePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
+            $runtimePath = Craft::$app->getPath()->getRuntimePath();
+            $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
 
             if (file_exists($fallbackFile) && is_readable($fallbackFile)) {
                 try {
                     $css = file_get_contents($fallbackFile);
                     if ($css !== false) {
                         $source = 'generated';
-                        Critter::getInstance()->log->debug("Loaded generated fallback CSS from storage: {$fallbackFile}", 'css');
+                        Critter::getInstance()->log->debug("Loaded generated fallback CSS from runtime: {$fallbackFile}", 'css');
                     }
                 } catch (\Throwable $e) {
                     Critter::getInstance()->log->error("Failed to read generated fallback CSS file '{$fallbackFile}': " . $e->getMessage(), 'css');

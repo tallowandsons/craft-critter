@@ -384,7 +384,7 @@ class UtilityService extends Component
             if (!$fallbackPath) {
                 return (new UtilityActionResponse())
                     ->setSuccess(false)
-                    ->setMessage(Critter::translate('Failed to save fallback CSS to storage.'));
+                    ->setMessage(Critter::translate('Failed to save fallback CSS to runtime.'));
             }
 
             // Update settings to use generated fallback CSS
@@ -398,7 +398,7 @@ class UtilityService extends Component
 
             return (new UtilityActionResponse())
                 ->setSuccess(true)
-                ->setMessage(Critter::translate('Successfully generated fallback CSS from entry "{title}" and saved to storage.', [
+                ->setMessage(Critter::translate('Successfully generated fallback CSS from entry "{title}" and saved to runtime.', [
                     'title' => $entry->title
                 ]));
         } catch (\Exception $e) {
@@ -416,8 +416,8 @@ class UtilityService extends Component
     private function saveFallbackCssToStorage(string $css): ?string
     {
         try {
-            $storagePath = Craft::$app->getPath()->getStoragePath();
-            $fallbackDir = $storagePath . DIRECTORY_SEPARATOR . 'critter';
+            $runtimePath = Craft::$app->getPath()->getRuntimePath();
+            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . 'critter';
 
             // Ensure directory exists
             if (!is_dir($fallbackDir)) {
@@ -430,7 +430,7 @@ class UtilityService extends Component
                 return $fallbackFile;
             }
         } catch (\Exception $e) {
-            Critter::error("Failed to save fallback CSS to storage: " . $e->getMessage(), __METHOD__);
+            Critter::error("Failed to save fallback CSS to runtime: " . $e->getMessage(), __METHOD__);
         }
 
         return null;
@@ -443,8 +443,8 @@ class UtilityService extends Component
     {
         try {
             // Remove the generated fallback CSS file
-            $storagePath = Craft::$app->getPath()->getStoragePath();
-            $fallbackFile = $storagePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
+            $runtimePath = Craft::$app->getPath()->getRuntimePath();
+            $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
 
             if (file_exists($fallbackFile)) {
                 unlink($fallbackFile);
