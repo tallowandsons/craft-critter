@@ -30,6 +30,11 @@ class CssController extends Controller
      */
     public ?string $section = null;
 
+    /**
+     * @var string|null Site IDs or handles to generate fallback CSS for (comma-separated)
+     */
+    public ?string $sites = null;
+
     public function options($actionID): array
     {
         $options = parent::options($actionID);
@@ -45,7 +50,7 @@ class CssController extends Controller
                 $options[] = 'section';
                 break;
             case 'generate-fallback':
-                $options[] = 'entry';
+                $options[] = 'sites';
                 break;
             case 'index':
                 // $options[] = '...';
@@ -279,21 +284,70 @@ class CssController extends Controller
     }
 
     /**
-     * Generate fallback CSS from an entry
-     * php craft critter/css/generate-fallback --entry=123
+     * Generate fallback CSS from the configured entry
+     * php craft critter/css/generate-fallback
+     * php craft critter/css/generate-fallback --sites=1,2,3
+     * php craft critter/css/generate-fallback --sites=default,secondary
      */
     public function actionGenerateFallback()
     {
-        if (!$this->entry) {
-            $this->printError("Error: You must specify an entry ID using --entry option.");
-            $this->printInfo("Usage: php craft critter/css/generate-fallback --entry=123");
-            return ExitCode::USAGE;
+        // Parse site IDs first
+        $siteIds = [];
+        if (!empty($this->sites)) {
+            $siteInputs = explode(',', $this->sites);
+            $siteInputs = array_map('trim', $siteInputs);
+            foreach ($siteInputs as $siteInput) {
+                if (is_numeric($siteInput)) {
+                    // Site ID provided
+                    $siteIds[] = (int) $siteInput;
+                } else {
+                    // Site handle provided
+                    $site = Craft::$app->getSites()->getSiteByHandle($siteInput);
+                    if ($site) {
+                        $siteIds[] = $site->id;
+                    } else {
+                        $this->printError("Error: Site with handle '{$siteInput}' not found.");
+                        return ExitCode::USAGE;
+                    }
+                }
+            }
+        } else {
+            // If no sites specified, use all sites
+            $siteIds = array_map(function ($site) {
+                return $site->id;
+            }, Craft::$app->getSites()->getAllSites());
         }
 
-        $this->printInfo("Generating fallback CSS from entry ID: {$this->entry}...");
+        // Check that at least one site has a configured fallback entry
+        $hasConfiguredSites = false;
+        $configuredSites = [];
+        foreach ($siteIds as $siteId) {
+            $entryId = Critter::getInstance()->configService->getFallbackCssEntryId($siteId);
+            if ($entryId) {
+                $hasConfiguredSites = true;
+                $site = Craft::$app->getSites()->getSiteById($siteId);
+                $configuredSites[] = $site ? $site->name : $siteId;
+            }
+        }
 
-        $response = Critter::getInstance()->utilityService->generateFallbackCss($this->entry);
+        if (!$hasConfiguredSites) {
+            $this->printError("Error: No fallback entry configured for any of the selected sites.");
+            $this->printInfo("Visit: /admin/critter/config to set up fallback entries for your sites.");
+            return ExitCode::CONFIG;
+        }
 
+        if (count($configuredSites) < count($siteIds)) {
+            $this->printInfo("Note: Only generating for sites with configured fallback entries: " . implode(', ', $configuredSites));
+        }
+
+        if (count($siteIds) === 1) {
+            $this->printInfo("Generating fallback CSS for 1 site...");
+        } else {
+            $this->printInfo("Generating fallback CSS for " . count($siteIds) . " site(s)...");
+        }
+
+        // Note: Each job will look up its own site-specific fallback entry ID
+        $response = Critter::getInstance()->utilityService->generateFallbackCss($siteIds);
         if ($response->isSuccess()) {
             $this->printSuccess($response->getMessage());
         } else {

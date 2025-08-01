@@ -64,9 +64,9 @@ class Critter extends Plugin
     public const PLUGIN_HANDLE = 'critter';
 
     // user permissions
-    public const PERMISSION_MANAGE_SECTIONS = 'critter:manageSections';
-    public const PERMISSION_MANAGE_SECTIONS_VIEW = 'critter:manageSections:view';
-    public const PERMISSION_MANAGE_SECTIONS_EDIT = 'critter:manageSections:edit';
+    public const PERMISSION_MANAGE_CONFIG = 'critter:manageConfig';
+    public const PERMISSION_MANAGE_CONFIG_VIEW = 'critter:manageConfig:view';
+    public const PERMISSION_MANAGE_CONFIG_EDIT = 'critter:manageConfig:edit';
 
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
@@ -228,11 +228,11 @@ class Critter extends Plugin
                 $event->permissions[] = [
                     'heading' => self::getPluginName(),
                     'permissions' => [
-                        self::PERMISSION_MANAGE_SECTIONS_VIEW => [
-                            'label' => self::translate('View section configurations'),
+                        self::PERMISSION_MANAGE_CONFIG_VIEW => [
+                            'label' => self::translate('View plugin configuration'),
                             'nested' => [
-                                self::PERMISSION_MANAGE_SECTIONS_EDIT => [
-                                    'label' => self::translate('Edit section configurations'),
+                                self::PERMISSION_MANAGE_CONFIG_EDIT => [
+                                    'label' => self::translate('Edit plugin configuration'),
                                 ],
                             ]
                         ],
@@ -325,7 +325,7 @@ class Critter extends Plugin
         $subNavs = [];
 
         // Only show sections subnav if user has view permissions
-        if ($user->checkPermission(self::PERMISSION_MANAGE_SECTIONS_VIEW)) {
+        if ($user->checkPermission(self::PERMISSION_MANAGE_CONFIG_VIEW)) {
             $subNavs['config'] = [
                 'label' => $this->translate('Configuration'),
                 'url' => $this->cpUrl('config'),

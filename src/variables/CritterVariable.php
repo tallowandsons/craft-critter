@@ -53,4 +53,12 @@ class CritterVariable
     {
         return Critter::getInstance()->getSettings();
     }
+
+    /**
+     * Get the config service for template access
+     */
+    public function configService()
+    {
+        return Critter::getInstance()->configService;
+    }
 }

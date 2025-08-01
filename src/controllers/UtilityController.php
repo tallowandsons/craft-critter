@@ -222,23 +222,25 @@ class UtilityController extends Controller
     }
 
     /**
-     * Generate fallback CSS from an entry.
+     * Generate fallback CSS from the configured entry.
      * /action/critter/utility/generate-fallback-css
      */
     public function actionGenerateFallbackCss(): Response
     {
         $this->requirePostRequest();
 
-        $entryIds = $this->request->getBodyParam('entryIds', []);
+        // Get selected site IDs from the form
+        $siteIds = $this->request->getBodyParam('siteIds', []);
 
-        if (empty($entryIds)) {
-            Craft::$app->getSession()->setError(Critter::translate('No entry selected.'));
+        if (empty($siteIds)) {
+            Craft::$app->getSession()->setError(Critter::translate('Please select at least one site to generate fallback CSS for.'));
             return $this->redirectToPostedUrl();
         }
 
-        $entryId = is_array($entryIds) ? (int) $entryIds[0] : (int) $entryIds;
+        // Ensure site IDs are integers
+        $siteIds = array_map('intval', $siteIds);
 
-        $response = Critter::getInstance()->utilityService->generateFallbackCss($entryId);
+        $response = Critter::getInstance()->utilityService->generateFallbackCss($siteIds);
 
         if ($response->isSuccess()) {
             Craft::$app->getSession()->setNotice($response->getMessage());
@@ -257,7 +259,36 @@ class UtilityController extends Controller
     {
         $this->requirePostRequest();
 
-        $response = Critter::getInstance()->utilityService->clearGeneratedFallbackCss();
+        // Get site IDs from the request
+        $siteIds = $this->request->getBodyParam('siteIds', []);
+
+        // Ensure we have an array of integers
+        if (!is_array($siteIds)) {
+            $siteIds = [];
+        } else {
+            $siteIds = array_map('intval', array_filter($siteIds, 'is_numeric'));
+        }
+
+        // If no site IDs provided, find all sites that have generated fallback CSS files
+        if (empty($siteIds)) {
+            $runtimePath = Craft::$app->getPath()->getRuntimePath();
+            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle();
+
+            foreach (Craft::$app->getSites()->getAllSites() as $site) {
+                $fallbackFile = $fallbackDir . DIRECTORY_SEPARATOR . "fallback-{$site->handle}.css";
+                if (file_exists($fallbackFile)) {
+                    $siteIds[] = $site->id;
+                }
+            }
+        }
+
+        // Validate that we have sites to process
+        if (empty($siteIds)) {
+            Craft::$app->getSession()->setNotice(Critter::translate('No generated fallback CSS files found to clear.'));
+            return $this->redirectToPostedUrl();
+        }
+
+        $response = Critter::getInstance()->utilityService->clearGeneratedFallbackCss($siteIds);
 
         if ($response->isSuccess()) {
             Craft::$app->getSession()->setNotice($response->getMessage());

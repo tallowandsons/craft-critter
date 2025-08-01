@@ -161,20 +161,40 @@ class CssService extends Component
         // Check if using generated fallback CSS first
         if ($settings->useGeneratedFallbackCss) {
             $runtimePath = Craft::$app->getPath()->getRuntimePath();
-            $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
 
-            if (file_exists($fallbackFile) && is_readable($fallbackFile)) {
+            // Try site-specific fallback CSS first
+            $currentSite = Craft::$app->getSites()->getCurrentSite();
+            $siteSpecificFile = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle() . DIRECTORY_SEPARATOR . "fallback-{$currentSite->handle}.css";
+
+            if (file_exists($siteSpecificFile) && is_readable($siteSpecificFile)) {
                 try {
-                    $css = file_get_contents($fallbackFile);
+                    $css = file_get_contents($siteSpecificFile);
                     if ($css !== false) {
-                        $source = 'generated';
-                        Critter::getInstance()->log->debug("Loaded generated fallback CSS from runtime: {$fallbackFile}", 'css');
+                        $source = "generated ({$currentSite->name})";
+                        Critter::getInstance()->log->debug("Loaded site-specific generated fallback CSS from runtime: {$siteSpecificFile}", 'css');
                     }
                 } catch (\Throwable $e) {
-                    Critter::getInstance()->log->error("Failed to read generated fallback CSS file '{$fallbackFile}': " . $e->getMessage(), 'css');
+                    Critter::getInstance()->log->error("Failed to read site-specific generated fallback CSS file '{$siteSpecificFile}': " . $e->getMessage(), 'css');
                 }
-            } else {
-                Critter::getInstance()->log->warning("Generated fallback CSS file not found: {$fallbackFile}", 'css');
+            }
+
+            // Fall back to generic fallback file if site-specific not found
+            if (!$css) {
+                $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
+
+                if (file_exists($fallbackFile) && is_readable($fallbackFile)) {
+                    try {
+                        $css = file_get_contents($fallbackFile);
+                        if ($css !== false) {
+                            $source = 'generated (generic)';
+                            Critter::getInstance()->log->debug("Loaded generic generated fallback CSS from runtime: {$fallbackFile}", 'css');
+                        }
+                    } catch (\Throwable $e) {
+                        Critter::getInstance()->log->error("Failed to read generated fallback CSS file '{$fallbackFile}': " . $e->getMessage(), 'css');
+                    }
+                } else {
+                    Critter::getInstance()->log->warning("Generated fallback CSS file not found: {$fallbackFile}", 'css');
+                }
             }
         }
 

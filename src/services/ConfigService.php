@@ -4,8 +4,10 @@ namespace tallowandsons\critter\services;
 
 use Craft;
 use craft\helpers\Json;
+use tallowandsons\critter\Critter;
 use tallowandsons\critter\models\SectionConfig;
 use tallowandsons\critter\records\SectionConfigRecord;
+use tallowandsons\critter\records\ConfigRecord;
 use yii\base\Component;
 
 /**
@@ -17,11 +19,21 @@ class ConfigService extends Component
      * saves all plugin config to the database
      * returns true on success
      */
-    public function save(array $config): bool
+    public function save(array $config, int $siteId): bool
     {
         $sections = $config['sections'] ?? [];
 
+        $fallbackCssEntryId = null;
+        if (isset($config['fallbackCssEntryId'])) {
+            if (is_array($config['fallbackCssEntryId']) && !empty($config['fallbackCssEntryId'])) {
+                $fallbackCssEntryId = (int) $config['fallbackCssEntryId'][0];
+            } elseif (is_numeric($config['fallbackCssEntryId'])) {
+                $fallbackCssEntryId = (int) $config['fallbackCssEntryId'];
+            }
+        }
+
         $this->saveSections($sections);
+        $this->saveFallbackCssEntryId($fallbackCssEntryId, $siteId);
 
         return true;
     }
@@ -105,5 +117,43 @@ class ConfigService extends Component
         }
 
         return SectionConfig::createFromRecord($record);
+    }
+
+    /**
+     * Save the fallback CSS entry ID to config database
+     */
+    private function saveFallbackCssEntryId(?int $entryId, int $siteId): bool
+    {
+        $record = ConfigRecord::findOne([
+            'key' => 'fallbackCssEntryId',
+            'siteId' => $siteId,
+        ]);
+
+        if (!$record) {
+            $record = new ConfigRecord();
+            $record->key = 'fallbackCssEntryId';
+            $record->siteId = $siteId;
+        }
+
+        $record->value = $entryId ? (string) $entryId : null;
+
+        return $record->save();
+    }
+
+    /**
+     * Get the fallback CSS entry ID from config database
+     */
+    public function getFallbackCssEntryId(int $siteId = null): ?int
+    {
+        $record = ConfigRecord::findOne([
+            'key' => 'fallbackCssEntryId',
+            'siteId' => $siteId,
+        ]);
+
+        if (!$record || !$record->value) {
+            return null;
+        }
+
+        return (int) $record->value;
     }
 }

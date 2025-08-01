@@ -357,36 +357,68 @@ class UtilityService extends Component
     }
 
     /**
-     * Generate fallback CSS from an entry by queueing a job
+     * Generate fallback CSS by queueing jobs for each site
      */
-    public function generateFallbackCss(int $entryId): UtilityActionResponse
+    public function generateFallbackCss(array $siteIds = []): UtilityActionResponse
     {
         try {
-            // Validate the entry exists
-            $entry = Entry::find()->id($entryId)->one();
-            if (!$entry) {
-                return (new UtilityActionResponse())
-                    ->setSuccess(false)
-                    ->setMessage(Critter::translate('Entry not found with ID: {id}', ['id' => $entryId]));
+            // If no site IDs provided, use all available sites
+            if (empty($siteIds)) {
+                $siteIds = array_map(function ($site) {
+                    return $site->id;
+                }, Craft::$app->getSites()->getAllSites());
             }
 
-            // Queue the job
-            $job = new GenerateFallbackCssJob([
-                'entryId' => $entryId
-            ]);
+            // Validate all site IDs exist
+            $validSiteIds = [];
+            $allSites = Craft::$app->getSites()->getAllSites();
+            $allSiteIds = array_map(function ($site) {
+                return $site->id;
+            }, $allSites);
 
-            $jobId = Craft::$app->getQueue()->push($job);
+            foreach ($siteIds as $siteId) {
+                if (in_array($siteId, $allSiteIds)) {
+                    $validSiteIds[] = $siteId;
+                }
+            }
+
+            if (empty($validSiteIds)) {
+                return (new UtilityActionResponse())
+                    ->setSuccess(false)
+                    ->setMessage(Critter::translate('No valid sites selected for fallback CSS generation.'));
+            }
+
+            // Queue jobs for each site (each job will look up its own fallback entry)
+            $jobIds = [];
+            $siteNames = [];
+
+            foreach ($validSiteIds as $siteId) {
+                $site = Craft::$app->getSites()->getSiteById($siteId);
+                if ($site) {
+                    $job = new GenerateFallbackCssJob([
+                        'siteId' => $siteId
+                    ]);
+
+                    $jobId = Craft::$app->getQueue()->push($job);
+                    $jobIds[] = $jobId;
+                    $siteNames[] = $site->name;
+                }
+            }
+
+            $siteNamesList = implode(', ', $siteNames);
+            $jobIdsList = implode(', ', $jobIds);
 
             return (new UtilityActionResponse())
                 ->setSuccess(true)
-                ->setMessage(Critter::translate('Queued job (Job ID {id}) to generate fallback CSS from entry "{title}".', [
-                    'id' => $jobId,
-                    'title' => $entry->title
+                ->setMessage(Critter::translate('Queued {count} job(s) (Job IDs: {jobIds}) to generate fallback CSS for sites: {sites}.', [
+                    'count' => count($jobIds),
+                    'jobIds' => $jobIdsList,
+                    'sites' => $siteNamesList
                 ]))
                 ->setData([
-                    'jobId' => $jobId,
-                    'entryId' => $entryId,
-                    'entryTitle' => $entry->title
+                    'jobIds' => $jobIds,
+                    'siteIds' => $validSiteIds,
+                    'siteNames' => $siteNames
                 ]);
         } catch (\Exception $e) {
             return (new UtilityActionResponse())
@@ -433,31 +465,55 @@ class UtilityService extends Component
     }
 
     /**
-     * Clear generated fallback CSS and disable the use of generated fallback
+     * Clear generated fallback CSS for specified sites
      */
-    public function clearGeneratedFallbackCss(): UtilityActionResponse
+    public function clearGeneratedFallbackCss(array $siteIds = []): UtilityActionResponse
     {
         try {
-            // Remove the generated fallback CSS file
             $runtimePath = Craft::$app->getPath()->getRuntimePath();
-            $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
+            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle();
 
-            if (file_exists($fallbackFile)) {
-                unlink($fallbackFile);
+            $clearedFiles = [];
+            $skippedSites = [];
+
+            foreach ($siteIds as $siteId) {
+                $site = Craft::$app->getSites()->getSiteById($siteId);
+                if (!$site) {
+                    continue;
+                }
+
+                // Use site-specific filename (matching the naming in GenerateFallbackCssJob)
+                $siteHandle = $site->handle;
+                $fallbackFile = $fallbackDir . DIRECTORY_SEPARATOR . "fallback-{$siteHandle}.css";
+
+                if (file_exists($fallbackFile)) {
+                    if (unlink($fallbackFile)) {
+                        $clearedFiles[] = $site->name;
+                    }
+                } else {
+                    $skippedSites[] = $site->name;
+                }
             }
 
-            // Update settings to disable generated fallback CSS
-            $settings = Critter::getInstance()->getSettings();
-            $settings->useGeneratedFallbackCss = false;
-            $settings->fallbackCssEntryId = null;
+            // Build response message
+            $messages = [];
+            if (!empty($clearedFiles)) {
+                $messages[] = 'Cleared fallback CSS for sites: ' . implode(', ', $clearedFiles);
+            }
+            if (!empty($skippedSites)) {
+                $messages[] = 'No fallback CSS found for sites: ' . implode(', ', $skippedSites);
+            }
 
-            // Save settings via the plugin
-            $plugin = Critter::getInstance();
-            Craft::$app->getPlugins()->savePluginSettings($plugin, $settings->toArray());
+            $message = !empty($messages) ? implode('. ', $messages) : 'No fallback CSS files found to clear';
 
             return (new UtilityActionResponse())
                 ->setSuccess(true)
-                ->setMessage(Critter::translate('Successfully cleared generated fallback CSS. Fallback CSS will now use the configured file path (if any).'));
+                ->setMessage(Critter::translate($message))
+                ->setData([
+                    'clearedSites' => $clearedFiles,
+                    'skippedSites' => $skippedSites,
+                    'siteIds' => $siteIds
+                ]);
         } catch (\Exception $e) {
             return (new UtilityActionResponse())
                 ->setSuccess(false)

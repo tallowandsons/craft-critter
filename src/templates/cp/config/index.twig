@@ -10,7 +10,7 @@
 {% block sidebar %}{% endblock %}
 
 {% block actionButton %}
-    {% if currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+    {% if currentUser.can(craft.critter.const('PERMISSION_MANAGE_CONFIG_EDIT')) %}
         <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
     {% endif %}
 {% endblock %}
@@ -19,15 +19,41 @@
 
     <input type="hidden" name="action" value="{{ pluginHandle }}/config/save">
     <input type="hidden" name="pluginHandle" value="{{ pluginHandle }}">
+    <input type="hidden" name="siteId" value="{{ cpSite.id }}">
 
-    {% if not currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+    {% if not currentUser.can(craft.critter.const('PERMISSION_MANAGE_CONFIG_EDIT')) %}
         <div class="readable">
             <blockquote class="note">
                 <p><strong>{{ 'Read-only mode'|t(pluginHandle) }}</strong></p>
-                <p>{{ 'You have permission to view section configurations but not to edit them. Contact your administrator if you need to make changes.'|t(pluginHandle) }}</p>
+                <p>{{ 'You have permission to view plugin configuration but not to edit it. Contact your administrator if you need to make changes.'|t(pluginHandle) }}</p>
             </blockquote>
         </div>
     {% endif %}
+
+    <h2>{{ "Fallback CSS"|t(pluginHandle) }}</h2>
+
+    <p>Select an entry to use for generating fallback CSS when no critical CSS is cached for a request.</p>
+
+    {% set fallbackEntryId = craft.critter.configService.getFallbackCssEntryId(cpSite.id) %}
+    {% set fallbackEntry = fallbackEntryId ? (craft.entries.id(fallbackEntryId).one() ?? null) : null %}
+
+    {{ forms.elementSelectField({
+        label: "Fallback Entry"|t(pluginHandle),
+        instructions: "Choose an entry that represents your site's typical layout and styling. This will be used to generate fallback CSS when no critical CSS is available."|t(pluginHandle),
+        id: 'fallback-entry',
+        name: 'config[fallbackCssEntryId]',
+        elementType: 'craft\\elements\\Entry',
+        criteria: {
+            siteId: cpSite.id,
+            status: null
+        },
+        limit: 1,
+        showSiteMenu: false,
+        elements: fallbackEntry ? [fallbackEntry] : [],
+        disabled: not currentUser.can(craft.critter.const('PERMISSION_MANAGE_CONFIG_EDIT')),
+    }) }}
+
+    <hr>
 
     <h2>{{ "Sections"|t('app') }}</h2>
 
@@ -39,8 +65,6 @@
             <span class="visually-hidden">Warning: </span><span>{{ configWarning('sectionSettings') }}</span>
         </p>
     {% endif %}
-
-    <hr>
 
     {% for section in sections %}
 
@@ -57,7 +81,7 @@
                     </div> #}
 
                     {% set elements = sectionConfig and sectionConfig.entryId ? [sectionConfig.getEntry()] : null %}
-                    {% set canEdit = currentUser.can(craft.critter.const('PERMISSION_MANAGE_SECTIONS_EDIT')) %}
+                    {% set canEdit = currentUser.can(craft.critter.const('PERMISSION_MANAGE_CONFIG_EDIT')) %}
                     {% set isDisabled = not canEdit or mode != 'section' %}
 
                     {{ forms.elementSelectField({

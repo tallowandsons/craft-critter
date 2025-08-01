@@ -152,46 +152,107 @@
 
 <h2>Generate fallback CSS</h2>
 
-<p>Generate critical CSS from a specific entry and save it as fallback CSS. This CSS will be used when no critical CSS is cached for a request.<br>Select an entry that represents your site's typical layout and styling.</p>
-
-<form class="utility" method="post" accept-charset="UTF-8">
-    {{ actionInput('critter/utility/generate-fallback-css') }}
-    {{ redirectInput('utilities/critter') }}
-    {{ csrfInput() }}
-
-    {{ forms.elementSelectField({
-        label: "Entry"|t('critter'),
-        id: 'fallbackEntryIds',
-        name: 'entryIds',
-        elementType: 'craft\\elements\\Entry',
-        selectionLabel: "Choose an entry"|t('critter'),
-        criteria: {
-            status: null
-        },
-        limit: 1,
-        required: true,
-        sources: '*'
-    }) }}
-
-    <input type="submit" class="btn submit" value="{{ "Generate fallback CSS"|t('critter') }}">
-</form>
-
 {% set settings = craft.critter.settings %}
-{% if settings.useGeneratedFallbackCss %}
-    <h3>Clear generated fallback CSS</h3>
+{% set allSites = craft.app.sites.allSites %}
 
-    <p>Remove the generated fallback CSS and revert to using the configured file path (if any).</p>
+{# Check which sites have configured fallback entries #}
+{% set sitesWithFallback = [] %}
+{% set sitesWithoutFallback = [] %}
+
+{% for site in allSites %}
+    {% set fallbackEntryId = craft.critter.configService.getFallbackCssEntryId(site.id) %}
+    {% if fallbackEntryId %}
+        {% set fallbackEntry = craft.entries.id(fallbackEntryId).one() %}
+        {% if fallbackEntry %}
+            {% set sitesWithFallback = sitesWithFallback|merge([{
+                site: site,
+                entryId: fallbackEntryId,
+                entry: fallbackEntry
+            }]) %}
+        {% else %}
+            {% set sitesWithoutFallback = sitesWithoutFallback|merge([{
+                site: site,
+                error: 'Entry not found (ID: ' ~ fallbackEntryId ~ ')'
+            }]) %}
+        {% endif %}
+    {% else %}
+        {% set sitesWithoutFallback = sitesWithoutFallback|merge([{
+            site: site,
+            error: 'No fallback entry configured'
+        }]) %}
+    {% endif %}
+{% endfor %}
+
+{% if sitesWithFallback|length > 0 %}
+    <p>Generate critical CSS from the configured fallback entries and save as fallback CSS. This CSS will be used when no critical CSS is cached for a request.</p>
+
+    <p><em>To change fallback entries, go to Configuration.</em></p>
+
+    {% if sitesWithoutFallback|length > 0 %}
+        <div class="warning">
+            <p>Some sites do not have fallback entries configured:</p>
+            <ul>
+                {% for siteInfo in sitesWithoutFallback %}
+                    <li><strong>{{ siteInfo.site.name }}</strong>: {{ siteInfo.error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     <form class="utility" method="post" accept-charset="UTF-8">
-        {{ actionInput('critter/utility/clear-generated-fallback-css') }}
+        {{ actionInput('critter/utility/generate-fallback-css') }}
         {{ redirectInput('utilities/critter') }}
         {{ csrfInput() }}
 
-        <input type="submit" class="btn submit" value="{{ "Clear generated fallback CSS"|t('critter') }}">
+        {% if allSites|length > 1 %}
+            {{ forms.checkboxSelectField({
+                label: "Sites"|t('critter'),
+                instructions: "Select which sites to generate fallback CSS for."|t('critter'),
+                id: 'siteIds',
+                name: 'siteIds',
+                options: sitesWithFallback|map(site => {
+                    label: site.site.name,
+                    value: site.site.id
+                }),
+                values: sitesWithFallback|map(s => s.site.id)
+            }) }}
+        {% else %}
+            {% for site in allSites %}
+                <input type="hidden" name="siteIds[]" value="{{ site.id }}">
+            {% endfor %}
+        {% endif %}
+
+        <input type="submit" class="btn submit" value="{{ "Generate fallback CSS"|t('critter') }}">
     </form>
+
+{% else %}
+    <p class="notice">No sites have fallback entries configured. Go to Configuration to select entries for fallback CSS generation.</p>
 {% endif %}
 
-<hr>
+<h3>Clear generated fallback CSS</h3>
+
+<p>Remove generated fallback CSS files. The system will fall back to configured file paths (if any) or manual fallback CSS.</p>
+
+<form class="utility" method="post" accept-charset="UTF-8">
+    {{ actionInput('critter/utility/clear-generated-fallback-css') }}
+    {{ redirectInput('utilities/critter') }}
+    {{ csrfInput() }}
+
+    {% if allSites|length > 1 %}
+        {{ forms.checkboxSelectField({
+            label: "Sites"|t('critter'),
+            instructions: "Select which sites to clear generated fallback CSS for. Leave empty to clear all generated files."|t('critter'),
+            id: 'clearSiteIds',
+            name: 'siteIds',
+            options: allSites|map(site => {
+                label: site.name,
+                value: site.id
+            })
+        }) }}
+    {% endif %}
+
+    <input type="submit" class="btn submit" value="{{ "Clear generated fallback CSS"|t('critter') }}">
+</form><hr>
 
 <h2>Clear stuck CSS records</h2>
 

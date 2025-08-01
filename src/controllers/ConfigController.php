@@ -22,7 +22,7 @@ class ConfigController extends Controller
     public function beforeAction($action): bool
     {
         // Check for sections management permission
-        $this->requirePermission(Critter::PERMISSION_MANAGE_SECTIONS_VIEW);
+        $this->requirePermission(Critter::PERMISSION_MANAGE_CONFIG_VIEW);
 
         return parent::beforeAction($action);
     }
@@ -61,7 +61,7 @@ class ConfigController extends Controller
     }
 
     /**
-     * critter/settings/sections/save action
+     * critter/config/save action
      * saves all config to the database
      */
     public function actionSave(): ?Response
@@ -69,12 +69,13 @@ class ConfigController extends Controller
         $this->requirePostRequest();
 
         // Check for edit permission
-        $this->requirePermission(Critter::PERMISSION_MANAGE_SECTIONS_EDIT);
+        $this->requirePermission(Critter::PERMISSION_MANAGE_CONFIG_EDIT);
 
         // get the settings from the POST
         $postedSettings = Craft::$app->getRequest()->getBodyParam('config', []);
+        $siteId = Craft::$app->getRequest()->getRequiredBodyParam('siteId');
 
-        if (!Critter::getInstance()->configService->save($postedSettings)) {
+        if (!Critter::getInstance()->configService->save($postedSettings, $siteId)) {
             Craft::$app->getSession()->setError(Critter::translate('Unable to save settings.'));
             return null;
         }

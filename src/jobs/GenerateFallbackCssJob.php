@@ -12,49 +12,56 @@ use tallowandsons\critter\factories\UrlFactory;
  */
 class GenerateFallbackCssJob extends GenerateCssBaseJob
 {
-    public int $entryId;
+    public ?int $siteId = null;
 
     /**
      * @inheritdoc
      */
     protected function performCssGeneration(): void
     {
+        // Abort if no site ID is specified
+        if ($this->siteId === null) {
+            throw new \Exception("Site ID must be specified for fallback CSS generation");
+        }
+
+        $site = Craft::$app->getSites()->getSiteById($this->siteId);
+        if (!$site) {
+            throw new \Exception("Site not found with ID: {$this->siteId}");
+        }
+
+        // Get the fallback entry ID for this specific site
+        $entryId = Critter::getInstance()->configService->getFallbackCssEntryId($this->siteId);
+        if (!$entryId) {
+            throw new \Exception("No fallback entry configured for site: {$site->name} (ID: {$this->siteId})");
+        }
+
         // Get the entry
-        $entry = Entry::find()->id($this->entryId)->one();
+        $entry = Entry::find()->id($entryId)->one();
         if (!$entry) {
-            throw new \Exception("Entry not found with ID: {$this->entryId}");
+            throw new \Exception("Entry not found with ID: {$entryId} for site: {$site->name}");
         }
 
         Craft::info(
-            "Starting fallback CSS generation for entry: {$entry->title} (ID: {$this->entryId})",
+            "Starting fallback CSS generation for entry: {$entry->title} (ID: {$entryId}) on site: {$site->name} (ID: {$this->siteId})",
             Critter::getPluginHandle()
         );
 
-        // Generate CSS for the entry's URL
-        $url = UrlFactory::createFromEntry($entry);
+        // Generate CSS for the entry's URL on the specified site
+        $url = UrlFactory::createFromEntry($entry, $this->siteId);
         $css = Critter::getInstance()->css->getCssForUrl($url, true);
 
         if (!$css) {
-            throw new \Exception("Failed to generate CSS for entry: {$entry->title}");
+            throw new \Exception("Failed to generate CSS for entry: {$entry->title} on site: {$site->name}");
         }
 
-        // Save CSS to runtime file
-        $fallbackPath = Critter::getInstance()->utilityService->saveFallbackCssToRuntime($css);
+        // Save CSS to runtime file with site-specific naming
+        $fallbackPath = $this->saveFallbackCssToRuntime($css, $this->siteId);
         if (!$fallbackPath) {
-            throw new \Exception("Failed to save fallback CSS to runtime");
+            throw new \Exception("Failed to save fallback CSS to runtime for site: {$site->name}");
         }
-
-        // Update settings to use generated fallback CSS
-        $settings = Critter::getInstance()->getSettings();
-        $settings->useGeneratedFallbackCss = true;
-        $settings->fallbackCssEntryId = $this->entryId;
-
-        // Save settings via the plugin
-        $plugin = Critter::getInstance();
-        Craft::$app->getPlugins()->savePluginSettings($plugin, $settings->toArray());
 
         Craft::info(
-            "Successfully generated fallback CSS from entry: {$entry->title} (ID: {$this->entryId})",
+            "Successfully generated fallback CSS from entry: {$entry->title} (ID: {$entryId}) for site: {$site->name}",
             Critter::getPluginHandle()
         );
     }
@@ -64,7 +71,13 @@ class GenerateFallbackCssJob extends GenerateCssBaseJob
      */
     protected function getJobContext(): string
     {
-        return "Entry ID: {$this->entryId}";
+        $context = "Site ID: {$this->siteId}";
+        if ($this->siteId) {
+            $site = Craft::$app->getSites()->getSiteById($this->siteId);
+            $siteName = $site ? $site->name : $this->siteId;
+            $context = "Site: {$siteName} (ID: {$this->siteId})";
+        }
+        return $context;
     }
 
     /**
@@ -73,7 +86,7 @@ class GenerateFallbackCssJob extends GenerateCssBaseJob
     protected function createRetryJob(int $nextAttempt): GenerateCssBaseJob
     {
         return new self([
-            'entryId' => $this->entryId,
+            'siteId' => $this->siteId,
             'retryAttempt' => $nextAttempt
         ]);
     }
@@ -83,6 +96,41 @@ class GenerateFallbackCssJob extends GenerateCssBaseJob
      */
     protected function getJobDescription(): string
     {
-        return 'Generating fallback CSS for entry ID ' . $this->entryId;
+        $description = 'Generating fallback CSS';
+        if ($this->siteId) {
+            $site = Craft::$app->getSites()->getSiteById($this->siteId);
+            $siteName = $site ? $site->name : $this->siteId;
+            $description .= " for site: {$siteName}";
+        }
+        return $description;
+    }
+
+    /**
+     * Save fallback CSS content to runtime with site-specific naming
+     */
+    private function saveFallbackCssToRuntime(string $css, int $siteId): ?string
+    {
+        try {
+            $runtimePath = Craft::$app->getPath()->getRuntimePath();
+            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle();
+
+            // Ensure directory exists
+            if (!is_dir($fallbackDir)) {
+                mkdir($fallbackDir, 0755, true);
+            }
+
+            // Use site-specific filename
+            $site = Craft::$app->getSites()->getSiteById($siteId);
+            $siteHandle = $site ? $site->handle : $siteId;
+            $fallbackFile = $fallbackDir . DIRECTORY_SEPARATOR . "fallback-{$siteHandle}.css";
+
+            if (file_put_contents($fallbackFile, $css) !== false) {
+                return $fallbackFile;
+            }
+        } catch (\Exception $e) {
+            Critter::error("Failed to save fallback CSS to runtime: " . $e->getMessage(), __METHOD__);
+        }
+
+        return null;
     }
 }
