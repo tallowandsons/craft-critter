@@ -77,6 +77,9 @@ class CssService extends Component
             Critter::getInstance()->generator->startGenerate($cssRequest, $this->useQueue);
         }
 
+        // log
+        Critter::info("Using fallback css for URL '{$url->getAbsoluteUrl()}'.", 'css');
+
         return (new CssModel($this->getFallbackCss()))->getCss();
     }
 
