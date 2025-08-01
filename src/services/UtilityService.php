@@ -7,6 +7,7 @@ use craft\elements\Entry;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
 use tallowandsons\critter\jobs\ExpireAllJob;
+use tallowandsons\critter\jobs\GenerateFallbackCssJob;
 use tallowandsons\critter\jobs\RegenerateAllJob;
 use tallowandsons\critter\jobs\RegenerateEntryJob;
 use tallowandsons\critter\jobs\RegenerateExpiredJob;
@@ -356,12 +357,12 @@ class UtilityService extends Component
     }
 
     /**
-     * Generate fallback CSS from an entry and save it to storage
+     * Generate fallback CSS from an entry by queueing a job
      */
     public function generateFallbackCss(int $entryId): UtilityActionResponse
     {
         try {
-            // Get the entry
+            // Validate the entry exists
             $entry = Entry::find()->id($entryId)->one();
             if (!$entry) {
                 return (new UtilityActionResponse())
@@ -369,45 +370,40 @@ class UtilityService extends Component
                     ->setMessage(Critter::translate('Entry not found with ID: {id}', ['id' => $entryId]));
             }
 
-            // Generate CSS for the entry's URL
-            $url = UrlFactory::createFromEntry($entry);
-            $css = Critter::getInstance()->css->getCssForUrl($url, true);
+            // Queue the job
+            $job = new GenerateFallbackCssJob([
+                'entryId' => $entryId
+            ]);
 
-            if (!$css) {
-                return (new UtilityActionResponse())
-                    ->setSuccess(false)
-                    ->setMessage(Critter::translate('Failed to generate CSS for entry: {title}', ['title' => $entry->title]));
-            }
-
-            // Save CSS to storage file
-            $fallbackPath = $this->saveFallbackCssToStorage($css);
-            if (!$fallbackPath) {
-                return (new UtilityActionResponse())
-                    ->setSuccess(false)
-                    ->setMessage(Critter::translate('Failed to save fallback CSS to runtime.'));
-            }
-
-            // Update settings to use generated fallback CSS
-            $settings = Critter::getInstance()->getSettings();
-            $settings->useGeneratedFallbackCss = true;
-            $settings->fallbackCssEntryId = $entryId;
-
-            // Save settings via the plugin
-            $plugin = Critter::getInstance();
-            Craft::$app->getPlugins()->savePluginSettings($plugin, $settings->toArray());
+            $jobId = Craft::$app->getQueue()->push($job);
 
             return (new UtilityActionResponse())
                 ->setSuccess(true)
-                ->setMessage(Critter::translate('Successfully generated fallback CSS from entry "{title}" and saved to runtime.', [
+                ->setMessage(Critter::translate('Queued job (Job ID {id}) to generate fallback CSS from entry "{title}".', [
+                    'id' => $jobId,
                     'title' => $entry->title
-                ]));
+                ]))
+                ->setData([
+                    'jobId' => $jobId,
+                    'entryId' => $entryId,
+                    'entryTitle' => $entry->title
+                ]);
         } catch (\Exception $e) {
             return (new UtilityActionResponse())
                 ->setSuccess(false)
-                ->setMessage(Critter::translate('Failed to generate fallback CSS: {error}', [
+                ->setMessage(Critter::translate('Failed to queue fallback CSS generation: {error}', [
                     'error' => $e->getMessage()
                 ]));
         }
+    }
+
+    /**
+     * Save fallback CSS content to runtime and return the file path
+     * Public method for use by jobs
+     */
+    public function saveFallbackCssToRuntime(string $css): ?string
+    {
+        return $this->saveFallbackCssToStorage($css);
     }
 
     /**
