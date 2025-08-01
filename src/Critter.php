@@ -304,10 +304,10 @@ class Critter extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules = array_merge(
                     [
-                        self::getPluginHandle() => self::getPluginHandle() . '/config/sections-edit',
+                        self::getPluginHandle() => self::getPluginHandle() . '/config/index',
+                        self::getPluginHandle() . '/config' => self::getPluginHandle() . '/config/index',
                         self::getPluginHandle() . '/settings/general' => self::getPluginHandle() . '/settings/edit',
                         self::getPluginHandle() . '/settings/sections' => self::getPluginHandle() . '/settings/sections-edit',
-                        self::getPluginHandle() . '/sections' => self::getPluginHandle() . '/config/sections-edit',
                     ],
                     $event->rules
                 );
@@ -326,9 +326,9 @@ class Critter extends Plugin
 
         // Only show sections subnav if user has view permissions
         if ($user->checkPermission(self::PERMISSION_MANAGE_SECTIONS_VIEW)) {
-            $subNavs['sections'] = [
-                'label' => $this->translate('Sections'),
-                'url' => $this->cpUrl('sections'),
+            $subNavs['config'] = [
+                'label' => $this->translate('Configuration'),
+                'url' => $this->cpUrl('config'),
             ];
         }
 

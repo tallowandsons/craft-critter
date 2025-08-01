@@ -28,13 +28,12 @@ class ConfigController extends Controller
     }
 
     /**
-     * critter/settings/sections/edit action
-     * loads the 'edit sections config' page.
+     * critter/config/index action
+     * loads the config index page.
      */
-    public function actionSectionsEdit(): Response
+    public function actionIndex(): Response
     {
         $cpSite = Cp::requestedSite();
-
         if (!$cpSite) {
             throw new \yii\web\BadRequestHttpException('No site specified.');
         }
@@ -50,7 +49,7 @@ class ConfigController extends Controller
             ]
         ];
 
-        return $this->renderTemplate(Critter::getPluginHandle() . '/cp/config/sections', [
+        return $this->renderTemplate(Critter::getPluginHandle() . '/cp/config/index', [
             'cpSite' => $cpSite,
             'settings' => $this->getSettings(),
             'config' => $this->getConfig(),
