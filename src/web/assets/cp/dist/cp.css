@@ -14,3 +14,9 @@
     background: #fff8f0;
     border-color: #ffb74d;
 }
+
+.critter-checkboxes div.checkbox.disabled:before,
+.critter-checkboxes input.checkbox:disabled+label,
+.critter-checkboxes input.checkbox:disabled+label:before {
+    opacity: 0.5;
+}

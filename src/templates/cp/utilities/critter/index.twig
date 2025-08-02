@@ -205,16 +205,25 @@
         {{ csrfInput() }}
 
         {% if allSites|length > 1 %}
+
+            {% set options = [] %}
+            {% for site in allSites %}
+                {% set hasFallback = craft.critter.configService.getFallbackCssEntryId(site.id) is not null %}
+                {% set options = options|merge([{
+                    label: site.name ~ (hasFallback ? '' : ' (Missing fallback entry)'),
+                    value: site.id,
+                    disabled: not hasFallback
+                }]) %}
+            {% endfor %}
+
             {{ forms.checkboxSelectField({
                 label: "Sites"|t('critter'),
                 instructions: "Select which sites to generate fallback CSS for."|t('critter'),
                 id: 'siteIds',
                 name: 'siteIds',
-                options: sitesWithFallback|map(site => {
-                    label: site.site.name,
-                    value: site.site.id
-                }),
-                values: sitesWithFallback|map(s => s.site.id)
+                options: options,
+                values: sitesWithFallback|map(s => s.site.id),
+                class: 'critter-checkboxes',
             }) }}
         {% else %}
             {% for site in allSites %}
@@ -229,7 +238,9 @@
     <p class="notice">No sites have fallback entries configured. Go to Configuration to select entries for fallback CSS generation.</p>
 {% endif %}
 
-<h3>Clear generated fallback CSS</h3>
+<hr>
+
+<h2>Clear generated fallback CSS</h2>
 
 <p>Remove generated fallback CSS files. The system will fall back to configured file paths (if any) or manual fallback CSS.</p>
 
@@ -246,13 +257,16 @@
             name: 'siteIds',
             options: allSites|map(site => {
                 label: site.name,
-                value: site.id
-            })
+                value: site.id,
+                checked: true
+            }),
         }) }}
     {% endif %}
 
     <input type="submit" class="btn submit" value="{{ "Clear generated fallback CSS"|t('critter') }}">
-</form><hr>
+</form>
+
+<hr>
 
 <h2>Clear stuck CSS records</h2>
 
