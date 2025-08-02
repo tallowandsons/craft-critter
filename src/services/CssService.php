@@ -23,6 +23,10 @@ class CssService extends Component
         if ($this->isCssableRequest()) {
             $css = $this->getCssForRequest();
             Craft::$app->getView()->registerCss($css, $this->formatTagAttributes(Critter::getInstance()->settings->styleTagAttributes));
+        } else {
+            $request = Craft::$app->getRequest();
+            $url = $request->getUrl();
+            Critter::debug("Skipping CSS rendering for non-site request or unsupported request type: {$url}", 'css');
         }
     }
 
