@@ -26,6 +26,7 @@ use tallowandsons\critter\services\CacheService;
 use tallowandsons\critter\services\ConfigService;
 use tallowandsons\critter\services\CssService;
 use tallowandsons\critter\services\ExpirationService;
+use tallowandsons\critter\services\FallbackService;
 use tallowandsons\critter\services\GeneratorService;
 use tallowandsons\critter\services\LogService;
 use tallowandsons\critter\services\RequestRecordService;
@@ -55,6 +56,7 @@ use yii\base\View as BaseView;
  * @property-read ConfigService $configService
  * @property-read LogService $log
  * @property-read UtilityService $utilityService
+ * @property-read FallbackService $fallbackService
  */
 class Critter extends Plugin
 {
@@ -86,6 +88,7 @@ class Critter extends Plugin
                 'log' => LogService::class,
                 'expiration' => ExpirationService::class,
                 'utilityService' => UtilityService::class,
+                'fallbackService' => FallbackService::class,
             ],
         ];
     }

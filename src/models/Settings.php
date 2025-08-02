@@ -92,12 +92,6 @@ class Settings extends Model
     // should be an absolute path to a CSS file on the server
     public ?string $fallbackCssFilePath = null;
 
-    // whether to use generated fallback CSS (stored in @storage) instead of file path
-    public bool $useGeneratedFallbackCss = false;
-
-    // entry ID to use for generating fallback CSS
-    public ?int $fallbackCssEntryId = null;
-
     /**
      * @inheritdoc
      */

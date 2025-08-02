@@ -271,15 +271,7 @@ class UtilityController extends Controller
 
         // If no site IDs provided, find all sites that have generated fallback CSS files
         if (empty($siteIds)) {
-            $runtimePath = Craft::$app->getPath()->getRuntimePath();
-            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle();
-
-            foreach (Craft::$app->getSites()->getAllSites() as $site) {
-                $fallbackFile = $fallbackDir . DIRECTORY_SEPARATOR . "fallback-{$site->handle}.css";
-                if (file_exists($fallbackFile)) {
-                    $siteIds[] = $site->id;
-                }
-            }
+            $siteIds = Critter::getInstance()->fallbackService->getSitesWithGeneratedFallbackCss();
         }
 
         // Validate that we have sites to process

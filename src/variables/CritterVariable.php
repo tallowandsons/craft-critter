@@ -5,6 +5,8 @@ namespace tallowandsons\critter\variables;
 use Craft;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\models\Settings;
+use tallowandsons\critter\services\ConfigService;
+use tallowandsons\critter\services\FallbackService;
 
 class CritterVariable
 {
@@ -57,8 +59,16 @@ class CritterVariable
     /**
      * Get the config service for template access
      */
-    public function configService()
+    public function configService(): ConfigService
     {
         return Critter::getInstance()->configService;
+    }
+
+    /**
+     * Get the fallback service for template access
+     */
+    public function fallbackService(): FallbackService
+    {
+        return Critter::getInstance()->fallbackService;
     }
 }

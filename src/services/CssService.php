@@ -3,7 +3,6 @@
 namespace tallowandsons\critter\services;
 
 use Craft;
-use craft\helpers\App;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
 use tallowandsons\critter\models\CssModel;
@@ -18,7 +17,6 @@ use yii\base\Component;
 class CssService extends Component
 {
     public $useQueue = true;
-    public $fallbackCss = "";
 
     public function renderCss(): void
     {
@@ -80,7 +78,7 @@ class CssService extends Component
         // log
         Critter::info("Using fallback css for URL '{$url->getAbsoluteUrl()}'.", 'css');
 
-        return (new CssModel($this->getFallbackCss()))->getCss();
+        return Critter::getInstance()->fallbackService->getFallbackCss();
     }
 
     /**
@@ -146,160 +144,5 @@ class CssService extends Component
 
         $now = new \DateTime();
         return $record->expiryDate < $now;
-    }
-
-    /**
-     * Get fallback CSS content - either from generated file, configured file, or default fallback
-     * Stamps the CSS with a comment indicating it's fallback CSS
-     */
-    private function getFallbackCss(): string
-    {
-        $settings = Critter::getInstance()->getSettings();
-        $css = '';
-        $source = 'default';
-
-        // Check if using generated fallback CSS first
-        if ($settings->useGeneratedFallbackCss) {
-            $runtimePath = Craft::$app->getPath()->getRuntimePath();
-
-            // Try site-specific fallback CSS first
-            $currentSite = Craft::$app->getSites()->getCurrentSite();
-            $siteSpecificFile = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle() . DIRECTORY_SEPARATOR . "fallback-{$currentSite->handle}.css";
-
-            if (file_exists($siteSpecificFile) && is_readable($siteSpecificFile)) {
-                try {
-                    $css = file_get_contents($siteSpecificFile);
-                    if ($css !== false) {
-                        $source = "generated ({$currentSite->name})";
-                        Critter::getInstance()->log->debug("Loaded site-specific generated fallback CSS from runtime: {$siteSpecificFile}", 'css');
-                    }
-                } catch (\Throwable $e) {
-                    Critter::getInstance()->log->error("Failed to read site-specific generated fallback CSS file '{$siteSpecificFile}': " . $e->getMessage(), 'css');
-                }
-            }
-
-            // Fall back to generic fallback file if site-specific not found
-            if (!$css) {
-                $fallbackFile = $runtimePath . DIRECTORY_SEPARATOR . 'critter' . DIRECTORY_SEPARATOR . 'fallback.css';
-
-                if (file_exists($fallbackFile) && is_readable($fallbackFile)) {
-                    try {
-                        $css = file_get_contents($fallbackFile);
-                        if ($css !== false) {
-                            $source = 'generated (generic)';
-                            Critter::getInstance()->log->debug("Loaded generic generated fallback CSS from runtime: {$fallbackFile}", 'css');
-                        }
-                    } catch (\Throwable $e) {
-                        Critter::getInstance()->log->error("Failed to read generated fallback CSS file '{$fallbackFile}': " . $e->getMessage(), 'css');
-                    }
-                } else {
-                    Critter::getInstance()->log->warning("Generated fallback CSS file not found: {$fallbackFile}", 'css');
-                }
-            }
-        }
-
-        // Check if fallback CSS file path is configured (if no generated CSS loaded)
-        if (!$css && $settings->fallbackCssFilePath) {
-            $filePath = App::parseEnv($settings->fallbackCssFilePath);
-
-            // Security validations
-            if ($this->isValidFallbackCssPath($filePath)) {
-                try {
-                    $css = file_get_contents($filePath);
-                    if ($css !== false) {
-                        $source = 'file';
-                        Critter::getInstance()->log->debug("Loaded fallback CSS from file: {$filePath}", 'css');
-                    }
-                } catch (\Throwable $e) {
-                    Critter::getInstance()->log->error("Failed to read fallback CSS file '{$filePath}': " . $e->getMessage(), 'css');
-                }
-            } else {
-                Critter::getInstance()->log->warning("Fallback CSS file path failed security validation: {$filePath}", 'css');
-            }
-        }
-
-        // Fall back to the default empty fallback CSS
-        if (!$css) {
-            $css = $this->fallbackCss;
-        }
-
-        // Stamp the CSS with a fallback indicator comment
-        return $this->stampFallbackCss($css, $source);
-    }
-
-    /**
-     * Add a comment stamp to CSS indicating it's fallback CSS
-     */
-    private function stampFallbackCss(string $css, string $source): string
-    {
-        $timestamp = date('Y-m-d H:i:s');
-        $stamp = "/* CRITTER FALLBACK CSS - Source: {$source} - Generated: {$timestamp} */\n";
-
-        return $stamp . $css;
-    }
-
-    /**
-     * Validate that a fallback CSS file path is secure and appropriate
-     */
-    private function isValidFallbackCssPath(?string $filePath): bool
-    {
-        if (!$filePath) {
-            return false;
-        }
-
-        // Check if file exists and is readable
-        if (!file_exists($filePath) || !is_readable($filePath)) {
-            return false;
-        }
-
-        // Resolve the real path to prevent path traversal attacks
-        $realPath = realpath($filePath);
-        if ($realPath === false) {
-            return false;
-        }
-
-        // Get allowed base paths
-        $allowedPaths = $this->getAllowedFallbackCssPaths();
-
-        // Check if the real path starts with any of the allowed paths
-        $isAllowed = false;
-        foreach ($allowedPaths as $allowedPath) {
-            $allowedRealPath = realpath($allowedPath);
-            if ($allowedRealPath && strpos($realPath, $allowedRealPath) === 0) {
-                $isAllowed = true;
-                break;
-            }
-        }
-
-        if (!$isAllowed) {
-            Critter::getInstance()->log->warning("Fallback CSS file outside allowed paths: {$realPath}", 'css');
-            return false;
-        }
-
-        // Check file extension
-        $extension = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
-        if ($extension !== 'css') {
-            Critter::getInstance()->log->warning("Fallback CSS file must have .css extension: {$realPath}", 'css');
-            return false;
-        }
-
-        // Check file size (prevent reading huge files)
-        $maxSize = 1024 * 1024; // 1MB limit
-        if (filesize($realPath) > $maxSize) {
-            Critter::getInstance()->log->warning("Fallback CSS file too large (max 1MB): {$realPath}", 'css');
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get allowed base paths for fallback CSS files
-     */
-    private function getAllowedFallbackCssPaths(): array
-    {
-        return [
-            Craft::$app->getPath()->getStoragePath(),
-        ];
     }
 }

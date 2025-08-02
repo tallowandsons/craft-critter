@@ -55,7 +55,7 @@ abstract class GenerateCssBaseJob extends BaseJob implements RetryableJobInterfa
     {
         // Early abort: Skip execution if NoGenerator is active
         if (NoGenerator::isActive()) {
-            Craft::info(
+            Critter::info(
                 'Skipping job execution - NoGenerator is active (' . $this->getJobContext() . ')',
                 Critter::getPluginHandle()
             );

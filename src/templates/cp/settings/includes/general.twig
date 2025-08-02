@@ -101,24 +101,6 @@
     code: true
 }) }}
 
-{% if settings.useGeneratedFallbackCss and settings.fallbackCssEntryId %}
-    {% set fallbackEntry = craft.entries.id(settings.fallbackCssEntryId).one() %}
-    <div class="field">
-        <div class="heading">
-            <label>{{ "Generated Fallback CSS"|t(pluginHandle) }}</label>
-        </div>
-        <div class="input">
-            <div class="notice">
-                <p><strong>{{ "Currently using generated fallback CSS"|t(pluginHandle) }}</strong></p>
-                {% if fallbackEntry %}
-                    <p>{{ "Generated from entry: {title}"|t(pluginHandle, {title: fallbackEntry.title}) }}</p>
-                {% endif %}
-                <p>{{ "To generate new fallback CSS or disable this option, use the Utilities page."|t(pluginHandle) }}</p>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
 {{ forms.autosuggestField({
     label: "Fallback CSS File Path"|t(pluginHandle),
     instructions: "Path to a CSS file to use as fallback when no critical CSS is cached. This will be used as a secondary fallback if generated fallback CSS is enabled but not available. For security, only .css files within the storage directory are allowed. Files are limited to 1MB in size. Environment variables are supported."|t(pluginHandle),

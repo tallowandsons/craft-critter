@@ -110,27 +110,6 @@ class GenerateFallbackCssJob extends GenerateCssBaseJob
      */
     private function saveFallbackCssToRuntime(string $css, int $siteId): ?string
     {
-        try {
-            $runtimePath = Craft::$app->getPath()->getRuntimePath();
-            $fallbackDir = $runtimePath . DIRECTORY_SEPARATOR . Critter::getPluginHandle();
-
-            // Ensure directory exists
-            if (!is_dir($fallbackDir)) {
-                mkdir($fallbackDir, 0755, true);
-            }
-
-            // Use site-specific filename
-            $site = Craft::$app->getSites()->getSiteById($siteId);
-            $siteHandle = $site ? $site->handle : $siteId;
-            $fallbackFile = $fallbackDir . DIRECTORY_SEPARATOR . "fallback-{$siteHandle}.css";
-
-            if (file_put_contents($fallbackFile, $css) !== false) {
-                return $fallbackFile;
-            }
-        } catch (\Exception $e) {
-            Critter::error("Failed to save fallback CSS to runtime: " . $e->getMessage(), __METHOD__);
-        }
-
-        return null;
+        return Critter::getInstance()->fallbackService->saveFallbackCssToRuntime($css, $siteId);
     }
 }
