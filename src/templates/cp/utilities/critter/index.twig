@@ -22,7 +22,7 @@
 
 <hr>
 
-<h2>Expire CSS for specific entry</h2>
+{# <h2>Expire CSS for specific entry</h2>
 
 <p>Mark critical CSS records for a specific entry as expired.<br>Select an entry to expire all associated CSS records.</p>
 
@@ -45,9 +45,9 @@
     <input type="submit" class="btn submit" value="{{ "Expire entry CSS"|t('critter') }}">
 </form>
 
-<hr>
+<hr> #}
 
-<h2>Expire CSS for specific section</h2>
+{# <h2>Expire CSS for specific section</h2>
 
 <p>Mark critical CSS records for a specific section as expired.<br>Select a section to expire all associated CSS records.</p>
 
@@ -70,7 +70,7 @@
     <input type="submit" class="btn submit" value="{{ "Expire section CSS"|t('critter') }}">
 </form>
 
-<hr>
+<hr> #}
 
 <h2>Regenerate expired critical CSS</h2>
 
@@ -100,11 +100,11 @@
 
 <hr>
 
-<h2>Regenerate CSS for specific entry</h2>
+{# <h2>Regenerate CSS for specific entry</h2> #}
 
-<p>Regenerate critical CSS records for a specific entry, regardless of expiration status.<br>Select an entry to regenerate all associated CSS records.</p>
+{# <p>Regenerate critical CSS records for a specific entry, regardless of expiration status.<br>Select an entry to regenerate all associated CSS records.</p> #}
 
-<form class="utility" method="post" accept-charset="UTF-8">
+{# <form class="utility" method="post" accept-charset="UTF-8">
     {{ actionInput('critter/utility/regenerate-entry') }}
     {{ redirectInput('utilities/critter') }}
     {{ csrfInput() }}
@@ -123,9 +123,9 @@
     <input type="submit" class="btn submit" value="{{ "Regenerate entry CSS"|t('critter') }}">
 </form>
 
-<hr>
+<hr> #}
 
-<h2>Regenerate CSS for specific section</h2>
+{# <h2>Regenerate CSS for specific section</h2>
 
 <p>Regenerate critical CSS records for a specific section, regardless of expiration status.<br>Select a section to regenerate all associated CSS records.</p>
 
@@ -148,7 +148,7 @@
     <input type="submit" class="btn submit" value="{{ "Regenerate section CSS"|t('critter') }}">
 </form>
 
-<hr>
+<hr> #}
 
 <h2>Generate fallback CSS</h2>
 
@@ -191,7 +191,7 @@
 
 <hr>
 
-<h2>Clear generated fallback CSS</h2>
+<h2>Clear fallback CSS</h2>
 
 <p>Remove generated fallback CSS files. The system will fall back to configured file paths (if any) or manual fallback CSS.</p>
 
