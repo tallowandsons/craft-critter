@@ -154,23 +154,11 @@
 
 {% set allSites = craft.app.sites.allSites %}
 {% set sitesWithFallback = craft.critter.fallbackService.getSitesWithFallbackEntries() %}
-{% set sitesWithoutFallback = craft.critter.fallbackService.getSitesWithoutFallbackEntries() %}
 
 {% if sitesWithFallback|length > 0 %}
     <p>Generate critical CSS from the configured fallback entries and save as fallback CSS. This CSS will be used when no critical CSS is cached for a request.</p>
 
     <p><em>To change fallback entries, go to Configuration.</em></p>
-
-    {% if sitesWithoutFallback|length > 0 %}
-        <div class="warning">
-            <p>Some sites do not have fallback entries configured:</p>
-            <ul>
-                {% for siteInfo in sitesWithoutFallback %}
-                    <li><strong>{{ siteInfo.site.name }}</strong>: {{ siteInfo.error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
 
     <form class="utility" method="post" accept-charset="UTF-8">
         {{ actionInput('critter/utility/generate-fallback-css') }}
