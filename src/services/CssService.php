@@ -23,10 +23,6 @@ class CssService extends Component
         if ($this->isCssableRequest()) {
             $css = $this->getCssForRequest();
             Craft::$app->getView()->registerCss($css, $this->formatTagAttributes(Critter::getInstance()->settings->styleTagAttributes));
-        } else {
-            $request = Craft::$app->getRequest();
-            $url = $request->getUrl();
-            Critter::debug("Skipping CSS rendering for non-site request or unsupported request type: {$url}", 'css');
         }
     }
 
@@ -91,30 +87,55 @@ class CssService extends Component
     public function isCssableRequest(): bool
     {
         $request = Craft::$app->getRequest();
+        $url = $request->getUrl();
 
-        // only generate Critical CSS for site requests that are GET requests
-        // and not console requests, preview requests, action requests, or non-HTML requests
-        // This is to prevent generating CSS for admin requests, API requests, assets requests, etc.
-        if (
-            !$request->getIsSiteRequest() ||
-            !$request->getIsGet() ||
-            $request->getIsConsoleRequest() ||
-            $request->getIsPreview() ||
-            $request->getIsActionRequest() ||
-            !$request->accepts('text/html')
-        ) {
+        // Check if this is a site request
+        if (!$request->getIsSiteRequest()) {
+            Critter::debug("Skipping CSS generation for non-site request: {$url}", 'css');
             return false;
         }
 
-        // only generate Critical CSS if the site is live
+        // Check if this is a GET request
+        if (!$request->getIsGet()) {
+            Critter::debug("Skipping CSS generation for non-GET request: {$url}", 'css');
+            return false;
+        }
+
+        // Check if this is a console request
+        if ($request->getIsConsoleRequest()) {
+            Critter::debug("Skipping CSS generation for console request: {$url}", 'css');
+            return false;
+        }
+
+        // Check if this is a preview request
+        if ($request->getIsPreview()) {
+            Critter::debug("Skipping CSS generation for preview request: {$url}", 'css');
+            return false;
+        }
+
+        // Check if this is an action request
+        if ($request->getIsActionRequest()) {
+            Critter::debug("Skipping CSS generation for action request: {$url}", 'css');
+            return false;
+        }
+
+        // Check if the request accepts HTML
+        if (!$request->accepts('text/html')) {
+            Critter::debug("Skipping CSS generation for non-HTML request: {$url}", 'css');
+            return false;
+        }
+
+        // Check if the site is live
         if (!Craft::$app->getIsLive()) {
+            Critter::debug("Skipping CSS generation for offline site: {$url}", 'css');
             return false;
         }
 
-        // only generate Critical CSS if the response is OK
-        // This is to prevent generating CSS for 404 or other error pages
+        // Check if the response is OK
         $response = Craft::$app->getResponse();
-        if (($response && !$response->getIsOk())) {
+        if ($response && !$response->getIsOk()) {
+            $statusCode = $response->getStatusCode();
+            Critter::debug("Skipping CSS generation for non-OK response (status {$statusCode}): {$url}", 'css');
             return false;
         }
 
