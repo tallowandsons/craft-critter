@@ -5,6 +5,7 @@ namespace tallowandsons\critter\migrations;
 use Craft;
 use craft\db\Migration;
 use craft\records\Site;
+use tallowandsons\critter\records\ConfigRecord;
 use tallowandsons\critter\records\RequestRecord;
 use tallowandsons\critter\records\SectionConfigRecord;
 
@@ -34,6 +35,7 @@ class Install extends Migration
      */
     public function safeDown(): bool
     {
+        $this->dropTableIfExists(ConfigRecord::tableName());
         $this->dropTableIfExists(SectionConfigRecord::tableName());
         $this->dropTableIfExists(RequestRecord::tableName());
 
@@ -77,6 +79,19 @@ class Install extends Migration
             ]);
         }
 
+        // Create critter_config table
+        if (!$this->db->tableExists(ConfigRecord::tableName())) {
+            $this->createTable(ConfigRecord::tableName(), [
+                'id' => $this->primaryKey(),
+                'key' => $this->string(255)->notNull(),
+                'value' => $this->text(),
+                'siteId' => $this->integer(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]);
+        }
+
         return true;
     }
 
@@ -98,6 +113,9 @@ class Install extends Migration
         $this->createIndex(null, SectionConfigRecord::tableName(), 'siteId');
         $this->createIndex(null, SectionConfigRecord::tableName(), 'sectionId');
         $this->createIndex(null, SectionConfigRecord::tableName(), ['siteId', 'sectionId'], true);
+
+        // Create indexes for config table
+        $this->createIndex(null, ConfigRecord::tableName(), ['key', 'siteId'], true);
     }
 
     /**
@@ -124,6 +142,17 @@ class Install extends Migration
             Site::tableName(),
             'id',
             'SET NULL',
+            'CASCADE'
+        );
+
+        // Add foreign keys for config table
+        $this->addForeignKey(
+            null,
+            ConfigRecord::tableName(),
+            'siteId',
+            Site::tableName(),
+            'id',
+            'CASCADE',
             'CASCADE'
         );
 
