@@ -22,7 +22,7 @@ Critter comes pre-configured with the **criticalcss.com** cloud-based generator.
 3. In Craft, go to **Critter → Settings → General → Generator**
 4. Enter your API key in the generator settings
 
-ℹ️ You can also switch to a different generator or implement your own custom generator if you have specific requirements.
+ℹ️ For local development, you can switch to the included CLI generator or implement your own custom generator if you have specific requirements.
 
 ### 3. Celebrate 🎉
 
@@ -80,7 +80,28 @@ Critter comes pre-configured with the [criticalcss.com](https://criticalcss.com)
 
 To get started, simply configure your API key in the plugin settings under **Critter → Settings → General → Generator**. You can also adjust options for viewport dimensions and other generation parameters.
 
-If you have specific requirements, you can implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
+#### CLI Generator (Local Development Only)
+
+Critter also includes a CLI-based generator that uses the `@plone/critical-css-cli` npm package to generate critical CSS locally on your server.
+
+⚠️ **Development Only** - The CLI Generator is intended for local development and testing and isn't recommended for production use.
+
+**Setup:**
+1. In config/critter.php, set the `generatorType` to `\tallowandsons\critter\generators\CriticalCssCliGenerator::class`
+2. In Craft admin, go to **Critter → Settings → General → Generator**
+3. Follow the instructions to install the required npm packages.
+
+**Important Limitations:**
+
+This is not recommended for production use for the following reasons:
+
+- ⚠️ **Performance impact** - uses your local server resources to generate critical CSS
+- ⚠️ **Server dependencies** - requires Node.js and npm packages to be maintained
+- ⚠️ **Security considerations** - executes shell commands on your server
+
+For production sites, we recommend using the criticalcss.com API generator instead.
+
+ℹ️ If you have specific requirements, you can implement your own generator by writing a class that extends the `BaseGenerator` and registering it with Critter.
 
 ### Cache Configuration
 
