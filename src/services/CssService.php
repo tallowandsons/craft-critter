@@ -3,6 +3,7 @@
 namespace tallowandsons\critter\services;
 
 use Craft;
+use craft\elements\User;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
 use tallowandsons\critter\models\CssModel;
@@ -97,7 +98,9 @@ class CssService extends Component
 
         // Check if this is a GET request
         if (!$request->getIsGet()) {
-            Critter::debug("Skipping CSS generation for non-GET request: {$url}", 'css');
+            $method = $request->getMethod();
+            $userAgent = $request->getUserAgent();
+            Critter::debug("Skipping CSS generation for non-GET request: {$url} (Method: {$method}, User-Agent: {$userAgent})", 'css');
             return false;
         }
 
@@ -113,31 +116,57 @@ class CssService extends Component
             return false;
         }
 
-        // Check if this is an action request
+        // Check if this is an action request (but allow some action requests)
         if ($request->getIsActionRequest()) {
             Critter::debug("Skipping CSS generation for action request: {$url}", 'css');
             return false;
         }
 
-        // Check if the request accepts HTML
-        if (!$request->accepts('text/html')) {
-            Critter::debug("Skipping CSS generation for non-HTML request: {$url}", 'css');
-            return false;
-        }
-
-        // Check if the site is live
-        if (!Craft::$app->getIsLive()) {
-            Critter::debug("Skipping CSS generation for offline site: {$url}", 'css');
-            return false;
-        }
-
-        // Check if the response is OK
+        // Check if the response is OK first (before other checks that might depend on it)
         $response = Craft::$app->getResponse();
         if ($response && !$response->getIsOk()) {
             $statusCode = $response->getStatusCode();
             Critter::debug("Skipping CSS generation for non-OK response (status {$statusCode}): {$url}", 'css');
             return false;
         }
+
+        // Check if the request accepts HTML
+        if (!$request->accepts('text/html')) {
+            $acceptHeader = $request->getHeaders()->get('Accept');
+            $contentType = $request->getContentType();
+            $userAgent = $request->getUserAgent();
+            Critter::debug("Skipping CSS generation for non-HTML request: {$url} (Accept: {$acceptHeader}, Content-Type: {$contentType}, User-Agent: {$userAgent})", 'css');
+            return false;
+        }
+
+        // Check site live status with user permissions context
+        /** @var User|null $user */
+        $user = Craft::$app->getUser()->getIdentity();
+        if (!Craft::$app->getIsLive()) {
+            // If site is not live, check if user has permission to access it
+            if ($user === null || !$user->can('accessSiteWhenSystemIsOff')) {
+                Critter::debug("Skipping CSS generation for offline site (user lacks permission): {$url}", 'css');
+                return false;
+            }
+        }
+
+        // Skip if user has debug toolbar enabled (would interfere with CSS)
+        if ($user !== null && $user->getPreference('enableDebugToolbarForSite')) {
+            Critter::debug("Skipping CSS generation because debug toolbar is enabled: {$url}", 'css');
+            return false;
+        }
+
+        // Check for no-critter parameter
+        if (!empty($request->getParam('no-critter'))) {
+            Critter::debug("Skipping CSS generation due to no-critter parameter: {$url}", 'css');
+            return false;
+        }
+
+        // Log successful validation
+        $method = $request->getMethod();
+        $acceptHeader = $request->getHeaders()->get('Accept');
+        $userAgent = $request->getUserAgent();
+        Critter::debug("CSS generation ALLOWED for request: {$url} (Method: {$method}, Accept: {$acceptHeader}, User-Agent: {$userAgent})", 'css');
 
         return true;
     }
