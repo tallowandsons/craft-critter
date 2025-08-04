@@ -84,6 +84,7 @@ class CssService extends Component
 
     /**
      * Determine if the current request is eligible for CSS generation.
+     * Only generate CSS for legitimate web page requests that browsers would render.
      */
     public function isCssableRequest(): bool
     {
@@ -116,7 +117,7 @@ class CssService extends Component
             return false;
         }
 
-        // Check if this is an action request (but allow some action requests)
+        // Check if this is an action request
         if ($request->getIsActionRequest()) {
             Critter::debug("Skipping CSS generation for action request: {$url}", 'css');
             return false;
@@ -130,9 +131,13 @@ class CssService extends Component
             return false;
         }
 
-        // Check if the request accepts HTML
-        if (!$request->accepts('text/html')) {
-            $acceptHeader = $request->getHeaders()->get('Accept');
+        // Check if the request accepts HTML - be more lenient here
+        $acceptHeader = $request->getHeaders()->get('Accept', '');
+        $acceptsHtml = $request->accepts('text/html') ||
+            str_contains($acceptHeader, '*/*') ||
+            empty($acceptHeader);
+
+        if (!$acceptsHtml) {
             $contentType = $request->getContentType();
             $userAgent = $request->getUserAgent();
             Critter::debug("Skipping CSS generation for non-HTML request: {$url} (Accept: {$acceptHeader}, Content-Type: {$contentType}, User-Agent: {$userAgent})", 'css');
@@ -164,7 +169,6 @@ class CssService extends Component
 
         // Log successful validation
         $method = $request->getMethod();
-        $acceptHeader = $request->getHeaders()->get('Accept');
         $userAgent = $request->getUserAgent();
         Critter::debug("CSS generation ALLOWED for request: {$url} (Method: {$method}, Accept: {$acceptHeader}, User-Agent: {$userAgent})", 'css');
 
