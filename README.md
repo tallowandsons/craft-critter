@@ -10,7 +10,7 @@
 
 You can install Critter by searching for “Critter” in the Craft Plugin Store, or install manually using composer.
 ```bash
-composer require tallow-and-sons/craft-critter
+composer require tallowandsons/craft-critter
 ```
 
 ### 2. Configure Your Generator
@@ -37,7 +37,7 @@ Critter comes ready to use with the [criticalcss.com](https://criticalcss.com) A
 Generate a unique critical CSS file for each individual Entry (Entry Mode) or a shared critical CSS file for all entries in a Section (Section Mode).
 
 ### Robust & Reliable
-Critical CSS generation jobs are queued and processed in the background, ensuring efficient resource usage. Mutex locks prevent duplicate API requests and help avoid rate limiting, while failed jobs are automatically retried using an exponential backoff strategy for maximum reliability.
+Critical CSS generation jobs are queued and processed in the background, ensuring efficient resource usage. Failed jobs are automatically retried using an exponential backoff strategy for maximum reliability.
 
 ### ⚡ Blitz Integration
 Critter plays nicely with the [Blitz](https://putyourlightson.com/plugins/blitz) static caching plugin. Automatically clear, expire, and refresh the Blitz cache when a page's critical CSS changes.
@@ -54,7 +54,7 @@ This plugin requires Craft CMS 5.5.0 or later, and PHP 8.2 or later.
 To install the plugin, search for “Critter” in the Craft Plugin Store, or install manually using composer.
 
 ```bash
-composer require tallow-and-sons/craft-critter
+composer require tallowandsons/craft-critter
 ```
 
 ## ⚙️ Configuration
@@ -76,7 +76,7 @@ For advanced control, disable Auto Render and call the render method manually:
 
 ### Generator Setup
 
-Critter comes pre-configured with the [criticalcss.com](https://criticalcss.com) API for cloud-based critical CSS generation. This professional service requires no server dependencies and operates on a pay-per-use model.
+Critter comes pre-configured with the [criticalcss.com](https://criticalcss.com) API for cloud-based critical CSS generation. This service requires no server dependencies and operates on a pay-per-domain model.
 
 To get started, simply configure your API key in the plugin settings under **Critter → Settings → General → Generator**. You can also adjust options for viewport dimensions and other generation parameters.
 
@@ -134,9 +134,9 @@ Event::on(
 );
 ```
 
-### Bring Your Own Cache Driver
+### Bring Your Own Static Cache Driver
 
-You can implement your own cache driver by writing a class that extends the `BaseCache` and registering it with Critter.
+You can implement your own static cache driver by writing a class that extends the `BaseCache` and registering it with Critter.
 
 ```php
 class MyCustomStaticCache extends BaseCache
@@ -167,4 +167,4 @@ This plugin requires a commercial license purchasable through the Craft Plugin S
 
 ## Credits
 
-Built by [Tallow &amp; Sons](https://github.com/tallow-and-sons) for the discerning developer in quiet pursuit of haste.
+Built by [Tallow &amp; Sons](https://github.com/tallowandsons) for the discerning developer in quiet pursuit of haste.
