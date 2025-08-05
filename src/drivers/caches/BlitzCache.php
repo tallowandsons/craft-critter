@@ -98,22 +98,26 @@ class BlitzCache extends BaseCache implements CacheInterface
             $urlPatterns[] = $url . '?*'; // URL with any query string: /about?*
         }
 
-        // log
         $urlsString = implode(', ', $urlPatterns);
-        Critter::getInstance()->log->logCacheOperation('resolve-cache', "Resolving cache for URLs: {$urlsString}", get_class($this));
 
         $siteUris = SiteUriHelper::getSiteUrisFromUrls($urlPatterns);
 
         switch ($this->cacheBehaviour) {
             case self::CACHE_BEHAVIOUR_CLEAR_URLS:
+                Critter::getInstance()->log->logCacheOperation('clear-cache', "Clearing cache for URLs: {$urlsString}", get_class($this));
                 Blitz::getInstance()->clearCache->clearUris($siteUris);
                 break;
             case self::CACHE_BEHAVIOUR_EXPIRE_URLS:
+                Critter::getInstance()->log->logCacheOperation('expire-cache', "Expiring cache for URLs: {$urlsString}", get_class($this));
                 Blitz::getInstance()->expireCache->expireUris($siteUris);
                 break;
             case self::CACHE_BEHAVIOUR_REFRESH_URLS:
+                Critter::getInstance()->log->logCacheOperation('refresh-cache', "Refreshing cache for URLs: {$urlsString}", get_class($this));
                 Blitz::getInstance()->refreshCache->refreshSiteUris($siteUris);
                 break;
+            default:
+                Critter::getInstance()->log->logCacheOperation('unknown-cache-behaviour', "Unknown cache behaviour: {$this->cacheBehaviour}", get_class($this));
+                throw new \Exception("Unknown cache behaviour: {$this->cacheBehaviour}");
         }
     }
 }
