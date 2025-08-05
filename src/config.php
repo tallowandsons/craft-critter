@@ -23,11 +23,9 @@
 // use tallowandsons\critter\storage\CraftCacheStorage;
 
 return [
-    // Enable or disable automatic rendering of critical CSS
-    // 'autoRenderEnabled' => true,
-
-    // Attributes to add to the <style> tag where critical CSS is inserted
-    // 'styleTagAttributes' => [],
+    // =========================================================================
+    // CORE GENERATION SETTINGS
+    // =========================================================================
 
     // Generator class to use for generating critical CSS
     // 'generatorType' => CriticalCssDotComGenerator::class, // Default
@@ -54,6 +52,10 @@ return [
     //     \tallowandsons\critter\generators\DummyGenerator::class,
     // ],
 
+    // =========================================================================
+    // STORAGE & CACHING
+    // =========================================================================
+
     // Storage class to use for storing critical CSS
     // 'storageType' => CraftCacheStorage::class,
 
@@ -63,11 +65,15 @@ return [
     // Settings for the cache
     // 'cacheSettings' => [],
 
-    // Query string parameters that should be treated as unique URLs
-    // 'uniqueQueryParams' => [],
+    // =========================================================================
+    // URL & CONTENT HANDLING
+    // =========================================================================
 
     // Base URL override for critical CSS generation (useful for staging, etc.)
     // 'baseUrlOverride' => null,
+
+    // Query string parameters that should be treated as unique URLs
+    // 'uniqueQueryParams' => [],
 
     // Default mode for critical CSS generation: 'entry' or 'section'
     // Options: Settings::MODE_ENTRY, Settings::MODE_SECTION
@@ -76,17 +82,19 @@ return [
     // Section-specific settings (per section handle)
     // 'sectionSettings' => [],
 
-    // Mutex timeout for API locking (in seconds)
-    // 'mutexTimeout' => 30,
+    // =========================================================================
+    // RENDERING & OUTPUT
+    // =========================================================================
 
-    // Maximum number of retries for retryable job failures
-    // 'maxRetries' => 3,
+    // Enable or disable automatic rendering of critical CSS
+    // 'autoRenderEnabled' => true,
 
-    // Base delay in seconds for retry exponential backoff
-    // 'retryBaseDelay' => 30,
+    // Attributes to add to the <style> tag where critical CSS is inserted
+    // 'styleTagAttributes' => [],
 
-    // Enable debug logging to storage/logs/critter.log
-    // 'enableDebugLogging' => false,
+    // =========================================================================
+    // BEHAVIORAL SETTINGS
+    // =========================================================================
 
     // What to do when an entry is saved
     // Options: Settings::ENTRY_SAVE_DO_NOTHING, Settings::ENTRY_SAVE_EXPIRE_CSS
@@ -95,4 +103,25 @@ return [
     // How to handle regeneration of expired Critical CSS
     // Options: Settings::REGENERATE_MANUALLY, Settings::REGENERATE_ON_REQUEST
     // 'regenerateExpiredCss' => Settings::REGENERATE_MANUALLY,
+
+    // =========================================================================
+    // QUEUE BEHAVIOUR
+    // =========================================================================
+
+    // Maximum number of retries for retryable job failures
+    // 'maxRetries' => 3,
+
+    // Base delay in seconds for retry exponential backoff
+    // 'retryBaseDelay' => 30,
+
+    // =========================================================================
+    // DEBUGGING & FALLBACKS
+    // =========================================================================
+
+    // Enable debug logging to storage/logs/critter.log
+    // 'enableDebugLogging' => false,
+
+    // Fallback CSS file path - file to read CSS from when no critical CSS is cached
+    // Should be an absolute path to a CSS file on the server
+    // 'fallbackCssFilePath' => null,
 ];
