@@ -69,6 +69,24 @@ class CriticalCssDotComApi extends BaseRestApi
         return $this;
     }
 
+    /**
+     * Check if an API error is an authentication error when API key is present
+     */
+    private function isAuthError($error): bool
+    {
+        return isset($this->apiKey) && $error && $error->getCode() === 'INVALID_JWT_TOKEN';
+    }
+
+    /**
+     * Handle authentication errors by throwing an exception
+     */
+    private function handleAuthError($error): void
+    {
+        if ($this->isAuthError($error)) {
+            throw new \Exception('criticalcss.com API authentication failed: ' . $error->getMessage());
+        }
+    }
+
     public function generate(UrlModel $urlModel, int $width = self::DEFAULT_WIDTH, int $height = self::DEFAULT_HEIGHT): CriticalCssDotComGenerateResponse
     {
         $data = [
@@ -83,8 +101,11 @@ class CriticalCssDotComApi extends BaseRestApi
             return CriticalCssDotComGenerateResponse::createFromResponse($response->getData());
         }
 
-        // if not successful, create a response with the error
+        // Check for authentication error when API key is present
         $error = $response->getError();
+        $this->handleAuthError($error);
+
+        // if not successful, create a response with the error
         return CriticalCssDotComGenerateResponse::createWithError($error);
     }
 
@@ -100,8 +121,11 @@ class CriticalCssDotComApi extends BaseRestApi
             return CriticalCssDotComResultsResponse::createFromResponse($response->getData());
         }
 
-        // if not successful, create a response with the error
+        // Check for authentication error when API key is present
         $error = $response->getError();
+        $this->handleAuthError($error);
+
+        // if not successful, create a response with the error
         return CriticalCssDotComResultsResponse::createWithError($error);
     }
 }

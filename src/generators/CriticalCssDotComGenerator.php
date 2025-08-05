@@ -119,7 +119,19 @@ class CriticalCssDotComGenerator extends BaseGenerator
         // if there is no resultId then no generate job has been triggered,
         // so trigger a new job via the API.
         if (!$resultId) {
-            $resultId = $this->triggerGenerateJob($urlModel);
+            try {
+                $resultId = $this->triggerGenerateJob($urlModel);
+            } catch (\Exception $e) {
+                // If this is an authentication exception, return it as a GeneratorResponse
+                if ($this->isAuthError($e)) {
+                    return (new GeneratorResponse())
+                        ->setSuccess(false)
+                        ->setException($e);
+                }
+                // Re-throw other exceptions
+                throw $e;
+            }
+
             if (!$resultId) {
                 // If we can't trigger a job, it's likely because another job is active
                 // This should be retryable so the job can try again later
@@ -146,6 +158,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // Check if the API response contains an error
             if ($apiResponse->hasError()) {
                 $error = $apiResponse->getError();
+
                 return (new GeneratorResponse())
                     ->setSuccess(false)
                     ->setException(new \Exception('Failed to get results from criticalcss.com API: ' . $error->toString()));
@@ -381,6 +394,11 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // Clear global job tracking on any exception
             $this->clearGlobalGenerateJob();
 
+            // Re-throw authentication exceptions so they bubble up properly
+            if ($this->isAuthError($e)) {
+                throw $e;
+            }
+
             Critter::getInstance()->log->error(
                 "Exception while triggering generate job: {$e->getMessage()}",
                 'generation'
@@ -426,6 +444,14 @@ class CriticalCssDotComGenerator extends BaseGenerator
     public function isReadyForGeneration(): bool
     {
         return !empty($this->getParsedApiKey());
+    }
+
+    /**
+     * Check if an exception is an authentication error from the criticalcss.com API
+     */
+    private function isAuthError(\Exception $exception): bool
+    {
+        return strpos($exception->getMessage(), 'criticalcss.com API authentication failed') === 0;
     }
 
     /**
