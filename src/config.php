@@ -111,6 +111,9 @@ return [
     // Maximum number of retries for retryable job failures
     // 'maxRetries' => 3,
 
+    // Time to reserve (TTR) for queue jobs in seconds - maximum execution time per job attempt
+    // 'jobTtr' => 300,
+
     // =========================================================================
     // DEBUGGING & FALLBACKS
     // =========================================================================

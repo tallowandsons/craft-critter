@@ -20,7 +20,8 @@ abstract class GenerateCssBaseJob extends BaseJob implements RetryableJobInterfa
      */
     public function getTtr(): int
     {
-        return 500; // 5 minutes
+        $settings = Critter::getInstance()->getSettings();
+        return $settings->jobTtr;
     }
 
     /**

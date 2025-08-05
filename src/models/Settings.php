@@ -70,6 +70,9 @@ class Settings extends Model
     // maximum number of retries for retryable job failures (mutex locks, network issues, etc.)
     public int $maxRetries = 3;
 
+    // time to reserve (TTR) for queue jobs in seconds - maximum execution time per job attempt
+    public int $jobTtr = 300;
+
     // whether to enable debug logging to storage/logs/critter.log
     public bool $enableDebugLogging = false;
 
