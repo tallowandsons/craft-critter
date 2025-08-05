@@ -81,6 +81,12 @@ class BlitzCache extends BaseCache implements CacheInterface
      */
     public function resolveCache(UrlModel|array $urlModels): void
     {
+        // Check if Blitz plugin is installed and enabled
+        if (!$this->isBlitzPluginAvailable()) {
+            Critter::getInstance()->log->logCacheOperation('blitz-unavailable', "Blitz plugin is not installed or enabled. Skipping cache operation.", get_class($this));
+            return;
+        }
+
         // if $urlModels is a single UrlModel, convert it to an array
         if (!is_array($urlModels)) {
             $urlModels = [$urlModels];
@@ -118,6 +124,19 @@ class BlitzCache extends BaseCache implements CacheInterface
             default:
                 Critter::getInstance()->log->logCacheOperation('unknown-cache-behaviour', "Unknown cache behaviour: {$this->cacheBehaviour}", get_class($this));
                 throw new \Exception("Unknown cache behaviour: {$this->cacheBehaviour}");
+        }
+    }
+
+    /**
+     * Check if the Blitz plugin is installed and enabled
+     */
+    private function isBlitzPluginAvailable(): bool
+    {
+        try {
+            return Craft::$app && Craft::$app->plugins && Craft::$app->plugins->getPlugin('blitz') !== null;
+        } catch (\Throwable $e) {
+            // Not in Craft context or Blitz not available
+            return false;
         }
     }
 }
