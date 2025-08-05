@@ -225,8 +225,9 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         $apiKey = $this->getParsedApiKey();
 
+        // Allow blank API key (may be set via environment variables or for testing)
         if (empty($apiKey)) {
-            $this->addError($attribute, 'API key is required for criticalcss.com generator.');
+            $this->addWarning($attribute, 'API key is blank. Ensure it is set via environment variable or configuration before generation.');
             return;
         }
 
@@ -243,7 +244,6 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         $rules = [
             [['apiKey'], 'string'],
-            [['apiKey'], 'required'],
             [['apiKey'], 'validateApiKey'],
             [['maxAttempts', 'attemptDelay', 'width', 'height'], 'integer', 'min' => 1],
             [['maxAttempts'], 'integer', 'min' => 1, 'max' => 50],
