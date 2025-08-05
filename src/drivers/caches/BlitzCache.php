@@ -130,13 +130,24 @@ class BlitzCache extends BaseCache implements CacheInterface
     /**
      * Check if the Blitz plugin is installed and enabled
      */
-    private function isBlitzPluginAvailable(): bool
+    public function isBlitzPluginAvailable(): bool
     {
         try {
-            return Craft::$app && Craft::$app->plugins && Craft::$app->plugins->getPlugin('blitz') !== null;
+            return \Craft::$app && \Craft::$app->plugins && \Craft::$app->plugins->getPlugin('blitz') !== null;
         } catch (\Throwable $e) {
             // Not in Craft context or Blitz not available
             return false;
         }
+    }
+
+    /**
+     * Get warning message if Blitz plugin is not available
+     */
+    public function getUnavailableWarning(): ?string
+    {
+        if (!$this->isBlitzPluginAvailable()) {
+            return Critter::translate('The Blitz plugin is not installed or enabled. This cache driver will not function without the Blitz plugin.');
+        }
+        return null;
     }
 }

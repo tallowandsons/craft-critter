@@ -23,6 +23,16 @@
     {% set isCurrent = (cacheClassName == settings.cacheType) %}
 
     <div id="{{ cacheClassName|id }}" {{ not isCurrent ? 'class="hidden"' }}>
+
+        {% set unavailableWarning = cache.getUnavailableWarning() %}
+        {% if unavailableWarning %}
+            <div class="field">
+                <p class="warning with-icon">
+                    {{ unavailableWarning }}
+                </p>
+            </div>
+        {% endif %}
+
         {% namespace 'cacheSettings[' ~ cacheClassName ~ ']' %}
             {{ cache.getSettingsHtml()|raw }}
         {% endnamespace %}
