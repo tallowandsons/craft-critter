@@ -34,3 +34,10 @@
         </ul>
     </nav>
 {% endblock %}
+
+{% if craft.critter.isBeta and currentUser.admin and craft.app.config.general.devMode %}
+    {% set footer %}
+        {# Beta status automatically detected from plugin version (dev-, beta, alpha, rc patterns) #}
+        <p>This version of Critter is in beta. Please raise any issues on the <a href="https://github.com/tallowandsons/craft-critter/issues" target="_blank">GitHub repository</a>.</p>
+    {% endset %}
+{% endif %}

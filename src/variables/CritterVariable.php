@@ -71,4 +71,31 @@ class CritterVariable
     {
         return Critter::getInstance()->fallbackService;
     }
+
+    /**
+     * Check if the plugin is in beta based on the version number
+     * Returns true if version contains 'dev-', 'beta', 'alpha', or 'rc'
+     */
+    public function isBeta(): bool
+    {
+        $version = Critter::getInstance()->getVersion();
+
+        // Check for common pre-release version patterns
+        $betaPatterns = [
+            'dev-',     // Development versions (e.g., dev-master)
+            'beta',     // Beta versions (e.g., 1.0.0-beta.1)
+            'alpha',    // Alpha versions (e.g., 1.0.0-alpha.1)
+            'rc',       // Release candidates (e.g., 1.0.0-rc.1)
+        ];
+
+        $versionLower = strtolower($version);
+
+        foreach ($betaPatterns as $pattern) {
+            if (str_contains($versionLower, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
