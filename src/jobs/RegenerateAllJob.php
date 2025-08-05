@@ -26,12 +26,12 @@ class RegenerateAllJob extends BaseJob
             return;
         }
 
-        $regenerated = 0;
+        $queued = 0;
         $failed = 0;
 
         foreach ($records as $index => $record) {
             // Update queue job progress
-            $this->setProgress($queue, $index / $totalRecords, Critter::translate('Regenerating CSS record {current} of {total}', [
+            $this->setProgress($queue, $index / $totalRecords, Critter::translate('Queueing CSS regeneration {current} of {total}', [
                 'current' => $index + 1,
                 'total' => $totalRecords
             ]));
@@ -43,25 +43,25 @@ class RegenerateAllJob extends BaseJob
                 // Create CSS request
                 $cssRequest = (new CssRequest())->setRequestUrl($urlModel);
 
-                // Generate CSS directly (don't expire, just regenerate)
-                Critter::getInstance()->generator->generate($cssRequest);
-                $regenerated++;
+                // Start generation using the queue (spawn individual jobs)
+                Critter::getInstance()->generator->startGenerate($cssRequest, true, true);
+                $queued++;
             } catch (\Exception $e) {
-                Critter::error("Failed to regenerate CSS for record ID {$record->id}: " . $e->getMessage(), __METHOD__);
+                Critter::error("Failed to queue CSS regeneration for record ID {$record->id}: " . $e->getMessage(), __METHOD__);
                 $failed++;
             }
         }
 
         // Log completion
         if ($failed > 0) {
-            Critter::warning("Regenerated {$regenerated} CSS records, {$failed} failed", __METHOD__);
+            Critter::warning("Queued {$queued} CSS regeneration jobs, {$failed} failed", __METHOD__);
         } else {
-            Critter::info("Successfully regenerated {$regenerated} CSS records", __METHOD__);
+            Critter::info("Successfully queued {$queued} CSS regeneration jobs", __METHOD__);
         }
     }
 
     protected function defaultDescription(): ?string
     {
-        return Critter::translate('Regenerating all CSS records');
+        return Critter::translate('Queueing CSS regeneration jobs for all records');
     }
 }

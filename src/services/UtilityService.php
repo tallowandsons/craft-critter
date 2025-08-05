@@ -148,16 +148,30 @@ class UtilityService extends Component
     public function regenerateAll()
     {
         try {
+            // Get count of all records to report to user
+            $totalRecords = RequestRecord::find()->count();
+
+            if ($totalRecords === 0) {
+                return (new UtilityActionResponse())
+                    ->setSuccess(true)
+                    ->setMessage(Critter::translate('No CSS records found to regenerate.'))
+                    ->setData([
+                        'count' => 0
+                    ]);
+            }
+
             // Queue regeneration job for all records
             $jobId = Craft::$app->getQueue()->push(new RegenerateAllJob());
 
             return (new UtilityActionResponse())
                 ->setSuccess(true)
-                ->setMessage(Critter::translate('Queued regeneration job (Job ID {jobId}) for all CSS records.', [
-                    'jobId' => $jobId
+                ->setMessage(Critter::translate('Queued regeneration job (Job ID {jobId}) for {count} CSS records.', [
+                    'jobId' => $jobId,
+                    'count' => $totalRecords
                 ]))
                 ->setData([
-                    'jobId' => $jobId
+                    'jobId' => $jobId,
+                    'count' => $totalRecords
                 ]);
         } catch (\Exception $e) {
             return (new UtilityActionResponse())
