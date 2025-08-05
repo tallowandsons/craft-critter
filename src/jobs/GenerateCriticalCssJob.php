@@ -33,18 +33,6 @@ class GenerateCriticalCssJob extends GenerateCssBaseJob
     /**
      * @inheritdoc
      */
-    protected function createRetryJob(int $nextAttempt): GenerateCssBaseJob
-    {
-        return new self([
-            'cssRequest' => $this->cssRequest,
-            'storeResult' => $this->storeResult,
-            'retryAttempt' => $nextAttempt
-        ]);
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected function getJobDescription(): string
     {
         return 'Generating critical css for ' . $this->cssRequest->getUrl()->getAbsoluteUrl();

@@ -111,9 +111,6 @@ return [
     // Maximum number of retries for retryable job failures
     // 'maxRetries' => 3,
 
-    // Base delay in seconds for retry exponential backoff
-    // 'retryBaseDelay' => 30,
-
     // =========================================================================
     // DEBUGGING & FALLBACKS
     // =========================================================================

@@ -70,9 +70,6 @@ class Settings extends Model
     // maximum number of retries for retryable job failures (mutex locks, network issues, etc.)
     public int $maxRetries = 3;
 
-    // base delay in seconds for retry exponential backoff
-    public int $retryBaseDelay = 30;
-
     // whether to enable debug logging to storage/logs/critter.log
     public bool $enableDebugLogging = false;
 

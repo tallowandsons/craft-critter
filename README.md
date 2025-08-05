@@ -37,7 +37,7 @@ Critter comes ready to use with the [criticalcss.com](https://criticalcss.com) A
 Generate a unique critical CSS file for each individual Entry (Entry Mode) or a shared critical CSS file for all entries in a Section (Section Mode).
 
 ### Robust & Reliable
-Critical CSS generation jobs are queued and processed in the background, ensuring efficient resource usage. Failed jobs are automatically retried using an exponential backoff strategy for maximum reliability.
+Critical CSS generation jobs are queued and processed in the background, and failed jobs are automatically retried.
 
 ### ⚡ Blitz Integration
 Critter plays nicely with the [Blitz](https://putyourlightson.com/plugins/blitz) static caching plugin. Automatically clear, expire, and refresh the Blitz cache when a page's critical CSS changes.

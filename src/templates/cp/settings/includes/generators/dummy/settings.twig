@@ -1,0 +1,33 @@
+{% import '_includes/forms' as forms %}
+{% from 'critter/macros' import configWarning, configGroupWarning %}
+
+{# whether or not allowAdminChanges is on #}
+{% set readOnly = readOnly ?? false %}
+
+<div class="critter-info-block critter-info-block--info">
+    <p>The Dummy Generator is for testing purposes only. Configure the behavior you want to simulate:</p>
+</div>
+
+{{ forms.lightswitchField({
+    label: "Success"|t(craft.critter.pluginHandle),
+    instructions: "Toggle between success and failure responses."|t(craft.critter.pluginHandle),
+    name: 'success',
+    on: settings.generatorSettings.success ?? generator.success,
+    disabled: readOnly,
+    errors: generator.getErrors('success'),
+}) }}
+
+{{ forms.selectField({
+    label: "Exception Type"|t(craft.critter.pluginHandle),
+    instructions: "Choose which type of exception to throw (if any)."|t(craft.critter.pluginHandle),
+    name: 'exceptionType',
+    value: settings.generatorSettings.exceptionType ?? generator.exceptionType,
+    options: [
+        { label: 'None', value: '' },
+        { label: 'RetryableCssGenerationException', value: 'RetryableCssGenerationException' }
+    ],
+    disabled: readOnly,
+    errors: generator.getErrors('exceptionType'),
+}) }}
+
+{{ config.generatorSettings is defined ? configGroupWarning('generatorSettings') }}
