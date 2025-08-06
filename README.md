@@ -188,4 +188,4 @@ This plugin requires a commercial license purchasable through the Craft Plugin S
 
 ## Credits
 
-Built by [Tallow &amp; Sons](https://github.com/tallowandsons) for the discerning developer in quiet pursuit of haste.
+Made with care and attention by [Tallow &amp; Sons](https://github.com/tallowandsons)
