@@ -51,4 +51,13 @@ class BaseCache extends Model implements CacheInterface
     {
         return [];
     }
+
+    /**
+     * Returns a warning message if the cache is unavailable.
+     * This is used to display a warning in the CP.
+     */
+    public function getUnavailableWarning(): ?string
+    {
+        return null;
+    }
 }
