@@ -22,7 +22,11 @@ Critter comes pre-configured with the **criticalcss.com** cloud-based generator.
 3. In Craft, go to **Critter → Settings → General → Generator**
 4. Enter your API key in the generator settings
 
-ℹ️ For local development, you can switch to the included CLI generator or implement your own custom generator if you have specific requirements.
+#### CLI Generator (Local Development Only)
+
+Alternatively, Critter also includes a CLI-based generator that uses the `@plone/critical-css-cli` npm package to generate critical CSS locally on your server. There are setup instructions further down this readme.
+
+ℹ️ You can also implement your own custom generator if you have specific requirements.
 
 ### 3. Celebrate 🎉
 

@@ -111,7 +111,7 @@ class CriticalCssCliGenerator extends BaseGenerator
      */
     public static function displayName(): string
     {
-        return Critter::translate('@plone/critical-css-cli Generator');
+        return Critter::translate('Local CLI Generator');
     }
 
     /**
