@@ -46,6 +46,7 @@ class CriticalCssDotComApi extends BaseRestApi
     const RESULT_STATUS_HTML_INVALID_WORDPRESS_REDIRECTS = 'HTML_INVALID_WORDPRESS_REDIRECTS';
     const RESULT_STATUS_CRITICAL_CSS_EMPTY = 'CRITICAL_CSS_EMPTY';
     const RESULT_STATUS_PENTHOUSE_TIMEOUT = 'PENTHOUSE_TIMEOUT';
+    const RESULT_STATUS_HTTP_SOCKET_HANG_UP = 'HTTP_SOCKET_HANG_UP';
 
     // the API key for the criticalcss.com account
     private string $apiKey;

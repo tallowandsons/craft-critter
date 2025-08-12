@@ -461,6 +461,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         $retryableStatuses = [
             CriticalCssDotComApi::RESULT_STATUS_PENTHOUSE_TIMEOUT,
+            CriticalCssDotComApi::RESULT_STATUS_HTTP_SOCKET_HANG_UP
         ];
 
         return in_array($resultStatus, $retryableStatuses, true);
