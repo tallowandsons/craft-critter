@@ -97,41 +97,9 @@ class GeneratorService extends Component
             // nullify expiry date since fresh CSS was generated
             Critter::getInstance()->requestRecords->nullifyExpiryDate($cssRequest);
 
-            // Validation & storage policy
-            $cssModel = $response->getCss();
-            $validator = Critter::getInstance()->cssValidator;
-            $validation = $validator->validate($cssModel);
-
-            $settings = Critter::getInstance()->getSettings();
-            $toSave = null;
-
-            if ($validation->isBlocked()) {
-                // Blocked: log and decide whether to fail the job or use fallback
-                $detail = implode(',', $validation->violations);
-                Critter::getInstance()->log->error("Unsafe CSS blocked for '{$urlString}' ({$detail})", 'validation');
-
-                if ($settings->failOnUnsafe) {
-                    // Mark record as error and throw
-                    Critter::getInstance()->requestRecords->setStatus($cssRequest, RequestRecord::STATUS_ERROR);
-                    throw new \RuntimeException('Critical CSS validation failed: ' . $detail);
-                }
-
-                // Otherwise, use fallback CSS
-                $fallbackCss = new \tallowandsons\critter\models\CssModel(Critter::getInstance()->fallbackService->getFallbackCss($url->siteId));
-                $toSave = $fallbackCss;
-            } elseif ($validation->isSanitized()) {
-                $detail = implode(',', $validation->violations);
-                if ($settings->notifyOnUnsafe) {
-                    Critter::getInstance()->log->warning("CSS sanitized for '{$urlString}' ({$detail})", 'validation');
-                }
-                $toSave = $validation->css;
-            } else {
-                $toSave = $validation->css; // ok
-            }
-
             // store the css
             if ($storeResult) {
-                Critter::getInstance()->storage->save($cssRequest, $toSave);
+                Critter::getInstance()->storage->save($cssRequest, $response->getCss());
                 Critter::getInstance()->log->logStorageOperation('save', $urlString, 'CraftCacheStorage');
             }
 

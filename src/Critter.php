@@ -28,7 +28,6 @@ use tallowandsons\critter\models\Settings;
 use tallowandsons\critter\services\CacheService;
 use tallowandsons\critter\services\ConfigService;
 use tallowandsons\critter\services\CssService;
-use tallowandsons\critter\services\CssValidatorService;
 use tallowandsons\critter\services\ExpirationService;
 use tallowandsons\critter\services\FallbackService;
 use tallowandsons\critter\services\GeneratorService;
@@ -62,7 +61,6 @@ use yii\log\Dispatcher;
  * @property-read LogService $log
  * @property-read UtilityService $utilityService
  * @property-read FallbackService $fallbackService
- * @property-read CssValidatorService $cssValidator
  */
 class Critter extends Plugin
 {
@@ -87,7 +85,6 @@ class Critter extends Plugin
                 'storage' => StorageService::class,
                 'generator' => GeneratorService::class,
                 'css' => CssService::class,
-                'cssValidator' => CssValidatorService::class,
                 'cache' => CacheService::class,
                 'requestRecords' => RequestRecordService::class,
                 'settingsService' => SettingsService::class,

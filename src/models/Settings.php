@@ -89,50 +89,6 @@ class Settings extends Model
     // should be an absolute path to a CSS file on the server
     public ?string $fallbackCssFilePath = null;
 
-    // ---- CSS validation & sanitization ----
-
-    /**
-     * Enable CSS sanitization/validation on generated CSS.
-     * Validation runs during generation (off the request path).
-     */
-    public bool $sanitizeCss = true;
-
-    /**
-     * Maximum allowed CSS size in bytes. CSS larger than this will be treated as unsafe.
-     */
-    public int $maxCssBytes = 102400; // 100KB
-
-    /**
-     * Allow data: URLs in CSS url() values.
-     */
-    public bool $allowDataUrls = false;
-
-    /**
-     * Maximum size (in bytes) of an inlined data: URL payload when allowed.
-     */
-    public int $dataUrlMaxBytes = 4096; // 4KB
-
-    /**
-     * Hosts allowed for absolute external URLs in CSS (http/https). Empty = same-origin only.
-     */
-    public array $allowedExternalHosts = [];
-
-    /**
-     * Strict mode: apply extra defensive checks. Kept lightweight by default.
-     */
-    public bool $strictMode = false;
-
-    /**
-     * If true, fail the generation job when unsafe CSS is detected. Default is to succeed
-     * and use sanitized or fallback CSS while logging the issue.
-     */
-    public bool $failOnUnsafe = false;
-
-    /**
-     * If true, emit an info/warn log when sanitization occurs (always logs on block).
-     */
-    public bool $notifyOnUnsafe = true;
-
     /**
      * @inheritdoc
      */
