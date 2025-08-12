@@ -122,14 +122,9 @@ class CriticalCssDotComGenerator extends BaseGenerator
             try {
                 $resultId = $this->triggerGenerateJob($urlModel);
             } catch (\Exception $e) {
-                // If this is an authentication exception, return it as a GeneratorResponse
-                if ($this->isAuthError($e)) {
-                    return (new GeneratorResponse())
-                        ->setSuccess(false)
-                        ->setException($e);
-                }
-                // Re-throw other exceptions
-                throw $e;
+                return (new GeneratorResponse())
+                    ->setSuccess(false)
+                    ->setException($e);
             }
 
             if (!$resultId) {
@@ -338,7 +333,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
             return null;
         }
 
-        Critter::getInstance()->log->info(
+        Critter::info(
             "Triggering new generate job for URL: {$urlModel->getAbsoluteUrl()}",
             'generation'
         );
@@ -357,11 +352,12 @@ class CriticalCssDotComGenerator extends BaseGenerator
                 // Clear global job tracking on API error
                 $this->clearGlobalGenerateJob();
 
-                Critter::getInstance()->log->error(
+                Critter::error(
                     "Failed to generate critical CSS from criticalcss.com API: " . $error->toString(),
                     'generation'
                 );
-                return null;
+
+                throw new \Exception("Failed to generate critical CSS from criticalcss.com API: " . $error->toString());
             }
 
             $resultId = $response->getJobId();
@@ -394,16 +390,12 @@ class CriticalCssDotComGenerator extends BaseGenerator
             // Clear global job tracking on any exception
             $this->clearGlobalGenerateJob();
 
-            // Re-throw authentication exceptions so they bubble up properly
-            if ($this->isAuthError($e)) {
-                throw $e;
-            }
-
-            Critter::getInstance()->log->error(
+            Critter::error(
                 "Exception while triggering generate job: {$e->getMessage()}",
                 'generation'
             );
-            return null;
+
+            throw $e;
         }
     }
 

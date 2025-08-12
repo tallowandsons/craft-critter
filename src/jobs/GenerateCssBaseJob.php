@@ -60,10 +60,7 @@ abstract class GenerateCssBaseJob extends BaseJob implements RetryableJobInterfa
     {
         $context = $this->getJobContext();
 
-        Craft::info(
-            "Starting CSS generation job: {$context}",
-            Critter::getPluginHandle()
-        );
+        Critter::info("Starting CSS generation job: {$context}", 'generate');
 
         // Early abort: Skip execution if NoGenerator is active
         if (NoGenerator::isActive()) {

@@ -13,6 +13,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\events\TemplateEvent;
 use craft\helpers\UrlHelper;
+use craft\log\MonologTarget;
 use craft\services\Elements;
 use craft\services\UserPermissions;
 use craft\services\Utilities;
@@ -20,6 +21,8 @@ use craft\utilities\ClearCaches;
 use craft\web\UrlManager;
 use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
+use Monolog\Formatter\LineFormatter;
+use Psr\Log\LogLevel;
 use tallowandsons\critter\helpers\GeneratorHelper;
 use tallowandsons\critter\models\Settings;
 use tallowandsons\critter\services\CacheService;
@@ -39,6 +42,7 @@ use tallowandsons\critter\variables\CritterVariable;
 use tallowandsons\critter\web\assets\cp\CpAsset;
 use yii\base\Event;
 use yii\base\View as BaseView;
+use yii\log\Dispatcher;
 
 /**
  * Critter plugin
@@ -105,6 +109,7 @@ class Critter extends Plugin
         $this->registerClearCaches();
         $this->attachEventHandlers();
         $this->registerPermissions();
+        $this->registerLogTarget();
 
         // register control panel URL rules
         if (Craft::$app->getRequest()->getIsCpRequest()) {
@@ -319,6 +324,29 @@ class Critter extends Plugin
                 );
             }
         );
+    }
+
+    /**
+     * Register critter log target
+     */
+    private function registerLogTarget(): void
+    {
+        if (Craft::getLogger()->dispatcher instanceof Dispatcher) {
+            Craft::getLogger()->dispatcher->targets[] = new MonologTarget([
+                'name' => Critter::getPluginHandle(),
+                'categories' => [
+                    Critter::getPluginHandle(),
+                    Critter::getPluginHandle() . '.*'
+                ],
+                'level' => LogLevel::INFO,
+                'logContext' => false,
+                'allowLineBreaks' => false,
+                'formatter' => new LineFormatter(
+                    format: "[%datetime%] [%level_name%] [%extra.yii_category%] %message%\n",
+                    dateFormat: 'Y-m-d H:i:s',
+                ),
+            ]);
+        }
     }
 
     /**

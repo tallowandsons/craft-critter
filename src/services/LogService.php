@@ -39,15 +39,12 @@ class LogService extends Component
         // Get debug logging setting from plugin settings
         $settings = Critter::getInstance()->getSettings();
         $this->enableDebugLogging = $settings->enableDebugLogging ?? $this->enableDebugLogging;
-
-        // Set up dedicated MonologTarget for Critter logs
-        $this->_setupMonologTarget();
     }
 
     /**
      * Log an informational message
      */
-    public function info(string $message, string $category = null): void
+    public function info(string $message, ?string $category = null): void
     {
         $this->log($message, LogLevel::INFO, $category);
     }
@@ -55,7 +52,7 @@ class LogService extends Component
     /**
      * Log a warning message
      */
-    public function warning(string $message, string $category = null): void
+    public function warning(string $message, ?string $category = null): void
     {
         $this->log($message, LogLevel::WARNING, $category);
     }
@@ -63,7 +60,7 @@ class LogService extends Component
     /**
      * Log an error message
      */
-    public function error(string $message, string $category = null): void
+    public function error(string $message, ?string $category = null): void
     {
         $this->log($message, LogLevel::ERROR, $category);
     }
@@ -71,7 +68,7 @@ class LogService extends Component
     /**
      * Log a debug message (only if debug logging is enabled)
      */
-    public function debug(string $message, string $category = null): void
+    public function debug(string $message, ?string $category = null): void
     {
         if ($this->enableDebugLogging) {
             $this->log($message, LogLevel::DEBUG, $category);
@@ -81,7 +78,7 @@ class LogService extends Component
     /**
      * Log a critical error message
      */
-    public function critical(string $message, string $category = null): void
+    public function critical(string $message, ?string $category = null): void
     {
         $this->log($message, LogLevel::CRITICAL, $category);
     }
@@ -89,14 +86,14 @@ class LogService extends Component
     /**
      * Log a message with the specified level
      */
-    public function log(string $message, string $level = LogLevel::INFO, string $category = null): void
+    public function log(string $message, string $level = LogLevel::INFO, ?string $category = null): void
     {
-        // Default category to the plugin handle
+        // Default category to the plugin handle; caller may pass full category
         if ($category === null) {
             $category = Critter::getPluginHandle();
-        } else {
-            // Prefix category with plugin handle for namespacing
-            $category = Critter::getPluginHandle() . '.' . $category;
+        } elseif (!str_starts_with($category, Critter::getPluginHandle())) {
+            // Prefix category with plugin handle for namespacing if not already namespaced
+            $category = Critter::getPluginHandle() . '.' . ltrim($category, '.');
         }
 
         // Convert PSR log level to Yii log level
@@ -117,7 +114,7 @@ class LogService extends Component
     /**
      * Log critical CSS generation completion
      */
-    public function logGenerationComplete(string $url, string $generator, float $duration = null): void
+    public function logGenerationComplete(string $url, string $generator, ?float $duration = null): void
     {
         $durationText = $duration ? " in {$duration}s" : '';
         $this->info("Completed critical CSS generation for '{$url}' using {$generator}{$durationText}", 'generation');
@@ -154,39 +151,6 @@ class LogService extends Component
     {
         $jobText = $jobId ? " (Job #{$jobId})" : '';
         $this->info("Queue job '{$operation}' for '{$url}'{$jobText}", 'queue');
-    }
-
-    /**
-     * Set up the MonologTarget for Critter logs
-     */
-    private function _setupMonologTarget(): void
-    {
-        // Only setup if we have a valid dispatcher
-        if (!(Craft::getLogger()->dispatcher instanceof Dispatcher)) {
-            return;
-        }
-
-        // Determine the log level based on debug setting
-        $logLevel = $this->enableDebugLogging ? LogLevel::DEBUG : LogLevel::INFO;
-
-        // Create the MonologTarget with Critter-specific configuration
-        $target = new MonologTarget([
-            'name' => $this->_logChannel,
-            'categories' => [Critter::getPluginHandle() . '*'],
-            'level' => $logLevel,
-            'logContext' => false,
-            'allowLineBreaks' => false,
-            'maxFiles' => 5,
-            'formatter' => new LineFormatter(
-                format: "[%datetime%] [%level_name%] [%extra.yii_category%] %message%\n",
-                dateFormat: 'Y-m-d H:i:s',
-                allowInlineLineBreaks: false,
-                ignoreEmptyContextAndExtra: true,
-            ),
-        ]);
-
-        // Add the target to the logger dispatcher
-        Craft::getLogger()->dispatcher->targets[$this->_logChannel] = $target;
     }
 
     /**
