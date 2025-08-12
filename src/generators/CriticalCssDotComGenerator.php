@@ -179,7 +179,7 @@ class CriticalCssDotComGenerator extends BaseGenerator
                         // Clear the record data to allow a fresh attempt
                         $this->clearRecordData($urlModel);
 
-                        Critter::getInstance()->log->info(
+                        Critter::info(
                             "Retryable failure '{$resultStatus}' for URL: {$urlModel->getAbsoluteUrl()}. Record cleared for retry.",
                             'generation'
                         );
@@ -453,7 +453,8 @@ class CriticalCssDotComGenerator extends BaseGenerator
     {
         $retryableStatuses = [
             CriticalCssDotComApi::RESULT_STATUS_PENTHOUSE_TIMEOUT,
-            CriticalCssDotComApi::RESULT_STATUS_HTTP_SOCKET_HANG_UP
+            CriticalCssDotComApi::RESULT_STATUS_HTTP_SOCKET_HANG_UP,
+            CriticalCssDotComApi::RESULT_STATUS_WORKER_TIMEOUT
         ];
 
         return in_array($resultStatus, $retryableStatuses, true);
