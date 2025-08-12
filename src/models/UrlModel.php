@@ -11,6 +11,7 @@ use craft\helpers\App;
 use craft\helpers\UrlHelper;
 use craft\models\Section;
 use tallowandsons\critter\Critter;
+use tallowandsons\critter\helpers\CompatibilityHelper;
 
 /**
  * Url Model model
@@ -172,7 +173,7 @@ class UrlModel extends Model
             return null;
         }
 
-        $section = Craft::$app->entries->getSectionByHandle($sectionHandle);
+        $section = CompatibilityHelper::getSectionByHandle($sectionHandle);
         if (!$section) {
             return null;
         }

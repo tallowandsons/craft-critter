@@ -6,6 +6,7 @@ use craft\base\Model;
 use craft\elements\Entry;
 use craft\models\Section;
 use Craft;
+use tallowandsons\critter\helpers\CompatibilityHelper;
 
 /**
  * Tag Model
@@ -135,7 +136,9 @@ class Tag extends Model
             return null;
         }
 
-        return Craft::$app->entries->getSectionByHandle($this->identifier);
+
+
+        return CompatibilityHelper::getSectionByHandle($this->identifier);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace tallowandsons\critter\services;
 use Craft;
 use craft\models\Section_SiteSettings;
 use tallowandsons\critter\Critter;
+use tallowandsons\critter\helpers\CompatibilityHelper;
 use yii\base\Component;
 
 /**
@@ -19,7 +20,7 @@ class SettingsService extends Component
      */
     public function getConfigurableSections(?int $siteId = null): array
     {
-        $sections = Craft::$app->getEntries()->getAllSections() ?? [];
+        $sections = CompatibilityHelper::getAllSections() ?? [];
 
         $sections = array_filter($sections, function ($section) use ($siteId) {
             // If no siteId is provided, check if any siteSettings have URLs enabled

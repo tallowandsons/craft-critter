@@ -23,6 +23,7 @@ use craft\web\View;
 use craft\web\twig\variables\CraftVariable;
 use Monolog\Formatter\LineFormatter;
 use Psr\Log\LogLevel;
+use tallowandsons\critter\helpers\CompatibilityHelper;
 use tallowandsons\critter\helpers\GeneratorHelper;
 use tallowandsons\critter\models\Settings;
 use tallowandsons\critter\services\CacheService;
@@ -112,12 +113,6 @@ class Critter extends Plugin
         if (Craft::$app->getRequest()->getIsCpRequest()) {
             $this->registerCpUrlRules();
         }
-
-        // Any code that creates an element query or loads Twig should be deferred until
-        // after Craft is fully initialized, to avoid conflicts with other plugins/modules
-        Craft::$app->onInit(function () {
-            // ...
-        });
     }
 
     /**
@@ -219,7 +214,7 @@ class Critter extends Plugin
             }
         );
 
-        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITIES, function (RegisterComponentTypesEvent $event) {
+        Event::on(Utilities::class, CompatibilityHelper::getRegisterUtilitiesEvent(), function (RegisterComponentTypesEvent $event) {
             $event->types[] = CritterUtility::class;
         });
     }

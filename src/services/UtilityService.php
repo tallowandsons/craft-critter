@@ -16,6 +16,7 @@ use tallowandsons\critter\models\UtilityActionResponse;
 use tallowandsons\critter\records\RequestRecord;
 use yii\base\Component;
 use DateTime;
+use tallowandsons\critter\helpers\CompatibilityHelper;
 
 /**
  * Utility Service service
@@ -106,7 +107,7 @@ class UtilityService extends Component
     {
         try {
             // Find section to validate it exists
-            $section = Craft::$app->entries->getSectionByHandle($sectionHandle);
+            $section = CompatibilityHelper::getSectionByHandle($sectionHandle);
             if (!$section) {
                 return (new UtilityActionResponse())
                     ->setSuccess(false)
@@ -250,7 +251,7 @@ class UtilityService extends Component
     {
         try {
             // Find section to validate it exists
-            $section = Craft::$app->entries->getSectionByHandle($sectionHandle);
+            $section = CompatibilityHelper::getSectionByHandle($sectionHandle);
             if (!$section) {
                 return (new UtilityActionResponse())
                     ->setSuccess(false)
