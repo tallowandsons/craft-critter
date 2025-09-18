@@ -1,5 +1,11 @@
 # Release Notes for Critter
 
+## 1.0.6 - 2025-09-18
+
+### Added
+
+- Added settings to add basic auth credentials to API requests - useful for staging environments behind basic auth.
+
 ## 1.0.5 - 2025-08-12
 
 ### Changed
