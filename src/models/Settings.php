@@ -59,6 +59,12 @@ class Settings extends Model
     // than the one the site is running on, for example on a staging environment.
     public ?string $baseUrlOverride = null;
 
+    // Optional HTTP Basic Auth credentials used when Critical CSS generator
+    // needs to fetch pages protected by basic authentication.
+    // These support environment variables (e.g. "$BASIC_AUTH_USER").
+    public ?string $basicAuthUsername = null;
+    public ?string $basicAuthPassword = null;
+
     // what the default mode should be.
     // this will determine whether critical css
     // is generated for each entry or each section

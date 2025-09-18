@@ -2,6 +2,9 @@
 
 namespace tallowandsons\critter\drivers\apis;
 
+use Craft;
+use craft\helpers\App;
+use tallowandsons\critter\Critter;
 use tallowandsons\critter\models\api\CriticalCssDotComGenerateResponse;
 use tallowandsons\critter\models\api\CriticalCssDotComResultsResponse;
 use tallowandsons\critter\models\UrlModel;
@@ -91,11 +94,28 @@ class CriticalCssDotComApi extends BaseRestApi
 
     public function generate(UrlModel $urlModel, int $width = self::DEFAULT_WIDTH, int $height = self::DEFAULT_HEIGHT): CriticalCssDotComGenerateResponse
     {
+        // Build optional Basic Auth header from settings
+        $settings = Critter::getInstance()->getSettings();
+
+        $username = $settings->basicAuthUsername ? App::parseEnv($settings->basicAuthUsername) : null;
+        $password = $settings->basicAuthPassword ? App::parseEnv($settings->basicAuthPassword) : null;
+
+        $customHeaders = null;
+        if ($username !== null && $username !== '' && $password !== null && $password !== '') {
+            $authString = 'Authorization: Basic ' . base64_encode($username . ':' . $password);
+            $customHeaders = $authString;
+        }
+
         $data = [
             'url' => $urlModel->getAbsoluteUrl(),
             'width' => $width,
             'height' => $height,
         ];
+
+        // Only send custom headers if configured
+        if ($customHeaders) {
+            $data['customPageHeaders'] = $customHeaders;
+        }
 
         $response = $this->post('generate', $data);
 

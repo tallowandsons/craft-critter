@@ -72,6 +72,12 @@ return [
     // Base URL override for critical CSS generation (useful for staging, etc.)
     // 'baseUrlOverride' => null,
 
+    // Optional HTTP Basic Auth credentials used when fetching HTML for generation.
+    // Useful if your site is behind basic auth in certain environments.
+    // Environment variables and aliases are supported.
+    // 'basicAuthUsername' => null, // e.g. '$BASIC_AUTH_USER'
+    // 'basicAuthPassword' => null, // e.g. '$BASIC_AUTH_PASS'
+
     // Query string parameters that should be treated as unique URLs
     // 'uniqueQueryParams' => [],
 
