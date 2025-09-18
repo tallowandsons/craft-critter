@@ -101,6 +101,34 @@
     code: true
 }) }}
 
+{# Optional HTTP Basic Auth credentials (used when fetching pages for generation) #}
+{{ forms.autosuggestField({
+    label: "Basic Auth Username"|t(pluginHandle),
+    instructions: "If your site is behind HTTP Basic Authentication, provide the username. Environment variables supported."|t(pluginHandle),
+    warning: config.basicAuthUsername is defined ? configWarning('basicAuthUsername') : null,
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'settings[basicAuthUsername]',
+    value: settings.basicAuthUsername ?? null,
+    required: false,
+    disabled: readOnly,
+    code: true
+}) }}
+
+{{ forms.autosuggestField({
+    label: "Basic Auth Password"|t(pluginHandle),
+    instructions: "If your site is behind HTTP Basic Authentication, provide the password. Environment variables supported."|t(pluginHandle),
+    warning: config.basicAuthPassword is defined ? configWarning('basicAuthPassword') : null,
+    suggestEnvVars: true,
+    suggestAliases: true,
+    name: 'settings[basicAuthPassword]',
+    value: settings.basicAuthPassword ?? null,
+    required: false,
+    disabled: readOnly,
+    code: true,
+    type: 'password'
+}) }}
+
 {{ forms.autosuggestField({
     label: "Fallback CSS File Path"|t(pluginHandle),
     instructions: "Path to a CSS file to use as fallback when no critical CSS is cached. This will be used as a secondary fallback if generated fallback CSS is enabled but not available. For security, only .css files within the storage directory are allowed. Files are limited to 1MB in size. Environment variables are supported."|t(pluginHandle),
