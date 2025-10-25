@@ -30,7 +30,7 @@ class UrlPattern extends Model
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): self
+    public function setEnabled(mixed $enabled): self
     {
         // Handle various truthy/falsy values for enabled flag
         $this->enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
