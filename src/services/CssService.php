@@ -123,6 +123,12 @@ class CssService extends Component
             return false;
         }
 
+        // drop request if excluded by the `ignorePatterns` setting
+        if ($this->isIgnoredUrl($url)) {
+            Critter::debug("Skipping CSS generation for ignored URL pattern: {$url}", 'css');
+            return false;
+        }
+
         // Check if the response is OK first (before other checks that might depend on it)
         $response = Craft::$app->getResponse();
         if ($response && !$response->getIsOk()) {
@@ -173,6 +179,20 @@ class CssService extends Component
         Critter::debug("CSS generation ALLOWED for request: {$url} (Method: {$method}, Accept: {$acceptHeader}, User-Agent: {$userAgent})", 'css');
 
         return true;
+    }
+
+    private function isIgnoredUrl(string $url): bool
+    {
+        $settings = Critter::getInstance()->getSettings();
+        foreach ($settings->ignorePatterns as $patternArray) {
+            if ($patternArray['enabled'] !== true || empty($patternArray['pattern'])) {
+                continue;
+            }
+            if (@preg_match($patternArray['pattern'], $url)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

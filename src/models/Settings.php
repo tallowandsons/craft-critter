@@ -95,6 +95,8 @@ class Settings extends Model
     // should be an absolute path to a CSS file on the server
     public ?string $fallbackCssFilePath = null;
 
+    public array $ignorePatterns = [];
+
     /**
      * @inheritdoc
      */
