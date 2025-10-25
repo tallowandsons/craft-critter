@@ -81,6 +81,9 @@ return [
     // Query string parameters that should be treated as unique URLs
     // 'uniqueQueryParams' => [],
 
+    // URL patterns to exclude from critical CSS generation
+    // public array $excludePatterns = [];
+
     // Default mode for critical CSS generation: 'entry' or 'section'
     // Options: Settings::MODE_ENTRY, Settings::MODE_SECTION
     // 'defaultMode' => Settings::MODE_SECTION,

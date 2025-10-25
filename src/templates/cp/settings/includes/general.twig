@@ -88,6 +88,33 @@
     disabled: readOnly,
 }) }}
 
+{# ignore patterns #}
+{{ forms.editableTableField({
+    label: "Exclude Patterns"|t(pluginHandle),
+    instructions:  "Requests matching these patterns will be excluded and not processed for critical CSS"|t(pluginHandle),
+    warning: (config.excludePatterns is defined ? configWarning('excludePatterns') : null),
+    name: 'settings[excludePatterns]',
+    cols: {
+        enabled: {
+            type: 'lightswitch',
+            value: true,
+            thin: true,
+        },
+        pattern: {
+            type: 'singleline',
+            heading: 'Pattern'|t(pluginHandle),
+            placeholder: "Enter a pattern"|t(pluginHandle),
+            code: true,
+        },
+    },
+    rows: settings.excludePatterns,
+    addRowLabel: "Add pattern"|t(pluginHandle),
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    disabled: readOnly,
+}) }}
+
 {{ forms.autosuggestField({
     label: "Base URL Override"|t(craft.critter.pluginHandle),
     instructions: "An optional replacement base URL for generating critical CSS. This can be useful for testing or staging environments."|t(craft.critter.pluginHandle),
