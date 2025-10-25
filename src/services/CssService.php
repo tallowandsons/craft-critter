@@ -146,7 +146,7 @@ class CssService extends Component
         }
 
         // drop request if excluded by the `excludePatterns` setting
-        if ($this->isExcludedUrl($url)) {
+        if ($this->isExcludedUrl()) {
             Critter::debug("Skipping CSS generation for excluded URL pattern: {$url}", 'css');
             return false;
         }
@@ -182,7 +182,7 @@ class CssService extends Component
         return true;
     }
 
-    private function isExcludedUrl(string $url): bool
+    private function isExcludedUrl(): bool
     {
         $settings = Critter::getInstance()->getSettings();
         foreach ($settings->excludePatterns as $patternArray) {

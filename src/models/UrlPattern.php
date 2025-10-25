@@ -4,6 +4,7 @@ namespace tallowandsons\critter\models;
 
 use Craft;
 use craft\base\Model;
+use tallowandsons\critter\Critter;
 
 /**
  * Url Pattern model
@@ -44,32 +45,62 @@ class UrlPattern extends Model
         return !empty($this->pattern);
     }
 
-    public function getPattern(): string
+    public function getPattern(bool $normalise = true): string
     {
-        return $this->pattern;
+        return $normalise ? $this->normalisePattern() : $this->pattern;
     }
 
-    public function setPattern(string $pattern, bool $normalise = true): self
+    public function setPattern(string $pattern): self
     {
-        if ($normalise) {
-            // trim leading and trailing whitespace
-            $pattern = trim($pattern);
-
-            // add delimiters if not present
-            if (@preg_match($pattern, '') === false) {
-                $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
-            }
-        }
-
         $this->pattern = $pattern;
         return $this;
     }
 
     public function patternMatches(UrlModel $urlModel): bool
     {
+        // abort early if pattern is not valid
+        if (!$this->patternIsValid()) {
+            return false;
+        }
+
         $subject = $urlModel->getPath();
-        $match = (bool) preg_match($this->pattern, $subject);
-        return $match;
+
+        // check if pattern matches the subject
+        // (suppress errors for invalid patterns - should not occur due to prior validation)
+        $match = @preg_match($this->getPattern(), $subject);
+
+        // return whether there was a match (cast int to bool)
+        return (bool) $match;
+    }
+
+    private function patternIsValid(): bool
+    {
+        // if no pattern provided, use the normalised model pattern
+        $pattern = $this->getPattern();
+
+        try {
+            return preg_match($pattern, '') !== false;
+        } catch (\Throwable $th) {
+            Critter::error("Invalid regex pattern in UrlPattern: " . ($pattern), __METHOD__);
+            return false;
+        }
+    }
+
+    /**
+     * Normalise a pattern by trimming whitespace and adding delimiters if needed
+     */
+    private function normalisePattern(): string
+    {
+        // trim leading and trailing whitespace
+        $pattern = trim($this->pattern);
+
+        // add forward slash delimiters if not present
+        if (strlen($pattern) < 2 || $pattern[0] !== '/' || $pattern[-1] !== '/') {
+            // Escape forward slashes and wrap with delimiters
+            $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+        }
+
+        return $pattern;
     }
 
     // ===============
