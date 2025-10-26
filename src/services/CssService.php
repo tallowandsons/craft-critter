@@ -6,6 +6,7 @@ use Craft;
 use craft\elements\User;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\helpers\UrlHelper;
 use tallowandsons\critter\models\CssModel;
 use tallowandsons\critter\models\CssRequest;
 use tallowandsons\critter\models\Settings;
@@ -184,23 +185,8 @@ class CssService extends Component
 
     private function isExcludedUrl(): bool
     {
-        $settings = Critter::getInstance()->getSettings();
-        foreach ($settings->excludePatterns as $patternArray) {
-
-            $patternModel = UrlPattern::createFromArray($patternArray);
-
-            // skip if not enabled or no pattern
-            if (!$patternModel->isEnabled() || !$patternModel->hasPattern()) {
-                continue;
-            }
-
-            // return if pattern matches, otherwise continue
-            $urlModel = UrlFactory::createFromRequest();
-            if ($patternModel->patternMatches($urlModel)) {
-                return true;
-            }
-        }
-        return false;
+        $urlModel = UrlFactory::createFromRequest();
+        return UrlHelper::isExcludedUrl($urlModel);
     }
 
     /**
