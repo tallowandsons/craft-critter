@@ -6,10 +6,12 @@ use Craft;
 use craft\elements\User;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\helpers\UrlHelper;
 use tallowandsons\critter\models\CssModel;
 use tallowandsons\critter\models\CssRequest;
 use tallowandsons\critter\models\Settings;
 use tallowandsons\critter\models\UrlModel;
+use tallowandsons\critter\models\UrlPattern;
 use yii\base\Component;
 
 /**
@@ -123,12 +125,6 @@ class CssService extends Component
             return false;
         }
 
-        // drop request if excluded by the `ignorePatterns` setting
-        if ($this->isIgnoredUrl($url)) {
-            Critter::debug("Skipping CSS generation for ignored URL pattern: {$url}", 'css');
-            return false;
-        }
-
         // Check if the response is OK first (before other checks that might depend on it)
         $response = Craft::$app->getResponse();
         if ($response && !$response->getIsOk()) {
@@ -147,6 +143,12 @@ class CssService extends Component
             $contentType = $request->getContentType();
             $userAgent = $request->getUserAgent();
             Critter::debug("Skipping CSS generation for non-HTML request: {$url} (Accept: {$acceptHeader}, Content-Type: {$contentType}, User-Agent: {$userAgent})", 'css');
+            return false;
+        }
+
+        // drop request if excluded by the `excludePatterns` setting
+        if ($this->isExcludedUrl()) {
+            Critter::debug("Skipping CSS generation for excluded URL pattern: {$url}", 'css');
             return false;
         }
 
@@ -181,18 +183,10 @@ class CssService extends Component
         return true;
     }
 
-    private function isIgnoredUrl(string $url): bool
+    private function isExcludedUrl(): bool
     {
-        $settings = Critter::getInstance()->getSettings();
-        foreach ($settings->ignorePatterns as $patternArray) {
-            if ($patternArray['enabled'] !== true || empty($patternArray['pattern'])) {
-                continue;
-            }
-            if (@preg_match($patternArray['pattern'], $url)) {
-                return true;
-            }
-        }
-        return false;
+        $urlModel = UrlFactory::createFromRequest();
+        return UrlHelper::isExcludedUrl($urlModel);
     }
 
     /**

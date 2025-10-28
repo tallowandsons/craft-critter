@@ -51,13 +51,6 @@ class RegenerateAllJob extends BaseJob
                 $failed++;
             }
         }
-
-        // Log completion
-        if ($failed > 0) {
-            Critter::warning("Queued {$queued} CSS regeneration jobs, {$failed} failed", __METHOD__);
-        } else {
-            Critter::info("Successfully queued {$queued} CSS regeneration jobs", __METHOD__);
-        }
     }
 
     protected function defaultDescription(): ?string

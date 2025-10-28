@@ -7,6 +7,7 @@ use craft\base\Model;
 use craft\elements\Entry;
 use tallowandsons\critter\Critter;
 use tallowandsons\critter\factories\UrlFactory;
+use tallowandsons\critter\helpers\UrlHelper;
 use tallowandsons\critter\models\Tag;
 
 /**
@@ -137,6 +138,17 @@ class CssRequest extends Model
                     return 'url:' . md5($this->requestUrl->getAbsoluteUrl());
                 }
         }
+    }
+
+
+    /**
+     * Determine if this request is eligible for CSS generation.
+     * This is a version of CssService::isCssableRequest adapted for the CssRequest context.
+     * It's useful if a CssRequest is being processed outside of a web request context.
+     */
+    public function isCssable(): bool
+    {
+        return !UrlHelper::isExcludedUrl($this->getRequestUrl());
     }
 
     static public function createFromEntry(Entry $entry): self

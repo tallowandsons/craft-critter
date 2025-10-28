@@ -57,6 +57,16 @@ class GeneratorService extends Component
             return;
         }
 
+        // Early abort: Don't start generation for non-cssable requests
+        if (!$cssRequest->isCssable()) {
+            $urlString = $cssRequest->getUrl()->getAbsoluteUrl();
+            Critter::getInstance()->log->info(
+                "Skipping critical CSS generation for non-cssable URL: {$urlString}",
+                'generation'
+            );
+            return;
+        }
+
         $url = $cssRequest->getUrl()->getAbsoluteUrl();
         $generatorClass = get_class($this->generator);
         Critter::getInstance()->log->logGenerationStart($url, $generatorClass);
