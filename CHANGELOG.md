@@ -1,5 +1,13 @@
 # Release Notes for Critter
 
+## 1.1.0 - 2025-10-28
+
+### Added
+
+- Added new `excludePatterns` setting, to allow admins to configure URL patterns for Critter to ignore. Fixes [#61].
+
+[#61]: https://github.com/tallowandsons/craft-critter/issues/61
+
 ## 1.0.6 - 2025-09-18
 
 ### Added
