@@ -1,5 +1,11 @@
 # Release Notes for Critter
 
+## 1.1.1 - 2026-04-23
+
+### Fixed
+
+- Fix incorrect error output during job retries
+
 ## 1.1.0 - 2025-10-28
 
 ### Added

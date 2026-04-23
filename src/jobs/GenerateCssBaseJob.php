@@ -32,8 +32,11 @@ abstract class GenerateCssBaseJob extends BaseJob implements RetryableJobInterfa
         $settings = Critter::getInstance()->getSettings();
         $context = $this->getJobContext();
 
+        $logText = "Job retry check: {$context} - Attempt {$attempt}/{$settings->maxRetries}";
+        $logText .= $error ? ", Error: " . get_class($error) . " - " . $error->getMessage() : '';
+
         Critter::info(
-            "Job retry check: {$context} - Attempt {$attempt}/{$settings->maxRetries}, Error: " . get_class($error) . " - " . $error->getMessage(),
+            $logText,
             'generate'
         );
 
